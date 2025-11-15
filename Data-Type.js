@@ -70,6 +70,6 @@ console.log("Symbol datatype:");
 
 //BigInt datatype
 let bigIntNum = BigInt(9007199254740991);
-console.log("BigInt datatype:");
+console.log("BigInt datatype:"); 
 
 // _____________________________________________________________________________________________________________________________________________________________
