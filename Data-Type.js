@@ -3,7 +3,7 @@
 //1. Number - mathematical values
 //2. String - sequence of characters
 //3. Boolean - true or false
-//4. Null - empty value 
+//4. Null - empty value  
 //5. Undefined - variable not assigned a value
 //6. Object - collection of key-value pairs
 //7. Symbol - unique and immutable value
