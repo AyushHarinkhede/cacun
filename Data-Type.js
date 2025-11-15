@@ -65,7 +65,7 @@ console.log("Object datatype:");
 //Symbol datatype
 let sym = Symbol("unique");
 console.log("Symbol datatype:");
-
+ 
 // _____________________________________________________________________________________________________________________________________________________________
 
 //BigInt datatype
