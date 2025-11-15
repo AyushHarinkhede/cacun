@@ -42,7 +42,7 @@ console.log("Is fish tasty?", isFishTasty);
 //Null datatype
 
 let moting = null;
-console.log("Null datatype:");
+console.log("Null datatype:"); 
 
 // _____________________________________________________________________________________________________________________________________________________________
 
