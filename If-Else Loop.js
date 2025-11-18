@@ -83,7 +83,7 @@ else{
 //If else example//
 let color=prompt("Enter the color of traffic light:");
 if(colo=="red")
-{
+{ 
     console.log("Stop");
 }else if(color=="yellow")
 {
