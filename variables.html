@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Conditional Statements</title>
+   <link rel="stylesheet" href="./variables.css">
+</head>
+<body>
+
+<!-- Variables -->
+<h1>JavaScript Variables</h1>
+
+<div class="section">
+<Pre>
+• A variable is used to store data or values.
+• It works like a container to hold information.
+• We can store numbers, text, or other data types.
+• Variables help us reuse and update data easily.
+<b>• variables can be declared in 4 ways:</b>
+a.Let <br>
+b.Const <br>
+c.Var <br>
+d.Automatically 
+</Pre>
+</div>
+
+<div class="section">
+<h2>* Identifiers</h2>
+<p>Identifiers are names used to identify variables, functions, and objects.</p>
+<pre>
+<b><p>The rules for constructing names (identifiers) are:</p></b>
+• Names can contain letters, digits, underscores, and dollar signs.
+• Names must begin with a letter, a $ sign or an underscore (_).
+• Names are case sensitive (X is different from x).
+• Reserved words (JavaScript keywords) cannot be used as names.
+</pre>
+</div>
+
+<div class="section">
+<h2>* Underscore (_)</h2>
+<p>The underscore (_) is a valid character that can be used in: </p>
+<pre>
+a) Variable names<br>
+b) Function names<br>
+c) Object properties</p></b>
+
+<b>Example:</b>
+let total_amount = 5000;
+let paid_amount = 2000;
+let remaining_amount = total_amount - paid_amount;
+console.log("Remaining Amount: " + remaining_amount);
+
+<b>Output:</b>
+Remaining Amount: 3000
+</pre>
+</div>
+
+<div class="section">
+<h2>* Dollar Sign $</h2>
+<p>The Dollar sign ($) in JavaScript is a valid identifier that can be used in variable names, function names, and object names. It is also used inside template literals to insert (interpolate) variables or expressions into strings.</p>
+<pre>
+<b>Example:</b>
+let item = "Laptop";
+let price = 50000;
+console.log(`The price of ${item} is ₹${price}.`);
+
+<b>Output:</b>
+The price of Laptop is ₹50000.
+</pre>
+</div>
+<br>
+
+<!-- Types Of Variable -->
+<h1>Types Of Variable</h1>
+
+<div class="section">
+<h2>* Let</h2>
+<p>• let is used to declare a variable in JavaScript.</p>
+<p>• A variable declared with let can be changed later (reassigned).</p>
+<p>• let has block scope — it works only inside the { } block where it is defined.</p>
+<p>• You cannot redeclare the same let variable in the same block. </p>
+<pre>
+<b>Example:</b>
+let name="Paurnima Bawane";
+console.log(name);
+<br>
+<b>Output</b>
+Paurnima Bawane
+</pre>
+</div>
+
+<div class="section">
+<h2>* Var</h2>
+<p>var is used to declare a variable.</p>
+<p>• It has function scope (not block scope).</p>
+<p>• You can redeclare and reassign a variable declared with var.</p>
+ <p>• Variables declared with var are hoisted (they move to the top of their scope).</p>
+<p>• var is older — now mostly replaced by let and const in modern JavaScript.</p>
+<pre>
+<b>Example:</b>
+var city = "Nagpur"; 
+console.log(city);a
+<br>
+<b>Output:</b>
+Nagpur
+</pre>
+</div>
+
+<div class="section">
+<h2>* Const</h2>
+<p>• const is used to declare a constant variable.</p>
+<p>• You cannot change (reassign) its value after declaring.</p>
+<p>• You cannot redeclare a const variable.</p>
+<p>• It has block scope (works only inside { }).</p>
+<p>• You must assign a value at the time of declaration.</p>
+<pre>
+<b>Example:</b>
+const country = "India"; 
+console.log(country);
+<br>
+<b>Output:</b>
+India
+</pre>
+</div>
+<br>
+
+<!-- Variable Of Datatype -->
+ <h1>Variable Of Datatype</h1>
+
+ <div class="section">
+<h2>* String</h2>
+<p>• A string in JavaScript is a sequence of characters used to represent text.</p>
+<p>• It is written inside single quotes (' '), double quotes (" "), or backticks ( ).</p>
+<pre>
+<b>Example:</b>
+let firstName = "Paurnima";
+let lastName = "Bawane";
+let fullName = firstName + " " + lastName;
+console.log(fullName);
+
+<b>Output:</b>
+Paurnima Bawane
+</pre>
+</div>
+
+<div class="section">
+<h2>* Number</h2>
+<p>• A Number in JavaScript is a data type used to represent numeric values, whether integer or decimal (floating-point).</p>
+<p>• It is used for performing mathematical calculations like addition, subtraction, multiplication, etc.</p>
+<pre>
+<b>Example:</b>
+let price = 99.99;
+console.log(price);
+
+<b>Output:</b>
+99.99
+</pre>
+</div>
+
+<div class="section">
+<h2>* Bigint</h2>
+<p>• A BigInt in JavaScript is a special numeric data type used to represent very large integers that cannot be handled by the regular Number type.</p>
+<pre>
+<b>Example:</b>
+let num = 20;
+let bigNum = 50n;
+let total = BigInt(num) + bigNum;
+console.log(total);
+
+<b>Output:</b>
+70n
+</pre>
+</div>
+
+<div class="section">
+<h2>* Boolean</h2>
+<p>• A Boolean in JavaScript is a data type that can have only two values — true or false.</p>
+<p>• It is mainly used for decision-making and conditional statements (like if, else).</p>
+<pre>
+<b>Example:</b>
+let isLoggedIn = true;
+
+if (isLoggedIn) {
+  console.log("Welcome, user!");
+} else {
+  console.log("Please log in.");
+}
+
+<b>Output:</b>
+Welcome, user!
+</pre>
+</div>
+
+<div class="section">
+<h2>* Undefined</h2>
+<p>• Undefined is a primitive data type in JavaScript.</p>
+<p>• It means a variable has been declared but no value has been assigned to it yet.</p>
+<pre>
+<b>Example:</b>
+let city = undefined;
+console.log(city);
+
+<b>Output:</b>
+undefined
+</pre>
+</div>
+
+<div class="section">
+<h2>* Object</h2>
+<p>An Object in JavaScript is a non-primitive data type used to store multiple values in the form of key–value pairs.</p>
+<pre>
+<b>Example:</b>
+let student = {
+name: "Riya",
+rollNo: 45,
+subjects: ["Math", "English", "Science"],
+isPassed: true
+};
+console.log(student);
+
+<b>Output:</b>
+{
+  name: "Riya",
+  rollNo: 45,
+  subjects: ["Math", "English", "Science"],
+  isPassed: true
+}
+</pre>
+</div>
+
+<div class="section">
+<h2>* Null</h2>
+<p>• Null is a primitive data type in JavaScript that represents an intentional absence of any value.</p>
+<p>• It means the variable is empty or has no value assigned on purpose. </p>
+<pre>
+<b>Example:</b>
+let data = null;
+console.log(data);
+
+<b>Output:</b>
+null
+</pre>
+</div>
+
+<div class="section">
+<h2>* Symbol </h2>
+<p>• A Symbol is a primitive data type in JavaScript that is used to create unique and immutable identifiers (values that are guaranteed to be different from any other). </p>
+<p>• Symbols are often used as object property keys to avoid naming conflicts — because every Symbol is completely unique, even if they have the same description.</p>
+<pre>
+<b>Example:</b>
+let a = Symbol("user");
+let b = Symbol("user");
+console.log(a === b);
+
+<b>Output:</b>
+False
+</pre>
+</div>
+
+
+</body>
+
+</html>
+

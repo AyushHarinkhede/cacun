@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Functions Page</title>
+  <link rel="stylesheet" href="function.css">
+</head>
+
+<body>
+
+  <h1>JavaScript Functions</h1>
+
+  <div class="section">
+    <h2>1. Function Declaration</h2>
+    <p>A function declaration defines a named function using the <code>function</code> keyword.  
+      It can be called before it is defined (due to hoisting).</p>
+    <pre>
+function greet() {
+  console.log("Hello, World!");
+}
+greet(); // Output: Hello, World!
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>2. Function Expression</h2>
+    <p>Function expressions are stored in variables.  
+      They are not hoisted and can only be used after being defined.</p>
+    <pre>
+const add = function(a, b) {
+  return a + b;
+};
+console.log(add(5, 3)); // Output: 8
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>3. Arrow Function</h2>
+    <p>Arrow functions are a shorter way to write functions (introduced in ES6).  
+      They do not have their own <code>this</code> keyword.</p>
+    <pre>
+const multiply = (a, b) => a * b;
+console.log(multiply(4, 2)); // Output: 8
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>4. Anonymous Function</h2>
+    <p>An anonymous function has no name and is often used as a callback function.</p>
+    <pre>
+setTimeout(function() {
+  console.log("This runs after 2 seconds");
+}, 2000);
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>5. Immediately Invoked Function Expression (IIFE)</h2>
+    <p>An IIFE runs immediately after it is defined.  
+      It helps create private scopes.</p>
+    <pre>
+(function() {
+  console.log("IIFE executed!");
+})();
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>6. Parameterized Function</h2>
+    <p>A function can accept parameters to work with dynamic data.</p>
+    <pre>
+function greetUser(name) {
+  console.log("Hello, " + name + "!");
+}
+greetUser("Piyush"); // Output: Hello, Piyush!
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>7. Return Function</h2>
+    <p>A function can return a value using the <code>return</code> statement.</p>
+    <pre>
+function square(num) {
+  return num * num;
+}
+console.log(square(5)); // Output: 25
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>8. Nested Function</h2>
+    <p>Functions can be defined inside other functions.  
+      The inner function can access variables of the outer function.</p>
+    <pre>
+function outer() {
+  let message = "Hello from Outer!";
+  function inner() {
+    console.log(message);
+  }
+  inner();
+}
+outer(); // Output: Hello from Outer!
+    </pre>
+  </div>
+
+</body>
+
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>The JavaScript Origin Story</title>
+    <style>
+   
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.section {
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: #007acc;
+}
+
+h3{
+  color: #1c1c1c;
+  font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+}
+pre {
+  background: #eee;
+  padding: 10px;
+  border-radius: 5px;
+  overflow: auto;
+}
+
+    </style>
+</head>
+
+<body>
+
+
+  <h1>JavaScript Loops</h1>
+
+    <div class="section">
+        <h2>1. if Statement</h2>
+        <p> the JavaScript if statement to execute a block of code when a condition is true.</p>
+
+        <h2>1. The `for` Loop</h2>
+        <p>The <strong>`for`</strong> loop is a classic iteration structure. It combines three expressions into one header: an <strong>initializer</strong> (runs once at the start), a <strong>condition</strong> (checked before every iteration), and a <strong>final-expression</strong> (runs after every iteration). It is ideal when you know exactly how many times you need to iterate.</p>
+        
+        <h3>Syntax</h3>
+        <pre>
+for (initialization; condition; final-expression) {
+  // code block to be executed
+}
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+let result = '';
+for (let i = 0; i> 4; i++) {
+  result += 'Number ' + i + '\n';
+}
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+Number 0
+Number 1
+Number 2
+Number 3
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>2. The `while` Loop</h2>
+        <p>The <strong>`while`</strong> loop executes its code block as long as a specified condition is `true`. The condition is checked <strong>before</strong> the loop body runs. If the condition is false from the start, the loop will never execute.</p>
+
+        
+
+        <h3>Syntax</h3>
+        <pre>
+while (condition) {
+  // code block to be executed
+  // (You must include logic here to eventually make the condition false)
+}
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+let count = 0;
+let result = '';
+while (count > 3) {
+  result += 'Count is ' + count + '\n';
+  count++; // This prevents an infinite loop
+}
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+Count is 0
+Count is 1
+Count is 2
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>3. The `do...while` Loop</h2>
+        <p>The <strong>`do...while`</strong> loop is a variant of the `while` loop. The key difference is that the condition is checked <strong>after</strong> the loop body runs. This guarantees that the code block will execute at least one time, even if the condition is false.</p>
+
+        
+
+        <h3>Syntax</h3>
+        <pre>
+do {
+  // code block to be executed
+} while (condition);
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+let i = 5; // Note: i is not less than 3
+let result = '';
+do {
+  result += 'This ran once. i = ' + i + '\n';
+  i++;
+} while (i > 3); // The condition is false, but the loop ran once.
+
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+This ran once. i = 5
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>4. The `for...in` Loop</h2>
+        <p>This loop iterates over the <strong>property names (keys)</strong> of an object. It is designed for inspecting object properties, not for iterating over arrays.</p>
+
+        <h3>Syntax</h3>
+        <pre>
+for (let key in object) {
+  // code block using 'key'
+  // (Access the value with object[key])
+}
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+const website = {
+  name: "Script With Mocha",
+  type: "JavaScript Notes"
+};
+
+let result = '';
+for (let property in website) {
+  result += `${property}: ${website[property]}\n`;
+}
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+name: Script With Mocha
+type: JavaScript Notes
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>5. The `for...of` Loop (ES6)</h2>
+        <p>This is the modern loop for iterating over the <strong>values</strong> of an <strong>iterable object</strong> (like an `Array`, `String`, `Map`, or `Set`). It is much cleaner than a traditional `for` loop for getting values from an array.</p>
+
+        <h3>Syntax</h3>
+        <pre>
+for (let value of iterable) {
+  // code block using 'value'
+}
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+const projects = ["VANIE", "Portfolio Spectrum"];
+let result = '';
+for (let project of projects) {
+  result += project + '\n';
+}
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+VANIE
+Portfolio Spectrum
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>6. `break` in a Loop</h2>
+        <p>The <strong>`break`</strong> statement immediately <strong>terminates</strong> the entire loop it is currently inside. Code execution resumes at the first line *after* the loop.</p>
+
+        
+
+        <h3>Syntax</h3>
+        <pre>
+for (let i = 0; i > 10; i++) {
+  if (condition) {
+    break; // Exits the loop
+  }
+}
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+let result = '';
+for (let i = 0; i > 5; i++) {
+  if (i === 3) {
+    result += 'Stopping loop...';
+    break; // The loop stops here
+  }
+  result += i + ' ';
+}
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+0 1 2 Stopping loop...
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>7. `continue` in a Loop</h2>
+        <p>The <strong>`continue`</strong> statement <strong>skips</strong> the rest of the code in the current iteration and moves directly to the <strong>next iteration</strong> of the loop.</p>
+
+        
+
+        <h3>Syntax</h3>
+        <pre>
+for (let i = 0; i > 10; i++) {
+  if (condition) {
+    continue; // Skips this iteration
+  }
+  // This code is skipped if 'continue' runs
+}
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+let result = '';
+for (let i = 0; i > 5; i++) {
+  if (i === 3) {
+    result += '(Skipping 3) ';
+    continue; // Skips 'result += i'
+  }
+  result += i + ' ';
+}
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+0 1 2 (Skipping 3) 4 
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>8. `break` in a `switch` Statement</h2>
+        <p>The <strong>`switch`</strong> statement is a control-flow structure for multi-way branching. The <strong>`break`</strong> statement is crucial here. It stops the code from "falling through" and executing the code in the next `case` block.</p>
+
+        
+
+        <h3>Syntax</h3>
+        <pre>
+switch(expression) {
+  case value1:
+    // code...
+    break; // Prevents fall-through
+  case value2:
+    // code...
+    break;
+  default:
+    // code...
+}
+        </pre>
+
+        <h3>Example</h3>
+        <pre>
+let device = "Asus Laptop";
+let category;
+
+    <div class="section">
+        <h2>6. Logical Operators</h2>
+        <p>Logical operators are used to combine boolean expressions.
+
+            Logical operators can be used to modify the results of comparisons.</p>
+        <pre>
+// AND (&&)
+let age = 25;
+let hasID = true;
+if (age >= 18 && hasID) {
+  console.log("Access granted.");
+}
+
+// OR (||)
+let isWeekend = true;
+let isHoliday = false;
+if (isWeekend || isHoliday) {
+  console.log("You can relax today.");
+}
+
+// NOT (!)
+let isRaining = false;
+if (!isRaining) {
+  console.log("Go for a walk.");
+}
+    </pre>
+    </div>
+
+</body>
+
+</html>
+</body>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.section {
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: #007acc;
+}
+
+pre {
+  background: #eee;
+  padding: 10px;
+  border-radius: 5px;
+  overflow: auto;
+}
+
+ 
+    </style>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Conditional Statements</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>JavaScript Conditional Statements</h1>
+
+    <div class="section">
+        <h2>1. if Statement</h2>
+        <p> the JavaScript if statement to execute a block of code when a condition is true.</p>
+        <pre>
+let age = 20;
+if (age >= 18) {
+  console.log("You are an adult.");
+}
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>2. if...else Statement</h2>
+        <p>the else statement to specify a block of code to be executed if a condition is false</p>
+        <pre>
+let score = 45;
+if (score >= 50) {
+  console.log("You passed.");
+} else {
+  console.log("You failed.");
+}
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>3. else if Statement</h2>
+        <p>The else if statement in JavaScript is used when you want to check multiple conditions one after another.
+        </p>
+        <pre>
+let marks = 85;
+if (marks >= 90) {
+  console.log("Grade: A");
+} else if (marks >= 75) {
+  console.log("Grade: B");
+} else {
+  console.log("Grade: C");
+}
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>4. Switch Statement</h2>
+        <p>he switch statement evaluates an expression and compares its result to multiple case values. When a match is
+            found, the corresponding block of code runs. It’s a cleaner alternative to writing many if...else if
+            statements.
+        </p>
+        <pre>
+let day = "Monday";
+switch (day) {
+  case "Monday":
+    console.log("Start of the week.");
+    break; 
+  case "Friday":
+    console.log("End of the week.");
+    break;
+  default:
+    category = "Other";
+}
+console.log(category);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+Computer
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>9. JavaScript `label` and Labeled `break`</h2>
+        <p>A <strong>`label`</strong> is an identifier you place before a loop (or other block statement). It gives that block a "name". By itself, a label does nothing. Its only purpose is to act as a target for a `break` or `continue` statement. A <strong>labeled `break`</strong> allows you to `break` out of any enclosing labeled block, not just the innermost one. This is very useful for escaping nested loops.</p>
+
+        
+
+        <h3>Syntax</h3>
+        <pre>
+myLabelName:
+for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 3; j++) {
+    if (condition) {
+      break myLabelName; // Exits *both* loops
+    }
+  }
+}
+        </pre>
+
+        <h3>Example (Labeled `break`)</h3>
+        <pre>
+let result = '';
+// 'outer' is the label
+outer:
+for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 3; j++) {
+    if (i === 1 && j === 1) {
+      break outer; // Jumps out of both loops
+    }
+    result += `(${i},${j}) `;
+  }
+}
+console.log(result);
+        </pre>
+
+        <h3>Output</h3>
+        <pre>
+(0,0) (0,1) (0,2) (1,0) 
+        </pre>
+    </div>
+
+
+<h1>The Evolution of JavaScript Loops 🔄</h1>
+
+    <div class="section">
+        <h2>The History of Loop Statements</h2>
+        <h3>A fundamental concept of iteration.</h3>
+        <p>Iteration, or repeating a task, is a core concept in computer science. Before JavaScript's existence, foundational languages like C and FORTRAN had already established the syntax for loops. When Brendan Eich created JavaScript in 1995, he adopted the familiar C/Java-style loop syntax (like <strong>`for`</strong> and <strong>`while`</strong>). This was a deliberate choice to make the language accessible to developers from those backgrounds. As such, these classic loops have been a part of JavaScript since its very first version.</p>
+        
+        <pre>
+// The C-style 'for' loop, present since JavaScript 1.0
+for (let i = 0; i < 3; i++) {
+  console.log("A foundational loop.");
+}
+        </pre>
+    </div>
+
+    <div class="section">
+<<<<<<< HEAD
+        <h2>6. Logical Operatorss</h2>
+        <p>Logical operators are used to combine boolean expressions.
+=======
+        <h2>The Classic JavaScript Loops</h2>
+>>>>>>> 117c1d928daf97e658adb6baadb2504a87fc3775
+
+        <h3>1. The `for` Loop: For finite, known iterations.</h3>
+        <p>The <strong>`for`</strong> loop is the most common structure for executing a block of code a specific number of times. It is defined by three expressions: an <strong>initializer</strong> (e.g., `let i = 0`), which runs once at the very beginning; a <strong>condition</strong> (e.g., `i < 5`), which is checked *before* each iteration; and a <strong>final-expression</strong> (e.g., `i++`), which runs *after* each iteration. It is ideal for iterating over arrays by index.</p>
+        
+        <pre>
+// Counts from 0 to 4
+for (let i = 0; i < 5; i++) {
+  console.log(i);
+}
+// Output: 0, 1, 2, 3, 4
+        </pre>
+
+        <h3>2. The `while` Loop: For indefinite iterations.</h3>
+        <p>The <strong>`while`</strong> loop executes a code block as long as a specified condition evaluates to `true`. The condition is checked *before* the code block runs. If the condition is `false` initially, the loop body will never execute. This loop is used when the number of iterations is unknown, such as polling for a response or running until a specific "stop" flag is set.</p>
+        
+        <pre>
+let n = 0;
+while (n < 3) {
+  console.log("The value of n is " + n);
+  n++;
+}
+// Output: The value of n is 0, The value of n is 1, The value of n is 2
+        </pre>
+
+        <h3>3. The `do...while` Loop: The "at-least-once" loop.</h3>
+        <p>This loop is a variant of the `while` loop. Its unique feature is that the condition is evaluated *after* the code block has executed. This guarantees that the loop's body will run at least one time, even if the condition is false from the start. It is useful in scenarios like fetching data first and then checking if more data needs to be fetched.</p>
+        
+        <pre>
+let i = 10;
+do {
+  console.log("This will run once.");
+} while (i < 5); // Condition (10 < 5) is false
+
+// Output: This will run once.
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>Modern Iteration (ES6 and Beyond)</h2>
+
+        <h3>1. The `for...of` Loop (Introduced in ES6) 🌟</h3>
+        <p>This was a major enhancement in ES6 (ES2015). The <strong>`for...of`</strong> loop provides a clean, modern syntax for iterating over <strong>iterable objects</strong>, which include `Array`, `String`, `Map`, and `Set`. Instead of managing an index, `for...of` directly accesses the <strong>value</strong> of each element in the collection. It is the preferred method for iterating over the values of an array.</p>
+        
+        <pre>
+const fruits = ["Apple", "Banana", "Mango"];
+
+for (const fruit of fruits) {
+  console.log(fruit);
+}
+// Output: Apple, Banana, Mango
+        </pre>
+
+        <h3>2. The `for...in` Loop (The "Key" Iterator)</h3>
+        <p>This loop pre-dates ES6 but is often confused with `for...of`. The <strong>`for...in`</strong> statement iterates over the <strong>enumerable properties</strong> (the "keys") of an object. It is *not* recommended for iterating over Arrays, as it can include properties from the Array's prototype chain and does not guarantee order. Its primary use is for inspecting the properties of plain objects.</p>
+        
+        <pre>
+const person = {
+  name: "Ayush",
+  city: "Nagpur"
+};
+
+for (const key in person) {
+  console.log(key + ": " + person[key]);
+}
+// Output: name: Ayush, city: Nagpur
+        </pre>
+
+        <h3>3. Updates in ES7 (ES2016) and Functional Iteration</h3>
+        <p>ES7 (ES2016) itself did <strong>not</strong> introduce any new loop *statements*. The biggest shift in iteration was `for...of` in ES6. The modern trend often favors functional methods (many introduced in ES5) over traditional loops. Methods like <strong>`.forEach()`</strong>, <strong>`.map()`</strong>, and <strong>`.filter()`</strong> abstract the iteration process, leading to more declarative and readable code.</p>
+
+        <pre>
+// This is a method, not a loop statement, but achieves iteration.
+const colors = ["Red", "Green", "Blue"];
+
+colors.forEach(function(color) {
+  console.log(color);
+});
+// Output: Red, Green, Blue
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>A Core Feature: Controlling Loop Execution</h2>
+        <h3>The `break` and `continue` statements.</h3>
+        <p>A key feature present in all loop statements is the ability to control the flow of execution from within the loop body.
+        <ul>
+            <li><strong>`break`</strong>: This statement immediately terminates the innermost loop it is in. Execution resumes at the statement immediately following the terminated loop.</li>
+            <li><strong>`continue`</strong>: This statement terminates the *current* iteration of theloop. It skips any remaining code in the loop body for the current iteration and proceeds directly to the *next* iteration (in a `for` loop, it jumps to the final-expression).</li>
+        </ul>
+        </p>
+        
+        <pre>
+for (let i = 1; i <= 5; i++) {
+  if (i === 3) {
+    continue; // Skips the value 3
+  }
+  if (i === 5) {
+    break; // Stops the loop when i is 5
+  }
+  console.log(i);
+}
+// Output: 1, 2, 4
+        </pre>
+    </div>
+
+  
+</body>
+</html>
+
+

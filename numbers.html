@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Numbers</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>JavaScript Numbers</h1>
+
+    <div class="section">
+        <h2>1. Number introduction</h2>
+        <p>In JavaScript, numbers are used to represent both integers and floating-point (decimal) values.
+Unlike many other programming languages, JavaScript has only one type of number, which means there’s no separate type for integers or decimals.
+
+Special numeric values include:
+
+-Infinity → Represents infinity (e.g., result of 1/0)
+-Infinity → Negative infinity
+-NaN → Not-a-Number (e.g., result of invalid math operations like "text" / 2)</p>
+        
+
+    <pre>
+let x = 10;           // integer
+let y = 5.5;          // floating-point number
+console.log(x + y);   // Output: 15.5
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>2.Number methods</h2>
+        <p>JavaScript provides several built-in methods to work with numbers, convert, format, and check numeric values.</p>
+        
+<p>1. Number():
+Converts a value to a number.</p>
+
+<pre>
+example: Number("10");  
+output:  // 10
+
+example: Number(true);  
+output: // 1
+
+example: Number("10.5"); 
+output: // 10.5
+ </pre>
+
+<p> 2. parseInt():
+Converts a string to an integer (whole number).</p>
+
+<pre>
+example: parseInt("10.99"); 
+output: // 10
+
+example: parseInt("100px"); 
+output: // 100
+</pre>
+
+<p> 3. parseFloat():
+Converts a string to a floating-point number (decimal).
+</p>
+
+<pre>
+example: parseFloat("10.99"); 
+output: // 10.99
+
+example: parseFloat("5.5em");
+output:  // 5.5
+</pre>
+
+<p> 4. sNaN():
+Checks whether a value is Not-a-Number (NaN).</p>
+
+<pre>
+example: isNaN("hello");  
+output: // true
+
+example: isNaN(123);      
+output: // false
+</pre>
+
+<p>5. isFinite():
+Checks if a value is a finite number (not Infinity or NaN).</p>
+
+<pre>
+example: isFinite(10);       
+output: // true
+
+example: isFinite(Infinity); 
+output: // false
+</pre>
+
+<p> 6. toFixed():
+Formats a number to a specific number of decimal places.</p>
+
+<pre>
+    example: et num = 5.6789;
+            num.toFixed(2); 
+
+output: // "5.68"
+</pre>
+
+<p> 7. toPrecision():
+Formats a number to a specific length (total digits)..</p>
+
+<pre>
+    example: let n = 123.456;
+            n.toPrecision(4);
+
+    output: // "123.5"
+
+</pre>
+
+<p> 8. toExponential():
+Returns a number in exponential (scientific) notation.</p>
+
+<pre>example: let num = 25;
+              num.toExponential(2); 
+
+    output: // "2.50e+1"
+</pre>
+
+<p> 9. valueOf():
+Returns the primitive value of a Number object.</p>
+
+<pre>
+example: let x = new Number(10);
+             x.valueOf(); 
+
+output: // 10
+</pre>
+
+<p> 10. Number.isInteger():
+Checks if the value is an integer.</p>
+
+<pre>
+example: Number.isInteger(10);   
+output: // true
+
+example: Number.isInteger(10.5); 
+output: // false
+</pre>
+
+<p> 11.Number.isNaN():
+Checks if a value is NaN (more reliable than global isNaN()).</p>
+
+<pre>
+example: Number.isNaN(NaN); 
+output: // true
+
+example: Number.isNaN("a"); 
+output: // false
+
+</pre>
+
+<p> 12. Number.isFinite():
+Checks if a value is finite (number only).</p>
+
+<pre>
+example: Number.isFinite(10);      
+output: // true
+
+example: Number.isFinite("10");     
+output: // false
+
+exam[le: Number.isFinite(Infinity); 
+output: // false
+
+</pre>
+
+<p>13.Number.parseInt():
+Same as global parseInt(), but used as a method of Number.</p> 
+
+<pre>
+example: Number.parseInt("50px"); 
+output: // 50
+
+</pre>
+
+<p>14. Number.parseFloat():
+Same as global parseFloat(), but used as a method of Number.</p> 
+
+<pre>
+    example: Number.parseFloat("12.34m"); 
+    output: // 12.34</pre>
+
+<p> 15. Number.toString():
+Converts a number to a string.</p>
+
+<pre>
+    example: let x = 10;
+            x.toString();
+    output: //"10"</pre>
+</div>
+
+    <div class="section">
+        <h2>3. Number referrence</h2>
+        <table>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+
+    <tr><td>constructor</td><td>Returns the function that created JavaScript's Number prototype.</td></tr>
+    <tr><td>EPSILON</td><td>Returns the difference between 1 and the smallest number greater than 1.</td></tr>
+    <tr><td>isFinite()</td><td>Checks whether a value is a finite number.</td></tr>
+    <tr><td>isInteger()</td><td>Checks whether a value is an integer.</td></tr>
+    <tr><td>isNaN()</td><td>Checks whether a value is Number.NaN.</td></tr>
+    <tr><td>isSafeInteger()</td><td>Checks whether a value is a safe integer.</td></tr>
+    <tr><td>MAX_SAFE_INTEGER</td><td>Returns the maximum safe integer in JavaScript.</td></tr>
+    <tr><td>MIN_SAFE_INTEGER</td><td>Returns the minimum safe integer in JavaScript.</td></tr>
+    <tr><td>MAX_VALUE</td><td>Returns the largest number possible in JavaScript.</td></tr>
+    <tr><td>MIN_VALUE</td><td>Returns the smallest number possible in JavaScript.</td></tr>
+    <tr><td>NaN</td><td>Represents a "Not-a-Number" value.</td></tr>
+    <tr><td>NEGATIVE_INFINITY</td><td>Represents negative infinity (returned on overflow).</td></tr>
+    <tr><td>POSITIVE_INFINITY</td><td>Represents infinity (returned on overflow).</td></tr>
+    <tr><td>parseFloat()</td><td>Parses a string and returns a number.</td></tr>
+    <tr><td>parseInt()</td><td>Parses a string and returns a whole number.</td></tr>
+    <tr><td>prototype</td><td>Allows you to add properties and methods to an object.</td></tr>
+    <tr><td>toExponential(x)</td><td>Converts a number into an exponential notation.</td></tr>
+    <tr><td>toFixed(x)</td><td>Formats a number with x digits after the decimal point.</td></tr>
+    <tr><td>toLocaleString()</td><td>Converts a number into a string, based on the locale settings.</td></tr>
+    <tr><td>toPrecision(x)</td><td>Formats a number to x length.</td></tr>
+    <tr><td>toString()</td><td>Converts a number to a string.</td></tr>
+    <tr><td>valueOf()</td><td>Returns the primitive value of a number.</td></tr>
+</table>
+    </div>
+
+    <div class="section">
+        <h2>4. Number Bitwise</h2>
+        <table>
+    <tr>
+      <th>Operator</th>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+
+    <tr><td>&amp;</td><td>AND</td><td>Sets each bit to 1 if both bits are 1.</td></tr>
+    <tr><td>|</td><td>OR</td><td>Sets each bit to 1 if one of two bits is 1.</td></tr>
+    <tr><td>^</td><td>XOR</td><td>Sets each bit to 1 if only one of two bits is 1.</td></tr>
+    <tr><td>~</td><td>NOT</td><td>Inverts all the bits.</td></tr>
+    <tr><td>&lt;&lt;</td><td>Zero fill left shift</td><td>Shifts left by pushing zeros in from the right and letting the leftmost bits fall off.</td></tr>
+    <tr><td>&gt;&gt;</td><td>Signed right shift</td><td>Shifts right by pushing copies of the leftmost bit in from the left, and lets the rightmost bits fall off.</td></tr>
+    <tr><td>&gt;&gt;&gt;</td><td>Zero fill right shift</td><td>Shifts right by pushing zeros in from the left, and lets the rightmost bits fall off.</td></tr>
+
+  </table>
+
+  <b><p>Examples</p></b>
+  <table>
+    <tr>
+      <th>Operation</th>
+      <th>Result</th>
+      <th>Same as</th>
+      <th>Result</th>
+    </tr>
+
+    <tr><td>5 &amp; 1</td><td>1</td><td>0101 &amp; 0001</td><td>0001</td></tr>
+    <tr><td>5 | 1</td><td>5</td><td>0101 | 0001</td><td>0101</td></tr>
+    <tr><td>~ 5</td><td>10</td><td>~0101</td><td>1010</td></tr>
+    <tr><td>5 &lt;&lt; 1</td><td>10</td><td>0101 &lt;&lt; 1</td><td>1010</td></tr>
+    <tr><td>5 ^ 1</td><td>4</td><td>0101 ^ 0001</td><td>0100</td></tr>
+    <tr><td>5 &gt;&gt; 1</td><td>2</td><td>0101 &gt;&gt; 1</td><td>0010</td></tr>
+    <tr><td>5 &gt;&gt;&gt; 1</td><td>2</td><td>0101 &gt;&gt;&gt; 1</td><td>0010</td></tr>
+
+  </table>
+    </div>
+</body>
+</html>

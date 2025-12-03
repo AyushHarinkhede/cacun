@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Conditional Statements</title>
+    <link rel="stylesheet" href="./array.css">
+</head>
+
+<body>
+
+    <h1>JavaScript Arrays</h1>
+
+    <div class="section">
+        <h2> <u>Array</u></h2>
+        <p>An array in JavaScript is a special object that stores multiple values in a single variable.
+          You can store numbers, strings, booleans, or even other arrays or objects!</p>
+        <pre>
+         
+          let fruits = ["Apple", "Banana", "Mango"];
+
+          fruits.push("Orange");       // Add an element
+          console.log(fruits[0]);      // Access first element
+          fruits[1] = "Grapes";        // Change second element
+          
+          console.log(fruits);         // Output the whole array
+          Apple
+          ["Apple", "Grapes", "Mango", "Orange"]
+     
+    </pre>
+    </div>
+
+    <div class="section">
+        <h1>Array methods</h1>
+        <h2>1. Array.length</h2>
+        <p>Gets the number of elements in an array.</p>
+        <pre>
+
+          let fruits = ["Apple", "Banana", "Cherry"];
+          console.log(fruits.length);  // Output: 3
+          
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>2. Array.tostring()</h2>
+        <p>Converts the array into a comma-separated string.
+        </p>
+        <pre>
+
+          let fruits = ["Apple", "Banana", "Cherry"];
+          console.log(fruits.toString());  // Output: Apple,Banana,Cherry
+          
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>3. Array.at()</h2>
+        <p>Returns the element at a specific index (supports negative indexing).
+        </p>
+        <pre>
+
+          let fruits = ["Apple", "Banana", "Cherry"];
+          console.log(fruits.at(1));   // Output: Banana
+          console.log(fruits.at(-1));  // Output: Cherry
+          
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>4.Array.join()</h2>
+        <p>Joins all elements into a string with a custom separator.</p>
+        <pre>
+
+          let fruits = ["Apple", "Banana", "Cherry"];
+console.log(fruits.join(" - "));  // Output: Apple - Banana - Cherry
+
+    </pre>
+    </div>
+
+    <div class="section">
+        <h2>5.Array.pop()</h2>
+        <p>Removes and returns the last element.</p>
+        <pre>
+
+          let fruits = ["Apple", "Banana", "Cherry"];
+          fruits.pop();
+          console.log(fruits);  // Output: ["Apple", "Banana"]
+          
+    </pre>
+    </div>
+
+    <div class="section">
+      <h2>6.Array.push()</h2>
+      <p>Adds new elements to the end.</p>
+      <pre>
+
+        let fruits = ["Apple", "Banana"];
+        fruits.push("Mango");
+        console.log(fruits);  // Output: ["Apple", "Banana", "Mango"]        
+        
+  </pre>
+  </div>
+
+  <div class="section">
+    <h2>7.Array.shift()</h2>
+    <p>Removes and returns the first element.</p>
+    <pre>
+
+      let fruits = ["Apple", "Banana", "Cherry"];
+      fruits.shift();
+      console.log(fruits);  // Output: ["Banana", "Cherry"]
+      
+</pre>
+</div>
+
+<div class="section">
+    <h2>8.Array.unshift</h2>
+  <p>Adds elements to the beginning.</p>
+  <pre>
+
+    let fruits = ["Banana", "Cherry"];
+fruits.unshift("Apple");
+console.log(fruits);  // Output: ["Apple", "Banana", "Cherry"]
+    
+</pre>
+</div>
+
+<div class="section">
+  <h2>9.Array.delete()</h2>
+  <p>Deletes an element but leaves an empty slot (undefined).</p>
+  <pre>
+
+    let fruits = ["Apple", "Banana", "Cherry"];
+delete fruits[1];
+console.log(fruits);  // Output: ["Apple", undefined, "Cherry"]
+
+    
+</pre>
+</div>
+
+<div class="section">
+  <h2>10.Array.concat()</h2>
+  <p>Merges two or more arrays.</p>
+  <pre>
+
+    let fruits = ["Apple", "Banana"];
+let moreFruits = ["Cherry", "Mango"];
+let allFruits = fruits.concat(moreFruits);
+console.log(allFruits);  // Output: ["Apple", "Banana", "Cherry", "Mango"]
+   
+</pre>
+</div>
+
+<div class="section">
+  <h2>11.Array.copyWithin()</h2>
+  <p>Copies part of an array to another location in the same array.</p>
+  <pre>
+
+    let arr = [1, 2, 3, 4, 5];
+arr.copyWithin(0, 3);  
+console.log(arr);  // Output: [4, 5, 3, 4, 5]
+
+   
+</pre>
+</div>
+
+<div class="section">
+  <h2>12.Array.flat()</h2>
+  <p>Flattens nested arrays.</p>
+  <pre>
+
+    let arr = [1, [2, [3, 4]]];
+    console.log(arr.flat(2));  // Output: [1, 2, 3, 4]
+    
+ </pre>
+</div>
+
+
+<div class="section">
+  <h2>13.Array.slice()</h2>
+  <p>Extracts a portion of an array (without modifying it).</p>
+  <pre>
+
+    let fruits = ["Apple", "Banana", "Cherry", "Mango"];
+    console.log(fruits.slice(1, 3));  // Output: ["Banana", "Cherry"]
+    
+   
+</pre>
+</div>
+
+<div class="section">
+  <h2>14.Array.splice()</h2>
+  <p>Adds/removes elements at a specified index (modifies the array).</p>
+  <pre>
+
+    let fruits = ["Apple", "Banana", "Cherry"];
+fruits.splice(1, 1, "Mango");  // Remove 1 item at index 1, add "Mango"
+console.log(fruits);  // Output: ["Apple", "Mango", "Cherry"]
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>15.Array.toSpliced()</h2>
+  <p>Same as splice(), but does not modify the original array.</p>
+  <pre>
+
+    let fruits = ["Apple", "Banana", "Cherry"];
+let newFruits = fruits.toSpliced(1, 1, "Mango");
+console.log(newFruits);  // Output: ["Apple", "Mango", "Cherry"]
+console.log(fruits);     // Original remains unchanged
+       
+</pre>
+</div>
+
+<div class="section">
+  <h1>Array Search Methods</h1>
+  <h2>1.Array.indexOf()</h2>
+  <p>Finds the first index of a given element in an array.</p>
+  <pre>
+
+    let fruits = ["apple", "banana", "mango", "banana"];
+    let position = fruits.indexOf("banana");
+    
+    console.log(position); // Output: 1
+
+     >Returns 1 because "banana" first appears at index 1.
+     >Returns -1 if the element isn't found. 
+       
+</pre>
+</div>
+
+<div class="section">
+  <h2>2.Array.lastIndexOf()</h2>
+  <p>Finds the last index of a given element.</p>
+  <pre>
+
+    let fruits = ["apple", "banana", "mango", "banana"];
+    let position = fruits.lastIndexOf("banana");
+    
+    console.log(position); // Output: 3
+
+    >Returns 3 (the last "banana" is at index 3).
+       
+</pre>
+</div>
+
+<div class="section">
+  <h2>3.Array.includes()</h2>
+  <p>Checks if an element exists in the array.</p>
+  <pre>
+
+    let fruits = ["apple", "banana", "mango"];
+
+console.log(fruits.includes("banana")); // true
+console.log(fruits.includes("grape"));  // false
+
+
+    >Returns a Boolean (true or false).
+       
+</pre>
+</div>
+
+<div class="section">
+  <h2>4.Array.find()</h2>
+  <p>Returns the first element that matches a condition.</p>
+  <pre>
+
+    let numbers = [4, 9, 16, 25, 29];
+let result = numbers.find(num => num > 20);
+
+console.log(result); // Output: 25
+
+
+
+    >Stops searching after finding the first match.
+       
+</pre>
+</div>
+
+<div class="section">
+  <h2>5.Array.findIndex()</h2>
+  <p>Returns the index of the first element that matches a condition.</p>
+  <pre>
+
+    let numbers = [4, 9, 16, 25, 29];
+    let index = numbers.findIndex(num => num > 20);
+    
+    console.log(index); // Output: 3
+    
+</pre>
+</div>
+
+<div class="section">
+  <h2>6.Array.findLast()</h2>
+  <p>Returns the last element that matches a condition.</p>
+  <pre>
+
+    let numbers = [4, 9, 16, 25, 29];
+let result = numbers.findLast(num => num > 20);
+
+console.log(result); // Output: 29
+
+    
+</pre>
+</div>
+
+<div class="section">
+  <h2>7.Array.findLastIndex()</h2>
+  <p>Returns the index of the last element that matches a condition.</p>
+  <pre>
+
+    let numbers = [4, 9, 16, 25, 29];
+let index = numbers.findLastIndex(num => num > 20);
+
+console.log(index); // Output: 4
+
+    
+</pre>
+</div>
+
+
+<div class="section">
+  <h1>javascript array sort</h1>
+  <h1>Alphabetic Sort</h1>
+  <h2>1.Array.sort()</h2>
+  <p>This method sorts the elements of an array in place (meaning it changes the original array).</p>
+  <pre>
+
+    const fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.sort();
+console.log(fruits);
+// Output: ["Apple", "Banana", "Mango", "Orange"]
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>2.Array.reverse()</h2>
+  <p>This method simply reverses the order of the elements in an array. It doesn't sort, it just flips the array. It also modifies the original array.</p>
+  <pre>
+
+    const letters = ['a', 'b', 'c', 'd'];
+    letters.reverse();
+    console.log(letters);
+    // Output: ['d', 'c', 'b', 'a']
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>3.Array.tosorted()</h2>
+  <p>This is a new method. It works just like sort(), but it does not change the original array. Instead, it returns a new, sorted array. This is safer to use.</p>
+  <pre>
+
+    const months = ["Mar", "Jan", "Feb"];
+const sortedMonths = months.toSorted();
+
+console.log(sortedMonths);
+// Output: ["Feb", "Jan", "Mar"]
+
+console.log(months);
+// Output: ["Mar", "Jan", "Feb"]  <-- The original is unchanged!
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>4.Array.toReversed</h2>
+  <p>This is the new version of reverse(). It does not change the original array and returns a new, reversed array.</p>
+  <pre>
+
+    const nums = [1, 2, 3, 4];
+const reversedNums = nums.toReversed();
+
+console.log(reversedNums);
+// Output: [4, 3, 2, 1]
+
+console.log(nums);
+// Output: [1, 2, 3, 4]  <-- The original is unchanged!
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>5.Sorting Objects</h2>
+  <p>This is the new version of reverse(). It does not change the original array and returns a new, reversed array.</p>
+  <pre>
+
+    const cars = [
+  {type: "Volvo", year: 2016},
+  {type: "Saab", year: 2001},
+  {type: "BMW", year: 2010}
+];
+
+// Sort by year (numerically)
+cars.sort(function(a, b) {
+  return a.year - b.year;
+});
+
+console.log(cars);
+/* Output:
+[
+  {type: "Saab", year: 2001},
+  {type: "BMW", year: 2010},
+  {type: "Volvo", year: 2016}
+]
+*/
+
+</pre>
+</div>
+
+<div class="section">
+  <h1>Numeric Sort</h1>
+  <h2></h2>
+  <p> > The compare function takes two values (a and b) and returns a number.
+
+    For ascending order (smallest to largest), use: (a, b) => a - b
+    
+    For descending order (largest to smallest), use: (a, b) => b - a </p>
+  <pre>
+
+    const points = [40, 100, 1, 5, 25, 10];
+
+// Default (incorrect) string sort:
+// [1, 10, 100, 25, 40, 5]
+points.sort();
+
+// Correct numeric sort (Ascending)
+points.sort((a, b) => a - b);
+// Result: [1, 5, 10, 25, 40, 100]
+
+// Correct numeric sort (Descending)
+points.sort((a, b) => b - a);
+// Result: [100, 40, 25, 10, 5, 1]
+  
+</pre>
+</div>
+
+
+<div class="section">
+  <h2>1.Random Sort (Shuffle)</h2>
+  <p>This uses the compare function to randomize the array order.</p>
+  <pre>
+
+    const points = [40, 100, 1, 5, 25, 10];
+points.sort(() => 0.5 - Math.random());
+// Result: [25, 10, 1, 100, 5, 40] (or any random order)
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>2.Math.min() and Math.max()</h2>
+  <p>These functions find the single lowest or highest value in an array. They do not sort the array. You must use the spread (...) operator to pass the array elements as arguments.</p>
+  <pre>
+
+    const points = [40, 100, 1, 5, 25, 10];
+
+// Find the lowest value
+let minVal = Math.min(...points); // Result: 1
+
+// Find the highest value
+let maxVal = Math.max(...points); // Result: 100
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>3."Home made" Min() and Max()</h2>
+  <p>This refers to writing your own function (usually with a for loop) to find the minimum or maximum value. This is a common exercise to learn programming logic.</p>
+  <pre>
+
+    function findMax(arr) {
+      let len = arr.length;
+      let max = -Infinity; // Start with the lowest possible value
+    
+      while (len--) {
+        if (arr[len] > max) {
+          max = arr[len];
+        }
+      }
+      return max;
+    }
+    
+    const points = [40, 100, 1, 5, 25, 10];
+    let myMax = findMax(points); // Result: 100
+
+</pre>
+</div>
+
+<div class="section">
+  <h1>Array Iteration Methods</h1>
+  <h2>1.Array.forEach()</h2>
+  <p>The forEach() method executes a provided function once for each array element.
+
+    Goal: To perform an operation (a side effect) for every item, such as logging, updating a database, or modifying an external variable.
+    
+    Return Value: It returns undefined. It does not create a new array.
+    
+    Example
+    This example logs a message for every item in the array.</p>
+    <pre>
+
+      const colors = ['red', 'green', 'blue'];
+
+colors.forEach(item => {
+  console.log(`The color is: ${item}`);
+});
+
+// Output:
+// The color is: red
+// The color is: green
+// The color is: blue 
+
+    </pre>
+  
+</div>
+
+<div class="section">
+  <h2>2.Array.map()</h2>
+  <p>The map() method creates a new array populated with the results of calling a provided function on every element in the calling array.
+
+    Goal: To transform every element in the array into a new value.
+    
+    Return Value: A new array with the same length as the original. The original array remains unchanged.</p>
+  <pre>
+
+    const numbers = [1, 2, 3, 4];
+
+const doubledNumbers = numbers.map(num => {
+  return num * 2;
+});
+
+console.log(doubledNumbers); // [2, 4, 6, 8]
+console.log(numbers);       // [1, 2, 3, 4] (Original array is unchanged)
+
+</pre>
+</div>
+
+<div class="section">
+  <h2>3.Array.filter()</h2>
+  <p>The filter() method creates a new array containing all elements that pass a test (a condition that returns true or false) implemented by the provided function.
+
+    Goal: To select a subset of elements from an array based on a condition.
+    
+    Return Value: A new array with elements that met the condition. The new array's length will be less than or equal to the original.</p>
+  <pre>
+
+    const scores = [5, 12, 8, 25, 3];
+
+const highScores = scores.filter(score => {
+  return score > 10;
+});
+
+console.log(highScores); // [12, 25]
+
+</pre>
+</div>
+
+<div class="section">
+<h2>4.Array.flatMap()</h2>
+<p>The flatMap() method is a combination of map() and flat(1). It's used to map each element and then flatten the resulting structure by one level in a single step.</p>
+<pre>
+
+  const phrases = ["Quick brown fox", "jumps over", "the lazy dog"];
+
+  // flatMap is equivalent to map() followed by flat(1)
+  const allWords = phrases.flatMap(phrase => {
+    return phrase.split(' ');
+  });
+  
+  console.log(allWords);
+  // Output: ['Quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+
+</pre>
+</div>
+
+ <div class="section">
+  <h1> Array Const</h1>
+  <p>In JavaScript, const declares a constant reference (or constant pointer) to a value.
+
+    You CANNOT reassign the array: You cannot change the variable myArray to point to a completely different array or value.
+    
+    You CAN modify the array content: Because const only protects the reference, you are free to change the elements inside the array (e.g., adding, removing, or changing elements).</p>
+    <pre>
+
+      // 1. Declare the array using const
+const fruits = ["apple", "banana", "cherry"];
+console.log(fruits); // Output: ["apple", "banana", "cherry"]
+
+// --- ACTIONS THAT ARE ALLOWED (Modifying the array content) ---
+
+// A. Changing an element at an index is allowed
+fruits[0] = "orange";
+console.log(fruits); // Output: ["orange", "banana", "cherry"]
+
+// B. Adding new elements (mutation) is allowed
+fruits.push("grape");
+console.log(fruits); // Output: ["orange", "banana", "cherry", "grape"]
+
+// --- ACTIONS THAT ARE NOT ALLOWED (Reassigning the variable) ---
+
+// C. Reassigning the variable will throw an error:
+// fruits = ["kiwi", "lime"]; 
+// console.log(fruits); 
+// TypeError: Assignment to constant variable.
+
+    </pre>
+</div>
+
+</body>
+
+</html>
