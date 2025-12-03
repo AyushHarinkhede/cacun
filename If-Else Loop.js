@@ -10,7 +10,7 @@ while(i<3)
 // another Example of while loop //
 let stars = 1; 
 while (stars<=8) { 
-    console.log("star number:"+ stars); 
+    console.log("star number:"+ stars);  
     stars++;  
 } 
 
