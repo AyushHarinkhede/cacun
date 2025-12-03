@@ -1,18 +1,18 @@
 // _____________________________________________________________________________________________________________________________________________________________
 
 // while loop //
-var i=0;
-while(i<3) 
-{
-    console.log(i);
-    i++;
-}
-// another Example of while loop//
-let stars = 1;
-while (stars<=8) {
-    console.log("star number:"+ stars);
-    stars++;
-}
+var i=0;  
+while(i<3)  
+{ 
+    console.log(i); 
+    i++; 
+} 
+// another Example of while loop //
+let stars = 1; 
+while (stars<=8) { 
+    console.log("star number:"+ stars); 
+    stars++; 
+} 
 
 // _____________________________________________________________________________________________________________________________________________________________
 
