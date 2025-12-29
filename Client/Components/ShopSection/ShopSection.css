@@ -1,0 +1,153 @@
+.shopWrap {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  padding: 16px;
+  box-shadow: 0 26px 80px color-mix(in oklab, #000 14%, transparent);
+}
+
+.shopHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 4px 14px;
+}
+
+.shopTitle {
+  font-weight: 950;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.shopSub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.shopGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.shopCard {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--card);
+  overflow: hidden;
+  min-height: 320px;
+  outline: none;
+  cursor: pointer;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.shopCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 70px color-mix(in oklab, #000 18%, transparent);
+}
+
+.shopMedia {
+  position: relative;
+  height: 160px;
+  background: color-mix(in oklab, var(--royal-blue) 85%, var(--royal-gold));
+}
+
+.shopImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.92;
+}
+
+.shopBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--maroon);
+  color: var(--royal-gold);
+  font-weight: 950;
+  letter-spacing: 0.4px;
+}
+
+.shopBody {
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.shopName {
+  font-weight: 950;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.shopCat {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--royal-blue) 12%, transparent);
+  color: var(--text);
+  font-weight: 850;
+  letter-spacing: 0.3px;
+  font-size: 12px;
+}
+
+.shopMeta {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.shopBrand {
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.shopActions {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.shopIcon {
+  height: 44px;
+  width: 44px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.shopIconActive {
+  background: color-mix(in oklab, var(--maroon) 16%, transparent);
+  border-color: color-mix(in oklab, var(--maroon) 60%, var(--border));
+}
+
+.shopAdd {
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 950;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.shopAddActive {
+  background: color-mix(in oklab, var(--royal-blue) 80%, var(--maroon));
+}

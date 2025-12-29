@@ -5,10 +5,16 @@ import { products } from '../../data/products.js'
 import { IconBasket, IconHeart } from '../icons.jsx'
 import { useSettings } from '../../contexts/useSettings.js'
 
-export default function ProductsSection() {
+export default function ProductsSection({ showViewMore = false }) {
   const { likedIds, cartIds, toggleLiked, toggleCart, setActiveProductId } = useSettings()
 
   const items = useMemo(() => products, [])
+  const displayed = useMemo(() => (showViewMore ? items.slice(0, 8) : items), [items, showViewMore])
+
+  const goShop = () => {
+    const el = document.getElementById('shop')
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <section className="prodWrap" id="products" aria-label="Products">
@@ -17,11 +23,18 @@ export default function ProductsSection() {
           <div className="prodTitle">Products</div>
           <div className="prodSub">Plastic-free • Non-toxic • Recycled • Nature-made</div>
         </div>
-        <div className="prodHint">Scroll</div>
+        <div className="prodHeaderActions">
+          {showViewMore ? (
+            <button className="prodMore" type="button" onClick={goShop}>
+              View more
+            </button>
+          ) : null}
+          <div className="prodHint">Scroll</div>
+        </div>
       </div>
 
       <div className="prodRail" role="list">
-        {items.map((p) => {
+        {displayed.map((p) => {
           const isLiked = likedIds.has(p.id)
           const inCart = cartIds.has(p.id)
 

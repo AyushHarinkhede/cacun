@@ -4,6 +4,8 @@ import './Home.css'
 import logo from '../cacun.png'
 import ProductsSection from '../ProductsSection/ProductsSection.jsx'
 import NewsletterSection from '../NewsletterSection/NewsletterSection.jsx'
+import ShopCtaSection from '../ShopCtaSection/ShopCtaSection.jsx'
+import ShopSection from '../ShopSection/ShopSection.jsx'
 
 export default function Home() {
   const heroRef = useRef(null)
@@ -67,7 +69,9 @@ export default function Home() {
         </div>
       </section>
 
-      <ProductsSection />
+      <ShopCtaSection />
+
+      <ProductsSection showViewMore />
 
       <section className="calloutRow" id="campaigns" aria-label="Campaigns and NGOs">
         <div className="callout">
@@ -83,6 +87,8 @@ export default function Home() {
       </section>
 
       <NewsletterSection />
+
+      <ShopSection />
     </div>
   )
 }
