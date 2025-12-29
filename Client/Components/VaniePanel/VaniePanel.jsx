@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import './VaniePanel.css'
 
-import { useSettings } from '../../contexts/SettingsContext.jsx'
+import { useSettings } from '../../contexts/useSettings.js'
 import { buildVanieReply } from './vaniePreset.js'
 
 export default function VaniePanel() {

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import './Navbar.css'
 
 import logo from '../cacun.png'
-import { useSettings } from '../../contexts/SettingsContext.jsx'
+import { useSettings } from '../../contexts/useSettings.js'
 import { IconBasket, IconHeart, IconSearch } from '../icons.jsx'
 
 export default function Navbar() {

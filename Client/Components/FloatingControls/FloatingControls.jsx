@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './FloatingControls.css'
 
-import { useSettings } from '../../contexts/SettingsContext.jsx'
+import { useSettings } from '../../contexts/useSettings.js'
 import {
   IconBack,
   IconChevronUp,
