@@ -1,0 +1,63 @@
+.newsWrap {
+  margin-top: 10px;
+}
+
+.newsInner {
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: color-mix(in oklab, var(--surface) 85%, transparent);
+  padding: 16px;
+  overflow: hidden;
+  box-shadow: 0 26px 80px color-mix(in oklab, #000 14%, transparent);
+}
+
+.newsCard {
+  border-radius: 22px;
+  padding: 18px;
+  border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklab, var(--card) 88%, transparent),
+    color-mix(in oklab, var(--card) 75%, var(--royal-blue))
+  );
+}
+
+.newsTitle {
+  font-weight: 950;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.newsText {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.newsRow {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.newsInput {
+  height: 46px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  padding: 0 12px;
+  color: var(--text);
+  font-weight: 650;
+}
+
+.newsBtn {
+  height: 46px;
+  border-radius: 16px;
+  border: 0;
+  padding: 0 16px;
+  background: var(--maroon);
+  color: var(--royal-gold);
+  font-weight: 950;
+  cursor: pointer;
+}

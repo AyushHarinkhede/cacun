@@ -24,23 +24,26 @@
 
 .authDrawer {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: min(420px, calc(100% - 28px));
-  height: calc(100vh - 28px);
+  top: 50%;
+  left: 50%;
+  width: min(440px, calc(100% - 28px));
+  height: auto;
+  max-height: calc(100vh - 40px);
   border-radius: 26px;
   border: 1px solid var(--border);
   background: var(--surface);
   box-shadow: 0 24px 80px color-mix(in oklab, #000 26%, transparent);
-  transform: translateX(120%);
+  transform: translate(-50%, -50%) scale(0.98);
   transition: 260ms cubic-bezier(.2,.9,.2,1);
   display: grid;
   grid-template-rows: auto 1fr;
   overflow: hidden;
+  opacity: 0;
 }
 
 .authDrawerOpen {
-  transform: translateX(0);
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
 }
 
 .authHeader {
@@ -176,7 +179,7 @@
   border-radius: 16px;
   border: 0;
   background: var(--maroon);
-  color: #fff;
+  color: var(--royal-gold);
   font-weight: 950;
   cursor: pointer;
 }
