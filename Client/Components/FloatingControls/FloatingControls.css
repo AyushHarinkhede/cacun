@@ -1,0 +1,44 @@
+.fabWrap {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  display: grid;
+  gap: 10px;
+  z-index: 50;
+}
+
+.fabMain,
+.fabChat,
+.fabAction {
+  height: 52px;
+  width: 52px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 16px 30px color-mix(in oklab, #000 16%, transparent);
+}
+
+.fabChat {
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
+}
+
+.fabActions {
+  display: grid;
+  gap: 10px;
+  transform: translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: 160ms ease;
+}
+
+.fabActionsOpen {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
