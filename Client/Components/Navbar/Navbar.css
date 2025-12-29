@@ -23,29 +23,40 @@
   gap: 10px;
   text-decoration: none;
   color: var(--text);
+  padding: 8px 10px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.brand:hover {
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--surface) 75%, transparent);
+  transform: translateY(-1px);
 }
 
 .brandLogo {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
 }
 
-.brandName {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: lowercase;
-}
-
 .navSearch {
+  position: relative;
   display: grid;
   grid-template-columns: 44px 1fr auto;
   align-items: center;
   border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: 16px;
+  background: linear-gradient(140deg, var(--surface), color-mix(in oklab, var(--surface) 80%, var(--royal-blue)));
+  border-radius: 18px;
   overflow: hidden;
+  box-shadow: 0 18px 50px color-mix(in oklab, #000 12%, transparent);
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.navSearch:focus-within {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 70px color-mix(in oklab, #000 18%, transparent);
 }
 
 .navSearchIcon {
@@ -64,6 +75,11 @@
   font-size: 14px;
 }
 
+.navSearchInput::placeholder {
+  color: color-mix(in oklab, var(--muted) 85%, transparent);
+  font-weight: 650;
+}
+
 .navSearchBtn {
   height: 44px;
   border: 0;
@@ -73,6 +89,60 @@
   font-weight: 800;
   letter-spacing: 0.2px;
   cursor: pointer;
+}
+
+.navSearchBtn:hover {
+  filter: brightness(1.05);
+}
+
+.navSuggest {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 10px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  box-shadow: 0 30px 90px color-mix(in oklab, #000 22%, transparent);
+}
+
+.navSuggestItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 86%, transparent);
+  color: var(--text);
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.navSuggestItem:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px color-mix(in oklab, #000 16%, transparent);
+}
+
+.navSuggestLabel {
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navSuggestType {
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.7px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
 }
 
 .navRight {

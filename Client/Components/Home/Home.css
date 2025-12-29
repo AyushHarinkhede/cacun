@@ -12,6 +12,21 @@
   background: linear-gradient(140deg, var(--surface) 0%, color-mix(in oklab, var(--surface) 70%, var(--royal-blue)) 140%);
   border: 1px solid var(--border);
   padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroCard::after {
+  content: '';
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  bottom: -40px;
+  height: 120px;
+  background: radial-gradient(closest-side at 20% 40%, color-mix(in oklab, var(--royal-gold) 55%, transparent), transparent 70%),
+    radial-gradient(closest-side at 70% 60%, color-mix(in oklab, var(--royal-blue) 24%, transparent), transparent 70%);
+  filter: blur(10px);
+  opacity: 0.55;
 }
 
 .heroKicker {
@@ -21,18 +36,20 @@
   letter-spacing: 0.2px;
 }
 
-.heroTitle {
+.heroLogoWrap {
   --hero-scale: 1;
-  margin: 6px 0 10px;
-  font-size: clamp(48px, 7vw, 82px);
-  line-height: 0.96;
-  letter-spacing: 1px;
-  font-weight: 900;
-  transform: scaleY(var(--hero-scale));
-  transform-origin: left top;
-  color: transparent;
-  -webkit-text-stroke: 1.4px var(--text);
-  text-transform: lowercase;
+  margin: 12px 0 10px;
+  width: min(320px, 72vw);
+  transform: scale(var(--hero-scale));
+  transform-origin: left center;
+  transition: 220ms cubic-bezier(.2,.9,.2,1);
+}
+
+.heroLogo {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 28px 60px color-mix(in oklab, #000 28%, transparent));
 }
 
 .heroSub {
@@ -69,6 +86,12 @@
   border-radius: 20px;
   background: var(--card);
   padding: 16px;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.stackCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 70px color-mix(in oklab, #000 14%, transparent);
 }
 
 .stackTitle {
@@ -94,6 +117,24 @@
   border-radius: 22px;
   background: var(--surface);
   padding: 18px;
+  position: relative;
+  overflow: hidden;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.callout:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 80px color-mix(in oklab, #000 16%, transparent);
+}
+
+.callout::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -60px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--royal-blue) 18%, transparent), transparent 70%);
 }
 
 .calloutTitle {

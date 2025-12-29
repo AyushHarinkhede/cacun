@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 import './Home.css'
 
+import logo from '../cacun.png'
+
 export default function Home() {
   const heroRef = useRef(null)
 
@@ -24,9 +26,9 @@ export default function Home() {
       <section className="hero">
         <div className="heroCard">
           <p className="heroKicker">Nature-first marketplace</p>
-          <h1 ref={heroRef} className="heroTitle">
-            cacun
-          </h1>
+          <div ref={heroRef} className="heroLogoWrap" aria-label="cacun">
+            <img className="heroLogo" src={logo} alt="cacun" />
+          </div>
           <p className="heroSub">
             Plastic-free, non-toxic, recycled-material products — made to keep you close to nature.
           </p>

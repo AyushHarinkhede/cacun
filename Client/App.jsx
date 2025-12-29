@@ -6,6 +6,7 @@ import Home from './Components/Home/Home.jsx'
 import Footer from './Components/Footer/Footer.jsx'
 import FloatingControls from './Components/FloatingControls/FloatingControls.jsx'
 import VaniePanel from './Components/VaniePanel/VaniePanel.jsx'
+import SettingsDrawer from './Components/SettingsDrawer/SettingsDrawer.jsx'
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Footer />
         <FloatingControls />
         <VaniePanel />
+        <SettingsDrawer />
       </div>
     </SettingsProvider>
   )
