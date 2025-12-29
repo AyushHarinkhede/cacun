@@ -5,8 +5,10 @@ import { useSettings } from '../../contexts/useSettings.js'
 import {
   IconBack,
   IconChevronUp,
-  IconChat,
+  IconPlus,
   IconSettings,
+  IconVanie,
+  IconX,
 } from '../icons.jsx'
 
 export default function FloatingControls() {
@@ -18,25 +20,30 @@ export default function FloatingControls() {
   }
 
   return (
-    <div className="fabWrap" aria-label="Quick controls">
-      <button className="fabMain" type="button" onClick={() => setOpen((o) => !o)} aria-label="Open quick controls">
-        <IconSettings />
-      </button>
-
-      <div className={open ? 'fabActions fabActionsOpen' : 'fabActions'}>
-        <button className="fabAction" type="button" onClick={() => setSettingsOpen(true)} aria-label="Settings">
+    <div className="floatDock" aria-label="Quick controls">
+      <div className={open ? 'floatStack floatStackOpen' : 'floatStack'}>
+        <button className="floatBtn" type="button" onClick={() => setSettingsOpen(true)} aria-label="Settings">
           <IconSettings />
         </button>
-        <button className="fabAction" type="button" onClick={scrollTop} aria-label="Scroll to top">
+        <button className="floatBtn" type="button" onClick={scrollTop} aria-label="Scroll to top">
           <IconChevronUp />
         </button>
-        <button className="fabAction" type="button" onClick={() => window.history.back()} aria-label="Back">
+        <button className="floatBtn" type="button" onClick={() => window.history.back()} aria-label="Back">
           <IconBack />
         </button>
       </div>
 
-      <button className="fabChat" type="button" onClick={() => setVanieOpen(true)} aria-label="Open VANIE chatbot">
-        <IconChat />
+      <button
+        className={open ? 'floatToggle floatToggleOpen' : 'floatToggle'}
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label={open ? 'Hide quick controls' : 'Show quick controls'}
+      >
+        {open ? <IconX /> : <IconPlus />}
+      </button>
+
+      <button className="vanieBtn" type="button" onClick={() => setVanieOpen(true)} aria-label="Open VANIE">
+        <IconVanie />
       </button>
     </div>
   )

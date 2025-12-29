@@ -96,6 +96,19 @@
   text-transform: uppercase;
 }
 
+.prodCat {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--royal-blue) 12%, transparent);
+  color: var(--text);
+  font-weight: 850;
+  letter-spacing: 0.3px;
+  font-size: 12px;
+}
+
 .prodMeta {
   color: var(--muted);
   font-weight: 650;

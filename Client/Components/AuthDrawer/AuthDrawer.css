@@ -56,7 +56,6 @@
 }
 
 .authTitle {
-  font-family: var(--font-royal);
   font-weight: 900;
   letter-spacing: 0.9px;
   text-transform: uppercase;
@@ -168,7 +167,6 @@
 }
 
 .authProfileTitle {
-  font-family: var(--font-royal);
   text-transform: uppercase;
   letter-spacing: 0.9px;
   font-weight: 900;

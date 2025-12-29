@@ -1,11 +1,18 @@
+import { products } from './products.js'
+
+const brands = Array.from(new Set(products.map((p) => p.brand))).map((b) => ({
+  id: `brand_${b.toLowerCase().replace(/\s+/g, '_')}`,
+  label: b,
+  type: 'brand',
+}))
+
 export const searchIndex = {
-  products: [
-    { id: 'p1', label: 'Leafy plates (plastic-free)', type: 'product', brand: 'Cacun Naturals' },
-    { id: 'p2', label: 'Coconut coir scrub', type: 'product', brand: 'Cacun Naturals' },
-    { id: 'p3', label: 'Refill detergent capsules (non-toxic)', type: 'product', brand: 'EcoClean' },
-    { id: 'p4', label: 'Edible spoons & bowls', type: 'product', brand: 'EatWare' },
-    { id: 'p5', label: 'Recycled fabric shoes', type: 'product', brand: 'ReWear' },
-  ],
+  products: products.map((p) => ({
+    id: p.id,
+    label: `${p.title} (${p.category})`,
+    type: 'product',
+    brand: p.brand,
+  })),
   ngos: [
     { id: 'n1', label: 'Clean Earth Initiative', type: 'ngo' },
     { id: 'n2', label: 'Plastic-Free India', type: 'ngo' },
@@ -16,10 +23,5 @@ export const searchIndex = {
     { id: 'c2', label: 'Zero Plastic Month', type: 'campaign' },
     { id: 'c3', label: 'Plant 1 Tree / Order', type: 'campaign' },
   ],
-  brands: [
-    { id: 'b1', label: 'Cacun Naturals', type: 'brand' },
-    { id: 'b2', label: 'EcoClean', type: 'brand' },
-    { id: 'b3', label: 'ReWear', type: 'brand' },
-    { id: 'b4', label: 'EatWare', type: 'brand' },
-  ],
+  brands,
 }

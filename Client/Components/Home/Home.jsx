@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import './Home.css'
 
 import logo from '../cacun.png'
+import ProductsSection from '../ProductsSection/ProductsSection.jsx'
+import NewsletterSection from '../NewsletterSection/NewsletterSection.jsx'
 
 export default function Home() {
   const heroRef = useRef(null)
@@ -42,7 +44,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="stackGrid" id="products" aria-label="Product stacks">
+      <section className="stackGrid" id="stacks" aria-label="Product stacks">
         <div className="stackCard">
           <h2 className="stackTitle">Plastic Free</h2>
           <p className="stackText">Packaging and products with zero plastic use.</p>
@@ -65,6 +67,8 @@ export default function Home() {
         </div>
       </section>
 
+      <ProductsSection />
+
       <section className="calloutRow" id="campaigns" aria-label="Campaigns and NGOs">
         <div className="callout">
           <h2 className="calloutTitle">Campaigns</h2>
@@ -78,18 +82,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="productSpot" aria-label="Products">
-        <div className="productSpotHeader">
-          <h2 className="productSpotTitle">Products</h2>
-          <p className="productSpotText">Cards, like, basket, swipe images, and full details are next.</p>
-        </div>
-        <div className="productPlaceholder">
-          <div className="phCard" />
-          <div className="phCard" />
-          <div className="phCard" />
-          <div className="phCard" />
-        </div>
-      </section>
+      <NewsletterSection />
     </div>
   )
 }

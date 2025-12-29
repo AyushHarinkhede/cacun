@@ -34,6 +34,7 @@ export default function ProductsSection() {
 
               <div className="prodBody">
                 <div className="prodName">{p.title}</div>
+                <div className="prodCat">{p.category}</div>
                 <div className="prodMeta">{p.material}</div>
                 <div className="prodBrand">Brand: {p.brand}</div>
 
