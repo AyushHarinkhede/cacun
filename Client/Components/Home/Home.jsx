@@ -42,7 +42,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="stackGrid" aria-label="Product stacks">
+      <section className="stackGrid" id="products" aria-label="Product stacks">
         <div className="stackCard">
           <h2 className="stackTitle">Plastic Free</h2>
           <p className="stackText">Packaging and products with zero plastic use.</p>
@@ -65,13 +65,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="calloutRow" aria-label="Campaigns and NGOs">
+      <section className="calloutRow" id="campaigns" aria-label="Campaigns and NGOs">
         <div className="callout">
           <h2 className="calloutTitle">Campaigns</h2>
           <p className="calloutText">Join clean-earth missions and track impact through the products you buy.</p>
           <button className="primaryBtn" type="button">Explore campaigns</button>
         </div>
-        <div className="callout">
+        <div className="callout" id="ngos">
           <h2 className="calloutTitle">NGO Partners</h2>
           <p className="calloutText">Support verified organizations working on waste reduction and nature protection.</p>
           <button className="primaryBtn" type="button">See NGO partners</button>

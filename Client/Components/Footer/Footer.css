@@ -1,14 +1,27 @@
 .footerWrap {
+  position: relative;
   border-top: 1px solid var(--border);
   background: var(--surface);
+  overflow: hidden;
+}
+
+.footerWave {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 100%;
+  height: 90px;
+  display: block;
+  pointer-events: none;
+  opacity: 0.9;
 }
 
 .footerInner {
   width: min(1200px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 26px 0;
+  padding: 86px 0 26px;
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
@@ -16,17 +29,17 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 85%, transparent);
+  border-radius: 22px;
+  padding: 14px 16px;
+  box-shadow: 0 24px 70px color-mix(in oklab, #000 12%, transparent);
 }
 
 .footerLogo {
-  width: 44px;
-  height: 44px;
+  width: 58px;
+  height: 58px;
   object-fit: contain;
-}
-
-.footerName {
-  font-weight: 900;
-  letter-spacing: 0.2px;
 }
 
 .footerTag {
@@ -37,13 +50,16 @@
 
 .footerCols {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.2fr;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 14px;
 }
 
 .footerTitle {
+  font-family: var(--font-royal);
   font-weight: 900;
   margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .footerCol {
@@ -55,10 +71,16 @@
   color: var(--text);
   text-decoration: none;
   font-weight: 650;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
 }
 
 .footerLink:hover {
-  text-decoration: underline;
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  transform: translateY(-1px);
 }
 
 .footerNews {
@@ -88,11 +110,11 @@
   cursor: pointer;
 }
 
-@media (max-width: 980px) {
-  .footerInner {
-    grid-template-columns: 1fr;
-  }
+.footerBtn:hover {
+  filter: brightness(1.05);
+}
 
+@media (max-width: 980px) {
   .footerCols {
     grid-template-columns: 1fr 1fr;
   }

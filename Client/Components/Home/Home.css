@@ -97,7 +97,7 @@
 .stackTitle {
   margin: 0;
   font-weight: 900;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.6px;
 }
 
 .stackText {
@@ -110,6 +110,20 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  position: relative;
+}
+
+.calloutRow::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 18px;
+  background: radial-gradient(closest-side at 20% 50%, color-mix(in oklab, var(--royal-blue) 12%, transparent), transparent 70%),
+    radial-gradient(closest-side at 70% 50%, color-mix(in oklab, var(--royal-gold) 25%, transparent), transparent 70%);
+  filter: blur(8px);
+  opacity: 0.6;
 }
 
 .callout {

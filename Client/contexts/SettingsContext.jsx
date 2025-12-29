@@ -14,6 +14,18 @@ function getInitialScale() {
   return Math.min(1.15, Math.max(0.9, stored))
 }
 
+function getInitialUser() {
+  const raw = localStorage.getItem('cacun.session')
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw)
+    if (parsed && typeof parsed === 'object') return parsed
+  } catch {
+    return null
+  }
+  return null
+}
+
 export function SettingsProvider({ children }) {
   const [theme, setTheme] = useState(getInitialTheme)
   const [uiScale, setUiScale] = useState(getInitialScale)
@@ -21,6 +33,8 @@ export function SettingsProvider({ children }) {
   const [language, setLanguage] = useState('en')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [vanieOpen, setVanieOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
+  const [user, setUser] = useState(getInitialUser)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -47,6 +61,10 @@ export function SettingsProvider({ children }) {
       setSettingsOpen,
       vanieOpen,
       setVanieOpen,
+      authOpen,
+      setAuthOpen,
+      user,
+      setUser,
     }),
     [
       theme,
@@ -55,6 +73,8 @@ export function SettingsProvider({ children }) {
       language,
       settingsOpen,
       vanieOpen,
+      authOpen,
+      user,
     ],
   )
 

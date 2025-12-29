@@ -69,6 +69,20 @@ a {
   text-decoration: none;
 }
 
+h1,
+h2,
+h3 {
+  font-family: var(--font-royal);
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+}
+
+.royalTitle {
+  font-family: var(--font-royal);
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+}
+
 button,
 input {
   font: inherit;

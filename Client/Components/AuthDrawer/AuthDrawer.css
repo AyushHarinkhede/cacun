@@ -1,0 +1,182 @@
+.authOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+}
+
+.authOverlayOpen {
+  pointer-events: auto;
+}
+
+.authBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: color-mix(in oklab, #000 40%, transparent);
+  opacity: 0;
+  transition: 220ms ease;
+}
+
+.authOverlayOpen .authBackdrop {
+  opacity: 1;
+}
+
+.authDrawer {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: min(420px, calc(100% - 28px));
+  height: calc(100vh - 28px);
+  border-radius: 26px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 24px 80px color-mix(in oklab, #000 26%, transparent);
+  transform: translateX(120%);
+  transition: 260ms cubic-bezier(.2,.9,.2,1);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+.authDrawerOpen {
+  transform: translateX(0);
+}
+
+.authHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(140deg, color-mix(in oklab, var(--surface) 70%, var(--royal-blue)), var(--surface));
+}
+
+.authTitle {
+  font-family: var(--font-royal);
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.authClose {
+  height: 38px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-weight: 850;
+  cursor: pointer;
+  padding: 0 12px;
+}
+
+.authBody {
+  overflow: auto;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.authError {
+  border: 1px solid color-mix(in oklab, var(--maroon) 60%, var(--border));
+  background: color-mix(in oklab, var(--maroon) 14%, transparent);
+  padding: 10px 12px;
+  border-radius: 16px;
+  font-weight: 750;
+}
+
+.authTabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 82%, transparent);
+}
+
+.authTab {
+  height: 42px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.authTabActive {
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
+}
+
+.authForm {
+  display: grid;
+  gap: 12px;
+}
+
+.authField {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--card) 86%, transparent);
+  padding: 12px;
+}
+
+.authField span {
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.authField input {
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 0 12px;
+}
+
+.authPrimary {
+  height: 46px;
+  border-radius: 16px;
+  border: 0;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 950;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+}
+
+.authProfile {
+  display: grid;
+  gap: 12px;
+}
+
+.authProfileCard {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: color-mix(in oklab, var(--card) 86%, transparent);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.authProfileTitle {
+  font-family: var(--font-royal);
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  font-weight: 900;
+}
+
+.authDanger {
+  height: 46px;
+  border-radius: 16px;
+  border: 0;
+  background: var(--maroon);
+  color: #fff;
+  font-weight: 950;
+  cursor: pointer;
+}

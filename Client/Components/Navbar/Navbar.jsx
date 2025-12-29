@@ -7,7 +7,7 @@ import { IconBasket, IconHeart, IconSearch } from '../icons.jsx'
 import { searchIndex } from '../../data/searchIndex.js'
 
 export default function Navbar() {
-  const { toggleTheme, setSettingsOpen } = useSettings()
+  const { setAuthOpen, user } = useSettings()
   const [query, setQuery] = useState('')
   const [likesCount] = useState(0)
   const [basketCount] = useState(0)
@@ -32,6 +32,19 @@ export default function Navbar() {
     return 'Search nature products, recycled items, plastic-free…'
   }, [])
 
+  const goTo = (item) => {
+    const targetId =
+      item.type === 'product' || item.type === 'brand'
+        ? 'products'
+        : item.type === 'ngo'
+          ? 'ngos'
+          : item.type === 'campaign'
+            ? 'campaigns'
+            : 'home'
+    const el = document.getElementById(targetId)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <header className="navWrap">
       <div className="navInner">
@@ -49,12 +62,14 @@ export default function Navbar() {
             className="navSearchInput"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && suggestions.length > 0) {
+                goTo(suggestions[0])
+              }
+            }}
             placeholder={placeholder}
             aria-label="Search products"
           />
-          <button className="navSearchBtn" type="button" onClick={() => setSettingsOpen(true)}>
-            Filters
-          </button>
 
           {suggestions.length > 0 ? (
             <div className="navSuggest" role="listbox" aria-label="Search suggestions">
@@ -63,7 +78,10 @@ export default function Navbar() {
                   key={`${s.type}:${s.id}`}
                   type="button"
                   className="navSuggestItem"
-                  onClick={() => setQuery(s.label)}
+                  onClick={() => {
+                    setQuery(s.label)
+                    goTo(s)
+                  }}
                 >
                   <span className="navSuggestLabel">{s.label}</span>
                   <span className="navSuggestType">{s.type.toUpperCase()}</span>
@@ -82,22 +100,9 @@ export default function Navbar() {
             <IconBasket />
             {basketCount > 0 ? <span className="navBadge">{basketCount}</span> : null}
           </button>
-          <div className="navAuth">
-            <button className="navAuthBtn" type="button">
-              Sign in
-            </button>
-            <div className="navAuthMenu" role="menu">
-              <button type="button" className="navMenuItem">
-                Login
-              </button>
-              <button type="button" className="navMenuItem">
-                Signup
-              </button>
-              <button type="button" className="navMenuItem" onClick={toggleTheme}>
-                Toggle theme
-              </button>
-            </div>
-          </div>
+          <button className="navAuthBtn" type="button" onClick={() => setAuthOpen(true)}>
+            {user ? 'Profile' : 'Sign in'}
+          </button>
         </div>
       </div>
     </header>

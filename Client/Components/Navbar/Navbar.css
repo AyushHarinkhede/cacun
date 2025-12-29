@@ -2,8 +2,8 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: color-mix(in oklab, var(--bg) 92%, transparent);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
   backdrop-filter: blur(14px);
 }
 
@@ -36,15 +36,15 @@
 }
 
 .brandLogo {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
 }
 
 .navSearch {
   position: relative;
   display: grid;
-  grid-template-columns: 44px 1fr auto;
+  grid-template-columns: 44px 1fr;
   align-items: center;
   border: 1px solid var(--border);
   background: linear-gradient(140deg, var(--surface), color-mix(in oklab, var(--surface) 80%, var(--royal-blue)));
@@ -80,20 +80,6 @@
   font-weight: 650;
 }
 
-.navSearchBtn {
-  height: 44px;
-  border: 0;
-  background: var(--royal-blue);
-  color: var(--royal-gold);
-  padding: 0 14px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  cursor: pointer;
-}
-
-.navSearchBtn:hover {
-  filter: brightness(1.05);
-}
 
 .navSuggest {
   position: absolute;
@@ -163,6 +149,16 @@
   display: grid;
   place-items: center;
   cursor: pointer;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.navIconBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px color-mix(in oklab, #000 16%, transparent);
+}
+
+.navIconBtn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .navBadge {
@@ -177,10 +173,6 @@
   border: 1px solid color-mix(in oklab, var(--maroon) 75%, #000);
 }
 
-.navAuth {
-  position: relative;
-}
-
 .navAuthBtn {
   border: 0;
   height: 44px;
@@ -191,35 +183,12 @@
   background: var(--royal-blue);
   color: var(--royal-gold);
   cursor: pointer;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
 }
 
-.navAuthMenu {
-  position: absolute;
-  right: 0;
-  top: 52px;
-  min-width: 220px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 10px;
-  display: none;
-}
-
-.navAuth:hover .navAuthMenu {
-  display: grid;
-  gap: 8px;
-}
-
-.navMenuItem {
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text);
-  font-weight: 700;
-  cursor: pointer;
-  text-align: left;
-  padding: 0 12px;
+.navAuthBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px color-mix(in oklab, #000 16%, transparent);
 }
 
 @media (max-width: 980px) {
