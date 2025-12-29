@@ -1,0 +1,150 @@
+.prodWrap {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  padding: 16px;
+  box-shadow: 0 26px 80px color-mix(in oklab, #000 14%, transparent);
+}
+
+.prodHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 4px 14px;
+}
+
+.prodTitle {
+  font-weight: 950;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.prodSub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.prodHint {
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+.prodRail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 1fr);
+  gap: 14px;
+  overflow: auto;
+  padding: 4px;
+  scroll-snap-type: x mandatory;
+}
+
+.prodCard {
+  scroll-snap-align: start;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--card);
+  overflow: hidden;
+  min-height: 320px;
+  outline: none;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.prodCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 70px color-mix(in oklab, #000 18%, transparent);
+}
+
+.prodMedia {
+  position: relative;
+  height: 160px;
+  background: color-mix(in oklab, var(--royal-blue) 85%, var(--royal-gold));
+}
+
+.prodImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.92;
+}
+
+.prodBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--maroon);
+  color: var(--royal-gold);
+  font-weight: 950;
+  letter-spacing: 0.4px;
+}
+
+.prodBody {
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.prodName {
+  font-weight: 950;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.prodMeta {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.prodBrand {
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.prodActions {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.prodIconBtn {
+  height: 44px;
+  width: 44px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.prodIconBtnActive {
+  background: color-mix(in oklab, var(--maroon) 16%, transparent);
+  border-color: color-mix(in oklab, var(--maroon) 60%, var(--border));
+}
+
+.prodAddBtn {
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 950;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.prodAddBtnActive {
+  background: color-mix(in oklab, var(--royal-blue) 80%, var(--maroon));
+}
