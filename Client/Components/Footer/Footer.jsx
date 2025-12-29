@@ -2,6 +2,7 @@ import './Footer.css'
 
 import logo from '../cacun.png'
 import { useSettings } from '../../contexts/useSettings.js'
+import { IconInstagram, IconTwitter, IconLinkedin, IconMail } from '../icons.jsx'
 
 export default function Footer() {
   const { setAboutPage, setLegalPage } = useSettings()
@@ -15,9 +16,26 @@ export default function Footer() {
       </svg>
 
       <div className="footerInner">
-        <div className="footerBrand">
-          <img className="footerLogo" src={logo} alt="cacun" />
-          <div className="footerTag">Nature-first • Plastic-free • Non-toxic</div>
+        <div className="footerMain">
+          <div className="footerBrand">
+            <img className="footerLogo" src={logo} alt="cacun" />
+            <div className="footerTag">Nature-first • Plastic-free • Non-toxic</div>
+          </div>
+
+          <div className="footerSocial">
+            <a className="socialIcon" href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <IconInstagram />
+            </a>
+            <a className="socialIcon" href="#" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+              <IconTwitter />
+            </a>
+            <a className="socialIcon" href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <IconLinkedin />
+            </a>
+            <a className="socialIcon" href="#" target="_blank" rel="noopener noreferrer" aria-label="Email">
+              <IconMail />
+            </a>
+          </div>
         </div>
 
         <div className="footerCols">

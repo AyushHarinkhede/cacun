@@ -22,7 +22,39 @@
   padding: 86px 0 26px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
+  gap: 24px;
+}
+
+.footerMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 8px;
+}
+
+.footerSocial {
+  display: flex;
+  gap: 12px;
+}
+
+.socialIcon {
+  height: 44px;
+  width: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 85%, transparent);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.socialIcon:hover {
+  transform: translateY(-2px);
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
 }
 
 .footerBrand {
@@ -37,8 +69,8 @@
 }
 
 .footerLogo {
-  width: 78px;
-  height: 78px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
 }
 
