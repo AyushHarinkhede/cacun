@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-const SettingsContext = createContext(null)
+import { SettingsContext } from './settingsContext.js'
 
 function getInitialTheme() {
   const stored = localStorage.getItem('cacun.theme')
@@ -61,12 +61,4 @@ export function SettingsProvider({ children }) {
   return (
     <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
   )
-}
-
-export function useSettings() {
-  const ctx = useContext(SettingsContext)
-  if (!ctx) {
-    throw new Error('useSettings must be used inside SettingsProvider')
-  }
-  return ctx
 }
