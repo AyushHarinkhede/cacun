@@ -15,6 +15,33 @@
   padding: 6px 4px 14px;
 }
 
+.prodHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prodMore {
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 950;
+  padding: 0 14px;
+  cursor: pointer;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.prodMore:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.prodMore:active {
+  transform: translateY(0) scale(0.98);
+}
+
 .prodTitle {
   font-weight: 950;
   letter-spacing: 0.5px;
