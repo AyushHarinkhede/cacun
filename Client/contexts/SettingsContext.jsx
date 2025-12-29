@@ -26,6 +26,18 @@ function getInitialUser() {
   return null
 }
 
+function getInitialIdSet(key) {
+  const raw = localStorage.getItem(key)
+  if (!raw) return new Set()
+  try {
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed)) return new Set(parsed)
+  } catch {
+    return new Set()
+  }
+  return new Set()
+}
+
 export function SettingsProvider({ children }) {
   const [theme, setTheme] = useState(getInitialTheme)
   const [uiScale, setUiScale] = useState(getInitialScale)
@@ -36,6 +48,10 @@ export function SettingsProvider({ children }) {
   const [authOpen, setAuthOpen] = useState(false)
   const [user, setUser] = useState(getInitialUser)
 
+  const [likedIds, setLikedIds] = useState(() => getInitialIdSet('cacun.likes'))
+  const [cartIds, setCartIds] = useState(() => getInitialIdSet('cacun.cart'))
+  const [activeProductId, setActiveProductId] = useState(null)
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('cacun.theme', theme)
@@ -45,6 +61,32 @@ export function SettingsProvider({ children }) {
     document.documentElement.style.setProperty('--ui-scale', String(uiScale))
     localStorage.setItem('cacun.uiScale', String(uiScale))
   }, [uiScale])
+
+  useEffect(() => {
+    localStorage.setItem('cacun.likes', JSON.stringify(Array.from(likedIds)))
+  }, [likedIds])
+
+  useEffect(() => {
+    localStorage.setItem('cacun.cart', JSON.stringify(Array.from(cartIds)))
+  }, [cartIds])
+
+  const toggleLiked = (id) => {
+    setLikedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleCart = (id) => {
+    setCartIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const value = useMemo(
     () => ({
@@ -65,6 +107,14 @@ export function SettingsProvider({ children }) {
       setAuthOpen,
       user,
       setUser,
+      likedIds,
+      cartIds,
+      likesCount: likedIds.size,
+      basketCount: cartIds.size,
+      toggleLiked,
+      toggleCart,
+      activeProductId,
+      setActiveProductId,
     }),
     [
       theme,
@@ -75,6 +125,9 @@ export function SettingsProvider({ children }) {
       vanieOpen,
       authOpen,
       user,
+      likedIds,
+      cartIds,
+      activeProductId,
     ],
   )
 

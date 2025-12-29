@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import './ProductsSection.css'
 
 import { products } from '../../data/products.js'
 import { IconBasket, IconHeart } from '../icons.jsx'
+import { useSettings } from '../../contexts/useSettings.js'
 
 export default function ProductsSection() {
-  const [liked, setLiked] = useState(() => new Set())
-  const [cart, setCart] = useState(() => new Set())
+  const { likedIds, cartIds, toggleLiked, toggleCart, setActiveProductId } = useSettings()
 
   const items = useMemo(() => products, [])
 
@@ -22,11 +22,20 @@ export default function ProductsSection() {
 
       <div className="prodRail" role="list">
         {items.map((p) => {
-          const isLiked = liked.has(p.id)
-          const inCart = cart.has(p.id)
+          const isLiked = likedIds.has(p.id)
+          const inCart = cartIds.has(p.id)
 
           return (
-            <article key={p.id} className="prodCard" role="listitem" tabIndex={0}>
+            <article
+              key={p.id}
+              className="prodCard"
+              role="listitem"
+              tabIndex={0}
+              onClick={() => setActiveProductId(p.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setActiveProductId(p.id)
+              }}
+            >
               <div className="prodMedia">
                 <img className="prodImg" src={p.images[0]} alt={p.title} />
                 <div className="prodBadge">-{p.discountPercent}%</div>
@@ -43,13 +52,9 @@ export default function ProductsSection() {
                     className={isLiked ? 'prodIconBtn prodIconBtnActive' : 'prodIconBtn'}
                     type="button"
                     aria-label="Like"
-                    onClick={() => {
-                      setLiked((prev) => {
-                        const next = new Set(prev)
-                        if (next.has(p.id)) next.delete(p.id)
-                        else next.add(p.id)
-                        return next
-                      })
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggleLiked(p.id)
                     }}
                   >
                     <IconHeart filled={isLiked} />
@@ -58,13 +63,9 @@ export default function ProductsSection() {
                   <button
                     className={inCart ? 'prodAddBtn prodAddBtnActive' : 'prodAddBtn'}
                     type="button"
-                    onClick={() => {
-                      setCart((prev) => {
-                        const next = new Set(prev)
-                        if (next.has(p.id)) next.delete(p.id)
-                        else next.add(p.id)
-                        return next
-                      })
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggleCart(p.id)
                     }}
                   >
                     <IconBasket />

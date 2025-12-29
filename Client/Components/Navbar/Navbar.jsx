@@ -7,10 +7,8 @@ import { IconBasket, IconHeart, IconSearch } from '../icons.jsx'
 import { searchIndex } from '../../data/searchIndex.js'
 
 export default function Navbar() {
-  const { setAuthOpen, user } = useSettings()
+  const { setAuthOpen, user, likesCount, basketCount } = useSettings()
   const [query, setQuery] = useState('')
-  const [likesCount] = useState(0)
-  const [basketCount] = useState(0)
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -65,6 +63,9 @@ export default function Navbar() {
             onKeyDown={(e) => {
               if (e.key === 'Enter' && suggestions.length > 0) {
                 goTo(suggestions[0])
+              } else if (e.key === 'Enter' && query.trim().length > 0) {
+                const el = document.getElementById('products')
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
               }
             }}
             placeholder={placeholder}

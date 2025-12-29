@@ -1,0 +1,193 @@
+.pmOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+}
+
+.pmBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: color-mix(in oklab, #000 40%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.pmCard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(860px, calc(100% - 28px));
+  max-height: calc(100vh - 40px);
+  transform: translate(-50%, -50%) scale(0.98);
+  opacity: 0;
+  border-radius: 26px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 30px 100px color-mix(in oklab, #000 26%, transparent);
+  overflow: hidden;
+  transition: 260ms cubic-bezier(.2,.9,.2,1);
+}
+
+.pmOverlayOpen .pmCard {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.pmHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(140deg, color-mix(in oklab, var(--surface) 70%, var(--royal-blue)), var(--surface));
+}
+
+.pmTitle {
+  font-weight: 950;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.pmMeta {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.pmClose {
+  height: 44px;
+  width: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.pmClose:hover {
+  transform: translateY(-1px);
+}
+
+.pmBody {
+  padding: 14px;
+  overflow: auto;
+  display: grid;
+  gap: 14px;
+}
+
+.pmMedia {
+  position: relative;
+  height: 280px;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: color-mix(in oklab, var(--royal-blue) 85%, var(--royal-gold));
+}
+
+.pmImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.92;
+}
+
+.pmDiscount {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--maroon);
+  color: var(--royal-gold);
+  font-weight: 950;
+}
+
+.pmInfo {
+  display: grid;
+  gap: 10px;
+}
+
+.pmRow {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.pmLabel {
+  font-weight: 950;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pmValue {
+  font-weight: 650;
+}
+
+.pmActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pmIcon {
+  height: 48px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-weight: 950;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.pmIconActive {
+  background: color-mix(in oklab, var(--maroon) 16%, transparent);
+  border-color: color-mix(in oklab, var(--maroon) 60%, var(--border));
+}
+
+.pmPrimary {
+  height: 48px;
+  border-radius: 16px;
+  border: 0;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 950;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.pmPrimaryActive {
+  background: color-mix(in oklab, var(--royal-blue) 80%, var(--maroon));
+}
+
+.pmHint {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+@media (max-width: 820px) {
+  .pmMedia {
+    height: 220px;
+  }
+  .pmActions {
+    grid-template-columns: 1fr;
+  }
+}
