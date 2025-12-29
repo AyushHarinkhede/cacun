@@ -54,15 +54,6 @@ export default function Footer() {
             <a className="footerLink" href="#">Careers</a>
             <a className="footerLink" href="#">Brand promises</a>
           </div>
-
-          <div className="footerCol">
-            <div className="footerTitle">Newsletter</div>
-            <div className="footerTag">Weekly drops of new eco-inventions.</div>
-            <div className="footerNews">
-              <input className="footerInput" placeholder="Email" aria-label="Newsletter email" />
-              <button className="footerBtn" type="button">Subscribe</button>
-            </div>
-          </div>
         </div>
       </div>
     </footer>
