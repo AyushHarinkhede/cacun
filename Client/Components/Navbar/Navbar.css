@@ -1,0 +1,159 @@
+.navWrap {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+}
+
+.navInner {
+  width: min(1200px, calc(100% - 32px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.brandLogo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.brandName {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: lowercase;
+}
+
+.navSearch {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.navSearchIcon {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.navSearchInput {
+  border: 0;
+  outline: none;
+  height: 44px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.navSearchBtn {
+  height: 44px;
+  border: 0;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  padding: 0 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+}
+
+.navRight {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.navIconBtn {
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 14px;
+  height: 44px;
+  width: 44px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.navBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--maroon);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in oklab, var(--maroon) 75%, #000);
+}
+
+.navAuth {
+  position: relative;
+}
+
+.navAuthBtn {
+  border: 0;
+  height: 44px;
+  border-radius: 14px;
+  padding: 0 16px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  cursor: pointer;
+}
+
+.navAuthMenu {
+  position: absolute;
+  right: 0;
+  top: 52px;
+  min-width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 10px;
+  display: none;
+}
+
+.navAuth:hover .navAuthMenu {
+  display: grid;
+  gap: 8px;
+}
+
+.navMenuItem {
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  padding: 0 12px;
+}
+
+@media (max-width: 980px) {
+  .navInner {
+    grid-template-columns: 1fr;
+  }
+}
