@@ -1,0 +1,97 @@
+.vaniePanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(420px, 92vw);
+  height: 100vh;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  transform: translateX(110%);
+  transition: 180ms ease;
+  z-index: 60;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.vaniePanelOpen {
+  transform: translateX(0);
+}
+
+.vanieHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.vanieTitle {
+  font-weight: 900;
+  letter-spacing: 0.4px;
+}
+
+.vanieClose {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 14px;
+  height: 38px;
+  padding: 0 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.vanieBody {
+  overflow: auto;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.bubble {
+  max-width: 86%;
+  border-radius: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  font-weight: 650;
+}
+
+.bubbleUser {
+  margin-left: auto;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
+}
+
+.bubbleVanie {
+  background: var(--card);
+  color: var(--text);
+}
+
+.vanieComposer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.vanieInput {
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 0 12px;
+}
+
+.vanieSend {
+  height: 44px;
+  border-radius: 16px;
+  border: 0;
+  padding: 0 16px;
+  background: var(--maroon);
+  color: #fff;
+  font-weight: 900;
+  cursor: pointer;
+}
