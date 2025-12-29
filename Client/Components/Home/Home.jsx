@@ -6,7 +6,6 @@ import ProductsSection from '../ProductsSection/ProductsSection.jsx'
 import NewsletterSection from '../NewsletterSection/NewsletterSection.jsx'
 import ShopCtaSection from '../ShopCtaSection/ShopCtaSection.jsx'
 import ShopSection from '../ShopSection/ShopSection.jsx'
-import Breadcrumb from '../Breadcrumb/Breadcrumb.jsx'
 
 export default function Home() {
   const heroRef = useRef(null)
@@ -28,7 +27,6 @@ export default function Home() {
 
   return (
     <div className="home" id="home">
-      <Breadcrumb />
       <section className="hero">
         <div className="heroCard">
           <p className="heroKicker">Nature-first marketplace</p>
