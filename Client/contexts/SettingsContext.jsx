@@ -51,6 +51,8 @@ export function SettingsProvider({ children }) {
   const [likedIds, setLikedIds] = useState(() => getInitialIdSet('cacun.likes'))
   const [cartIds, setCartIds] = useState(() => getInitialIdSet('cacun.cart'))
   const [activeProductId, setActiveProductId] = useState(null)
+  const [aboutPage, setAboutPage] = useState(null)
+  const [legalPage, setLegalPage] = useState(null)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -115,6 +117,10 @@ export function SettingsProvider({ children }) {
       toggleCart,
       activeProductId,
       setActiveProductId,
+      aboutPage,
+      setAboutPage,
+      legalPage,
+      setLegalPage,
     }),
     [
       theme,
@@ -128,6 +134,8 @@ export function SettingsProvider({ children }) {
       likedIds,
       cartIds,
       activeProductId,
+      aboutPage,
+      legalPage,
     ],
   )
 

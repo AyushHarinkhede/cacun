@@ -1,0 +1,87 @@
+.legalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+}
+
+.legalBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: color-mix(in oklab, #000 40%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.legalCard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(540px, calc(100% - 28px));
+  max-height: calc(100vh - 40px);
+  transform: translate(-50%, -50%) scale(0.98);
+  opacity: 0;
+  border-radius: 26px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 30px 100px color-mix(in oklab, #000 26%, transparent);
+  overflow: hidden;
+  transition: 260ms cubic-bezier(.2,.9,.2,1);
+}
+
+.legalOverlayOpen .legalCard {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.legalHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(140deg, color-mix(in oklab, var(--surface) 70%, var(--royal-blue)), var(--surface));
+}
+
+.legalTitle {
+  font-weight: 950;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.legalClose {
+  height: 44px;
+  width: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.legalClose:hover {
+  transform: translateY(-1px);
+}
+
+.legalBody {
+  padding: 16px;
+  overflow: auto;
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+.legalBody p {
+  margin: 0 0 12px;
+}
+
+.legalBody ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.legalBody li {
+  margin-bottom: 6px;
+}
