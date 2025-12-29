@@ -1,0 +1,173 @@
+.home {
+  display: grid;
+  gap: 26px;
+}
+
+.hero {
+  padding-top: 10px;
+}
+
+.heroCard {
+  border-radius: 26px;
+  background: linear-gradient(140deg, var(--surface) 0%, color-mix(in oklab, var(--surface) 70%, var(--royal-blue)) 140%);
+  border: 1px solid var(--border);
+  padding: 28px;
+}
+
+.heroKicker {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.heroTitle {
+  --hero-scale: 1;
+  margin: 6px 0 10px;
+  font-size: clamp(48px, 7vw, 82px);
+  line-height: 0.96;
+  letter-spacing: 1px;
+  font-weight: 900;
+  transform: scaleY(var(--hero-scale));
+  transform-origin: left top;
+  color: transparent;
+  -webkit-text-stroke: 1.4px var(--text);
+  text-transform: lowercase;
+}
+
+.heroSub {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.heroPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.pill {
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.stackGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.stackCard {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  padding: 16px;
+}
+
+.stackTitle {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.stackText {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.calloutRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.callout {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  padding: 18px;
+}
+
+.calloutTitle {
+  margin: 0;
+  font-weight: 900;
+}
+
+.calloutText {
+  margin: 8px 0 14px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.primaryBtn {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 0;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.productSpot {
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: var(--surface);
+  padding: 18px;
+}
+
+.productSpotHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.productSpotTitle {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.productSpotText {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.productPlaceholder {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.phCard {
+  height: 220px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: linear-gradient(120deg, color-mix(in oklab, var(--card) 85%, transparent), color-mix(in oklab, var(--card) 55%, transparent));
+}
+
+@media (max-width: 980px) {
+  .stackGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .calloutRow {
+    grid-template-columns: 1fr;
+  }
+
+  .productPlaceholder {
+    grid-template-columns: 1fr 1fr;
+  }
+}
