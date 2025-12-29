@@ -21,6 +21,7 @@ export default function SettingsDrawer() {
 
   return (
     <div className={settingsOpen ? 'settingsOverlay settingsOverlayOpen' : 'settingsOverlay'}>
+      <button className="settingsBackdrop" type="button" aria-label="Close settings backdrop" onClick={() => setSettingsOpen(false)} />
       <div className={settingsOpen ? 'settingsDrawer settingsDrawerOpen' : 'settingsDrawer'} aria-labelledby={titleId}>
         <div className="settingsHeader">
           <div className="settingsTitle" id={titleId}>Settings</div>
@@ -86,8 +87,6 @@ export default function SettingsDrawer() {
           </div>
         </div>
       </div>
-
-      <button className="settingsBackdrop" type="button" aria-label="Close settings backdrop" onClick={() => setSettingsOpen(false)} />
     </div>
   )
 }

@@ -160,6 +160,7 @@ export default function AuthDrawer() {
 
   return (
     <div className={overlayClass}>
+      <button className="authBackdrop" type="button" aria-label="Close auth backdrop" onClick={close} />
       <div className={drawerClass} aria-labelledby={titleId}>
         <div className="authHeader">
           <div className="authTitle" id={titleId}>
@@ -328,8 +329,6 @@ export default function AuthDrawer() {
           )}
         </div>
       </div>
-
-      <button className="authBackdrop" type="button" aria-label="Close auth backdrop" onClick={close} />
     </div>
   )
 }
