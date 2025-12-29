@@ -1,0 +1,64 @@
+.shopCtaWrap {
+  margin-top: 10px;
+}
+
+.shopCtaCard {
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklab, var(--surface) 82%, transparent),
+    color-mix(in oklab, var(--royal-gold) 26%, var(--surface))
+  );
+  padding: 18px;
+  box-shadow: 0 26px 80px color-mix(in oklab, #000 14%, transparent);
+  overflow: hidden;
+}
+
+.shopCtaTitle {
+  font-weight: 950;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.shopCtaText {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 650;
+  max-width: 72ch;
+}
+
+.shopCtaRow {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.shopCtaBtn {
+  height: 46px;
+  border-radius: 16px;
+  border: 0;
+  padding: 0 16px;
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 950;
+  cursor: pointer;
+  transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.shopCtaBtn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.shopCtaBtn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.shopCtaHint {
+  color: var(--muted);
+  font-weight: 650;
+}
