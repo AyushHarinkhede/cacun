@@ -1,8 +1,10 @@
 import './Footer.css'
 
 import logo from '../cacun.png'
+import { useSettings } from '../../contexts/useSettings.js'
 
 export default function Footer() {
+  const { setAboutPage, setLegalPage } = useSettings()
   return (
     <footer className="footerWrap">
       <svg className="footerWave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
@@ -35,22 +37,23 @@ export default function Footer() {
 
           <div className="footerCol">
             <div className="footerTitle">Legal</div>
-            <a className="footerLink" href="#">Privacy policy</a>
-            <a className="footerLink" href="#">Terms</a>
-            <a className="footerLink" href="#">Rules & regulations</a>
+            <button className="footerLink" type="button" onClick={() => setLegalPage('privacy')}>Privacy policy</button>
+            <button className="footerLink" type="button" onClick={() => setLegalPage('terms')}>Terms</button>
+            <button className="footerLink" type="button" onClick={() => setLegalPage('rights')}>User rights</button>
           </div>
 
           <div className="footerCol">
             <div className="footerTitle">Connect</div>
-            <a className="footerLink" href="#">Instagram</a>
-            <a className="footerLink" href="#">X (Twitter)</a>
-            <a className="footerLink" href="#">LinkedIn</a>
-            <a className="footerLink" href="#">Email</a>
+            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
+            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">Email</a>
           </div>
 
           <div className="footerCol">
             <div className="footerTitle">Company</div>
-            <a className="footerLink" href="#">About</a>
+            <button className="footerLink" type="button" onClick={() => setAboutPage('about')}>About</button>
+            <button className="footerLink" type="button" onClick={() => setAboutPage('faq')}>FAQ</button>
             <a className="footerLink" href="#">Careers</a>
             <a className="footerLink" href="#">Brand promises</a>
           </div>

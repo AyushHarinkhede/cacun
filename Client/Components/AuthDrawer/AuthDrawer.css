@@ -143,6 +143,16 @@
   padding: 0 12px;
 }
 
+.authField textarea {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 8px 12px;
+  resize: vertical;
+  min-height: 60px;
+}
+
 .authPrimary {
   height: 46px;
   border-radius: 16px;
@@ -166,6 +176,56 @@
   padding: 12px;
   display: grid;
   gap: 10px;
+}
+
+.authAvatarSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+}
+
+.authAvatarPreview {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--border);
+  background: color-mix(in oklab, var(--royal-blue) 12%, transparent);
+}
+
+.authAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.authAvatarPlaceholder {
+  font-weight: 700;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.authAvatarBtn {
+  height: 38px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--royal-blue);
+  color: var(--royal-gold);
+  font-weight: 850;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.authAvatarBtn:hover {
+  filter: brightness(1.05);
 }
 
 .authProfileTitle {

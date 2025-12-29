@@ -9,7 +9,7 @@ export default function ProductsSection({ showViewMore = false }) {
   const { likedIds, cartIds, toggleLiked, toggleCart, setActiveProductId } = useSettings()
 
   const items = useMemo(() => products, [])
-  const displayed = useMemo(() => (showViewMore ? items.slice(0, 8) : items), [items, showViewMore])
+  const displayed = useMemo(() => (showViewMore ? items.slice(0, 5) : items), [items, showViewMore])
 
   const goShop = () => {
     const el = document.getElementById('shop')

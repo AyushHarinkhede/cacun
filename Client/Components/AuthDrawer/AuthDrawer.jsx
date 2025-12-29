@@ -30,6 +30,11 @@ export default function AuthDrawer() {
 
   const [editName, setEditName] = useState('')
   const [editEmail, setEditEmail] = useState('')
+  const [editDob, setEditDob] = useState('')
+  const [editAddress, setEditAddress] = useState('')
+  const [editMobile, setEditMobile] = useState('')
+  const [editPersonalInfo, setEditPersonalInfo] = useState('')
+  const [editAvatar, setEditAvatar] = useState(null)
 
   const [error, setError] = useState('')
 
@@ -120,6 +125,10 @@ export default function AuthDrawer() {
 
     const name = editName.trim()
     const email = editEmail.trim().toLowerCase()
+    const dob = editDob.trim()
+    const address = editAddress.trim()
+    const mobile = editMobile.trim()
+    const personalInfo = editPersonalInfo.trim()
 
     if (!user) return
 
@@ -136,12 +145,12 @@ export default function AuthDrawer() {
     const storedUsers = readUsers()
     const nextUsers = storedUsers.map((u) => {
       if (u.id !== user.id) return u
-      return { ...u, name, email }
+      return { ...u, name, email, dob, address, mobile, personalInfo, avatar: editAvatar }
     })
 
     persistUsers(nextUsers)
 
-    const nextSession = { ...user, name, email }
+    const nextSession = { ...user, name, email, dob, address, mobile, personalInfo, avatar: editAvatar }
     localStorage.setItem('cacun.session', JSON.stringify(nextSession))
     setUser(nextSession)
   }
@@ -225,6 +234,29 @@ export default function AuthDrawer() {
             <div className="authProfile">
               <div className="authProfileCard">
                 <div className="authProfileTitle">Edit profile</div>
+                <div className="authAvatarSection">
+                  <div className="authAvatarPreview">
+                    {editAvatar ? (
+                      <img src={URL.createObjectURL(editAvatar)} alt="Avatar" className="authAvatarImg" />
+                    ) : user?.avatar ? (
+                      <img src={user.avatar} alt="Avatar" className="authAvatarImg" />
+                    ) : (
+                      <div className="authAvatarPlaceholder">Avatar</div>
+                    )}
+                  </div>
+                  <label className="authAvatarBtn">
+                    Upload image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) setEditAvatar(file)
+                      }}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
                 <label className="authField">
                   <span>Name</span>
                   <input
@@ -239,12 +271,49 @@ export default function AuthDrawer() {
                     onChange={(e) => setEditEmail(e.target.value)}
                   />
                 </label>
+                <label className="authField">
+                  <span>Date of Birth</span>
+                  <input
+                    type="date"
+                    value={editDob || user.dob || ''}
+                    onChange={(e) => setEditDob(e.target.value)}
+                  />
+                </label>
+                <label className="authField">
+                  <span>Address</span>
+                  <textarea
+                    value={editAddress || user.address || ''}
+                    onChange={(e) => setEditAddress(e.target.value)}
+                    rows={2}
+                  />
+                </label>
+                <label className="authField">
+                  <span>Mobile Number</span>
+                  <input
+                    type="tel"
+                    value={editMobile || user.mobile || ''}
+                    onChange={(e) => setEditMobile(e.target.value)}
+                  />
+                </label>
+                <label className="authField">
+                  <span>Personal Info</span>
+                  <textarea
+                    value={editPersonalInfo || user.personalInfo || ''}
+                    onChange={(e) => setEditPersonalInfo(e.target.value)}
+                    rows={3}
+                    placeholder="Tell us about yourself..."
+                  />
+                </label>
                 <button
                   className="authPrimary"
                   type="button"
                   onClick={() => {
                     if (!editName) setEditName(user.name || '')
                     if (!editEmail) setEditEmail(user.email || '')
+                    if (!editDob) setEditDob(user.dob || '')
+                    if (!editAddress) setEditAddress(user.address || '')
+                    if (!editMobile) setEditMobile(user.mobile || '')
+                    if (!editPersonalInfo) setEditPersonalInfo(user.personalInfo || '')
                     onSaveProfile()
                   }}
                 >

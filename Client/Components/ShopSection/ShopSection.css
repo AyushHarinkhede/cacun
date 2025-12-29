@@ -29,7 +29,7 @@
 
 .shopGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
 }
 
@@ -38,20 +38,20 @@
   border-radius: 22px;
   background: var(--card);
   overflow: hidden;
-  min-height: 320px;
+  min-height: 340px;
   outline: none;
   cursor: pointer;
   transition: 180ms cubic-bezier(.2,.9,.2,1);
 }
 
 .shopCard:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.02);
   box-shadow: 0 24px 70px color-mix(in oklab, #000 18%, transparent);
 }
 
 .shopMedia {
   position: relative;
-  height: 160px;
+  height: 180px;
   background: color-mix(in oklab, var(--royal-blue) 85%, var(--royal-gold));
 }
 

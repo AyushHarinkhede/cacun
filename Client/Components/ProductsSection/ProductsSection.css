@@ -63,7 +63,7 @@
 .prodRail {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(240px, 1fr);
+  grid-auto-columns: minmax(260px, 1fr);
   gap: 14px;
   overflow: auto;
   padding: 4px;
@@ -76,19 +76,19 @@
   border-radius: 22px;
   background: var(--card);
   overflow: hidden;
-  min-height: 320px;
+  min-height: 340px;
   outline: none;
   transition: 180ms cubic-bezier(.2,.9,.2,1);
 }
 
 .prodCard:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.02);
   box-shadow: 0 24px 70px color-mix(in oklab, #000 18%, transparent);
 }
 
 .prodMedia {
   position: relative;
-  height: 160px;
+  height: 180px;
   background: color-mix(in oklab, var(--royal-blue) 85%, var(--royal-gold));
 }
 

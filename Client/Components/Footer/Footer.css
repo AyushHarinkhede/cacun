@@ -37,8 +37,8 @@
 }
 
 .footerLogo {
-  width: 58px;
-  height: 58px;
+  width: 78px;
+  height: 78px;
   object-fit: contain;
 }
 
@@ -74,6 +74,9 @@
   border-radius: 12px;
   border: 1px solid transparent;
   transition: 160ms cubic-bezier(.2,.9,.2,1);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
 }
 
 .footerLink:hover {

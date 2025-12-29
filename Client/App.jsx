@@ -9,6 +9,8 @@ import VaniePanel from './Components/VaniePanel/VaniePanel.jsx'
 import SettingsDrawer from './Components/SettingsDrawer/SettingsDrawer.jsx'
 import AuthDrawer from './Components/AuthDrawer/AuthDrawer.jsx'
 import ProductModal from './Components/ProductModal/ProductModal.jsx'
+import AboutModal from './Components/AboutModal/AboutModal.jsx'
+import LegalModal from './Components/LegalModal/LegalModal.jsx'
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
         <SettingsDrawer />
         <AuthDrawer />
         <ProductModal />
+        <AboutModal />
+        <LegalModal />
       </div>
     </SettingsProvider>
   )
