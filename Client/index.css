@@ -1,8 +1,8 @@
 :root {
   --ui-scale: 1;
 
-  --royal-gold: #c9a227;
-  --royal-blue: #061b4d;
+  --royal-gold: #d4af37;
+  --royal-blue: #1e3a8a;
   --maroon: #7b1e2b;
 
   --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -24,6 +24,121 @@
 html {
   font-size: calc(16px * var(--ui-scale));
   scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: radial-gradient(1200px 700px at 20% 10%, color-mix(in oklab, var(--bg) 70%, var(--royal-gold)) 0%, var(--bg) 55%),
+    radial-gradient(900px 500px at 88% 30%, color-mix(in oklab, var(--royal-blue) 18%, transparent) 0%, transparent 55%),
+    var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Scroll animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animate-bounce {
+  animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-left {
+  animation: fadeInLeft 0.6s ease-out;
+}
+
+.animate-right {
+  animation: fadeInRight 0.6s ease-out;
+}
+
+.animate-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-scale {
+  animation: slideInScale 0.7s ease-out;
 }
 
 html[data-theme='light'] {
@@ -57,6 +172,7 @@ body {
     radial-gradient(900px 500px at 88% 30%, color-mix(in oklab, var(--royal-blue) 18%, transparent) 0%, transparent 55%),
     var(--bg);
   color: var(--text);
+  overflow-x: hidden;
 }
 
 #root {

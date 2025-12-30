@@ -12,8 +12,11 @@ export default function ProductsSection({ showViewMore = false }) {
   const displayed = useMemo(() => (showViewMore ? items.slice(0, 5) : items), [items, showViewMore])
 
   const goShop = () => {
-    const el = document.getElementById('shop')
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // Remove scrolling behavior - shop section will appear as overlay
+    const shopSection = document.getElementById('shop')
+    if (shopSection) {
+      shopSection.classList.add('shopSectionVisible')
+    }
   }
 
   return (
@@ -25,7 +28,7 @@ export default function ProductsSection({ showViewMore = false }) {
         </div>
         <div className="prodHeaderActions">
           {showViewMore ? (
-            <button className="prodMore" type="button" onClick={goShop}>
+            <button className="prodMore" type="button" onClick={goShop} data-shop-trigger="true">
               View more
             </button>
           ) : null}

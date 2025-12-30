@@ -28,7 +28,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(440px, calc(100% - 28px));
+  width: min(480px, calc(100% - 28px));
   height: auto;
   max-height: calc(100vh - 40px);
   border-radius: 26px;
@@ -143,6 +143,12 @@
   padding: 0 12px;
 }
 
+.authField input:focus {
+  outline: none;
+  border-color: var(--royal-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--royal-blue) 20%, transparent);
+}
+
 .authField textarea {
   border-radius: 14px;
   border: 1px solid var(--border);
@@ -151,6 +157,20 @@
   padding: 8px 12px;
   resize: vertical;
   min-height: 60px;
+}
+
+.authField textarea:focus {
+  outline: none;
+  border-color: var(--royal-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--royal-blue) 20%, transparent);
+}
+
+.authField div {
+  padding: 12px;
+  background: color-mix(in oklab, var(--card) 50%, transparent);
+  border-radius: 14px;
+  color: var(--text);
+  font-weight: 650;
 }
 
 .authPrimary {
@@ -242,4 +262,72 @@
   color: var(--royal-gold);
   font-weight: 950;
   cursor: pointer;
+}
+
+.authPasswordWrap {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.authPasswordToggle {
+  height: 44px;
+  width: 44px;
+  border: 1px solid var(--border);
+  border-radius: 0 14px 14px 0;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.authPasswordToggle:hover {
+  background: color-mix(in oklab, var(--royal-blue) 12%, transparent);
+}
+
+.authCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 86%, transparent);
+}
+
+.authCheckbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--royal-blue);
+}
+
+.authSocial {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.authSocialBtn {
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-weight: 750;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.authSocialBtn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--royal-blue) 12%, transparent);
+  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
 }

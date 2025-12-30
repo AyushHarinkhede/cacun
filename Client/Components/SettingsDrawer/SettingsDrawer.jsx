@@ -15,6 +15,7 @@ export default function SettingsDrawer() {
     setNotificationsEnabled,
     language,
     setLanguage,
+    setAuthOpen,
   } = useSettings()
 
   const titleId = useId()
@@ -33,7 +34,7 @@ export default function SettingsDrawer() {
         <div className="settingsBody">
           <div className="settingsSection">
             <div className="settingsSectionTitle">Profile</div>
-            <button className="settingsRowBtn" type="button">Edit profile</button>
+            <button className="settingsRowBtn" type="button" onClick={() => setAuthOpen(true)}>Edit profile</button>
           </div>
 
           <div className="settingsSection">
@@ -60,12 +61,15 @@ export default function SettingsDrawer() {
             <div className="settingsSectionTitle">Accessibility</div>
             <label className="settingsRow">
               <span className="settingsRowLabel">Notifications</span>
-              <input
-                type="checkbox"
-                checked={notificationsEnabled}
-                onChange={(e) => setNotificationsEnabled(e.target.checked)}
-                aria-label="Notifications"
-              />
+              <label className="settingsToggle">
+                <input
+                  type="checkbox"
+                  checked={notificationsEnabled}
+                  onChange={(e) => setNotificationsEnabled(e.target.checked)}
+                  aria-label="Notifications"
+                />
+                <span className="settingsToggleSlider"></span>
+              </label>
             </label>
           </div>
 

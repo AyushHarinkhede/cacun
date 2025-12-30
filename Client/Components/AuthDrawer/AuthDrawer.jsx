@@ -2,6 +2,7 @@ import { useId, useState } from 'react'
 import './AuthDrawer.css'
 
 import { useSettings } from '../../contexts/useSettings.js'
+import { IconGoogle, IconFacebook, IconApple, IconMicrosoft } from '../icons.jsx'
 
 function safeParse(json) {
   try {
@@ -23,10 +24,13 @@ export default function AuthDrawer() {
 
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
 
   const [signupName, setSignupName] = useState('')
   const [signupEmail, setSignupEmail] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
+  const [showSignupPassword, setShowSignupPassword] = useState(false)
 
   const [editName, setEditName] = useState('')
   const [editEmail, setEditEmail] = useState('')
@@ -87,8 +91,8 @@ export default function AuthDrawer() {
       return
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.')
       return
     }
 
@@ -205,8 +209,46 @@ export default function AuthDrawer() {
                   </label>
                   <label className="authField">
                     <span>Password</span>
-                    <input value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} type="password" placeholder="••••••••" />
+                    <div className="authPasswordWrap">
+                      <input 
+                        value={loginPassword} 
+                        onChange={(e) => setLoginPassword(e.target.value)} 
+                        type={showLoginPassword ? 'text' : 'password'} 
+                        placeholder="min 8 characters" 
+                        minLength={8}
+                      />
+                      <button 
+                        type="button" 
+                        className="authPasswordToggle"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showLoginPassword ? '👁️' : '👁️‍🗨️'}
+                      </button>
+                    </div>
                   </label>
+                  <label className="authCheckbox">
+                    <input 
+                      type="checkbox" 
+                      checked={rememberMe} 
+                      onChange={(e) => setRememberMe(e.target.checked)} 
+                    />
+                    <span>Remember me</span>
+                  </label>
+                  <div className="authSocial">
+                    <button className="authSocialBtn" type="button" aria-label="Sign in with Google">
+                      <IconGoogle /> Google
+                    </button>
+                    <button className="authSocialBtn" type="button" aria-label="Sign in with Facebook">
+                      <IconFacebook /> Facebook
+                    </button>
+                    <button className="authSocialBtn" type="button" aria-label="Sign in with Apple">
+                      <IconApple /> Apple
+                    </button>
+                    <button className="authSocialBtn" type="button" aria-label="Sign in with Microsoft">
+                      <IconMicrosoft /> Microsoft
+                    </button>
+                  </div>
                   <button className="authPrimary" type="button" onClick={onLogin}>
                     Login
                   </button>
@@ -223,8 +265,38 @@ export default function AuthDrawer() {
                   </label>
                   <label className="authField">
                     <span>Password</span>
-                    <input value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} type="password" placeholder="min 6 characters" />
+                    <div className="authPasswordWrap">
+                      <input 
+                        value={signupPassword} 
+                        onChange={(e) => setSignupPassword(e.target.value)} 
+                        type={showSignupPassword ? 'text' : 'password'} 
+                        placeholder="min 8 characters" 
+                        minLength={8}
+                      />
+                      <button 
+                        type="button" 
+                        className="authPasswordToggle"
+                        onClick={() => setShowSignupPassword(!showSignupPassword)}
+                        aria-label={showSignupPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showSignupPassword ? '👁️' : '👁️‍🗨️'}
+                      </button>
+                    </div>
                   </label>
+                  <div className="authSocial">
+                    <button className="authSocialBtn" type="button" aria-label="Sign up with Google">
+                      <IconGoogle /> Google
+                    </button>
+                    <button className="authSocialBtn" type="button" aria-label="Sign up with Facebook">
+                      <IconFacebook /> Facebook
+                    </button>
+                    <button className="authSocialBtn" type="button" aria-label="Sign up with Apple">
+                      <IconApple /> Apple
+                    </button>
+                    <button className="authSocialBtn" type="button" aria-label="Sign up with Microsoft">
+                      <IconMicrosoft /> Microsoft
+                    </button>
+                  </div>
                   <button className="authPrimary" type="button" onClick={onSignup}>
                     Create account
                   </button>
@@ -261,45 +333,49 @@ export default function AuthDrawer() {
                 <label className="authField">
                   <span>Name</span>
                   <input
-                    value={editName || user.name || ''}
+                    value={editName || ''}
                     onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Your name"
                   />
                 </label>
                 <label className="authField">
                   <span>Email</span>
                   <input
-                    value={editEmail || user.email || ''}
+                    value={editEmail || ''}
                     onChange={(e) => setEditEmail(e.target.value)}
+                    placeholder="you@example.com"
                   />
                 </label>
                 <label className="authField">
                   <span>Date of Birth</span>
                   <input
                     type="date"
-                    value={editDob || user.dob || ''}
+                    value={editDob || ''}
                     onChange={(e) => setEditDob(e.target.value)}
                   />
                 </label>
                 <label className="authField">
                   <span>Address</span>
                   <textarea
-                    value={editAddress || user.address || ''}
+                    value={editAddress || ''}
                     onChange={(e) => setEditAddress(e.target.value)}
                     rows={2}
+                    placeholder="Your address..."
                   />
                 </label>
                 <label className="authField">
                   <span>Mobile Number</span>
                   <input
                     type="tel"
-                    value={editMobile || user.mobile || ''}
+                    value={editMobile || ''}
                     onChange={(e) => setEditMobile(e.target.value)}
+                    placeholder="Your mobile number..."
                   />
                 </label>
                 <label className="authField">
                   <span>Personal Info</span>
                   <textarea
-                    value={editPersonalInfo || user.personalInfo || ''}
+                    value={editPersonalInfo || ''}
                     onChange={(e) => setEditPersonalInfo(e.target.value)}
                     rows={3}
                     placeholder="Tell us about yourself..."
@@ -308,18 +384,53 @@ export default function AuthDrawer() {
                 <button
                   className="authPrimary"
                   type="button"
-                  onClick={() => {
-                    if (!editName) setEditName(user.name || '')
-                    if (!editEmail) setEditEmail(user.email || '')
-                    if (!editDob) setEditDob(user.dob || '')
-                    if (!editAddress) setEditAddress(user.address || '')
-                    if (!editMobile) setEditMobile(user.mobile || '')
-                    if (!editPersonalInfo) setEditPersonalInfo(user.personalInfo || '')
-                    onSaveProfile()
-                  }}
+                  onClick={onSaveProfile}
                 >
                   Save profile
                 </button>
+
+                {user?.avatar && (
+                  <div className="authProfileCard" style={{ marginTop: '16px' }}>
+                    <div className="authProfileTitle">Your Profile</div>
+                    <div className="authAvatarSection">
+                      <div className="authAvatarPreview">
+                        <img src={user.avatar} alt="Profile" className="authAvatarImg" />
+                      </div>
+                    </div>
+                    <div className="authField">
+                      <span>Name</span>
+                      <div>{user.name}</div>
+                    </div>
+                    <div className="authField">
+                      <span>Email</span>
+                      <div>{user.email}</div>
+                    </div>
+                    {user.dob && (
+                      <div className="authField">
+                        <span>Date of Birth</span>
+                        <div>{user.dob}</div>
+                      </div>
+                    )}
+                    {user.address && (
+                      <div className="authField">
+                        <span>Address</span>
+                        <div>{user.address}</div>
+                      </div>
+                    )}
+                    {user.mobile && (
+                      <div className="authField">
+                        <span>Mobile Number</span>
+                        <div>{user.mobile}</div>
+                      </div>
+                    )}
+                    {user.personalInfo && (
+                      <div className="authField">
+                        <span>Personal Info</span>
+                        <div>{user.personalInfo}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <button className="authDanger" type="button" onClick={onLogout}>

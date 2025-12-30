@@ -5,6 +5,24 @@
   background: color-mix(in oklab, var(--surface) 88%, transparent);
   padding: 16px;
   box-shadow: 0 26px 80px color-mix(in oklab, #000 14%, transparent);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: min(1200px, calc(100vw - 32px));
+  height: 80vh;
+  max-height: 800px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: 260ms cubic-bezier(.2,.9,.2,1);
+  overflow-y: auto;
+}
+
+.shopWrap.shopSectionVisible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .shopHeader {
@@ -13,6 +31,29 @@
   justify-content: space-between;
   gap: 12px;
   padding: 6px 4px 14px;
+  position: sticky;
+  top: 0;
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  z-index: 10;
+}
+
+.shopCloseBtn {
+  height: 36px;
+  width: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 160ms cubic-bezier(.2,.9,.2,1);
+}
+
+.shopCloseBtn:hover {
+  background: var(--maroon);
+  color: var(--royal-gold);
+  border-color: var(--maroon);
 }
 
 .shopTitle {

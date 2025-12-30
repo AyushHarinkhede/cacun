@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import './ShopSection.css'
 
 import { products } from '../../data/products.js'
@@ -10,6 +10,20 @@ export default function ShopSection() {
 
   const items = useMemo(() => products, [])
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      const shopSection = document.getElementById('shop')
+      if (shopSection && shopSection.classList.contains('shopSectionVisible')) {
+        if (!shopSection.contains(e.target) && !e.target.closest('[data-shop-trigger]')) {
+          shopSection.classList.remove('shopSectionVisible')
+        }
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
+
   return (
     <section className="shopWrap" id="shop" aria-label="Shop">
       <div className="shopHeader">
@@ -17,6 +31,19 @@ export default function ShopSection() {
           <div className="shopTitle">Shop</div>
           <div className="shopSub">Everything in one place — tap a product to view more</div>
         </div>
+        <button 
+          className="shopCloseBtn" 
+          type="button"
+          onClick={() => {
+            const shopSection = document.getElementById('shop')
+            if (shopSection) {
+              shopSection.classList.remove('shopSectionVisible')
+            }
+          }}
+          aria-label="Close shop"
+        >
+          ✕
+        </button>
       </div>
 
       <div className="shopGrid" role="list">

@@ -27,7 +27,7 @@ export default function Navbar() {
   }, [query])
 
   const placeholder = useMemo(() => {
-    return 'Search nature products, recycled items, plastic-free…'
+    return 'Search products...'
   }, [])
 
   const goTo = (item) => {
@@ -102,7 +102,18 @@ export default function Navbar() {
             {basketCount > 0 ? <span className="navBadge">{basketCount}</span> : null}
           </button>
           <button className="navAuthBtn" type="button" onClick={() => setAuthOpen(true)}>
-            {user ? 'Profile' : 'Sign in'}
+            {user ? (
+              <div className="navProfile">
+                {user.avatar ? (
+                  <img src={user.avatar} alt="Profile" className="navProfileAvatar" />
+                ) : (
+                  <div className="navProfilePlaceholder">{user.name?.charAt(0)?.toUpperCase() || 'U'}</div>
+                )}
+                <span>Profile</span>
+              </div>
+            ) : (
+              'Sign in'
+            )}
           </button>
         </div>
       </div>

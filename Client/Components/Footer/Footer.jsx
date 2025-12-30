@@ -2,7 +2,7 @@ import './Footer.css'
 
 import logo from '../cacun.png'
 import { useSettings } from '../../contexts/useSettings.js'
-import { IconInstagram, IconTwitter, IconLinkedin, IconMail } from '../icons.jsx'
+import { IconInstagram, IconTwitter, IconLinkedin, IconMail, IconPhone, IconMapPin, IconMessageCircle } from '../icons.jsx'
 
 export default function Footer() {
   const { setAboutPage, setLegalPage } = useSettings()
@@ -16,12 +16,9 @@ export default function Footer() {
       </svg>
 
       <div className="footerInner">
-        <div className="footerMain">
-          <div className="footerBrand">
-            <img className="footerLogo" src={logo} alt="cacun" />
-            <div className="footerTag">Nature-first • Plastic-free • Non-toxic</div>
-          </div>
-
+        <div className="footerCorner">
+          <img className="footerLogo" src={logo} alt="cacun" />
+          <div className="footerTag">Nature-first • Plastic-free • Non-toxic</div>
           <div className="footerSocial">
             <a className="socialIcon" href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <IconInstagram />
@@ -38,43 +35,63 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="footerCols">
-          <div className="footerCol">
-            <div className="footerTitle">Explore</div>
-            <a className="footerLink" href="#home">Home</a>
-            <a className="footerLink" href="#">Campaigns</a>
-            <a className="footerLink" href="#">NGOs</a>
-            <a className="footerLink" href="#">Products</a>
-          </div>
-          <div className="footerCol">
-            <div className="footerTitle">Help</div>
-            <a className="footerLink" href="#">Contact</a>
-            <a className="footerLink" href="#">Shipping</a>
-            <a className="footerLink" href="#">Returns</a>
-          </div>
+        <div className="footerContent">
+          <div className="footerCols">
+            <div className="footerCol">
+              <div className="footerTitle">Explore</div>
+              <a className="footerLink" href="#home">Home</a>
+              <a className="footerLink" href="#">Campaigns</a>
+              <a className="footerLink" href="#">NGOs</a>
+              <a className="footerLink" href="#">Products</a>
+            </div>
+            <div className="footerCol">
+              <div className="footerTitle">Help</div>
+              <a className="footerLink" href="#">Contact</a>
+              <a className="footerLink" href="#">Shipping</a>
+              <a className="footerLink" href="#">Returns</a>
+            </div>
 
-          <div className="footerCol">
-            <div className="footerTitle">Legal</div>
-            <button className="footerLink" type="button" onClick={() => setLegalPage('privacy')}>Privacy policy</button>
-            <button className="footerLink" type="button" onClick={() => setLegalPage('terms')}>Terms</button>
-            <button className="footerLink" type="button" onClick={() => setLegalPage('rights')}>User rights</button>
-          </div>
+            <div className="footerCol">
+              <div className="footerTitle">Legal</div>
+              <button className="footerLink" type="button" onClick={() => setLegalPage('privacy')}>Privacy policy</button>
+              <button className="footerLink" type="button" onClick={() => setLegalPage('terms')}>Terms</button>
+              <button className="footerLink" type="button" onClick={() => setLegalPage('rights')}>User rights</button>
+            </div>
 
-          <div className="footerCol">
-            <div className="footerTitle">Connect</div>
-            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
-            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a className="footerLink" href="#" target="_blank" rel="noopener noreferrer">Email</a>
+            <div className="footerCol">
+              <div className="footerTitle">Company</div>
+              <button className="footerLink" type="button" onClick={() => setAboutPage('about')}>About</button>
+              <button className="footerLink" type="button" onClick={() => setAboutPage('faq')}>FAQ</button>
+              <a className="footerLink" href="#">Careers</a>
+              <a className="footerLink" href="#">Brand promises</a>
+            </div>
           </div>
-
-          <div className="footerCol">
-            <div className="footerTitle">Company</div>
-            <button className="footerLink" type="button" onClick={() => setAboutPage('about')}>About</button>
-            <button className="footerLink" type="button" onClick={() => setAboutPage('faq')}>FAQ</button>
-            <a className="footerLink" href="#">Careers</a>
-            <a className="footerLink" href="#">Brand promises</a>
+          
+          <div className="footerContact">
+            <div className="footerContactItem">
+              <IconPhone />
+              <span>+91 98765 43210</span>
+            </div>
+            <div className="footerContactItem">
+              <IconMail />
+              <span>support@cacun.com</span>
+            </div>
+            <div className="footerContactItem">
+              <IconMapPin />
+              <span>Mumbai, India</span>
+            </div>
+            <div className="footerContactItem">
+              <IconMessageCircle />
+              <span>Live Chat Available</span>
+            </div>
           </div>
+        </div>
+      </div>
+      
+      <div className="footerBottom">
+        <div className="footerCopyright">
+          <p>© 2025 Cacun. All rights reserved.</p>
+          <p>Made with ❤️ for nature lovers</p>
         </div>
       </div>
     </footer>

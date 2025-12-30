@@ -1,6 +1,12 @@
 .home {
   display: grid;
   gap: 26px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .hero {
@@ -14,6 +20,16 @@
   padding: 28px;
   position: relative;
   overflow: hidden;
+  animation: fadeInUp 0.8s ease-out;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 16px;
+}
+
+.heroCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px color-mix(in oklab, var(--royal-blue) 20%, transparent);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .heroCard::after {
@@ -39,7 +55,7 @@
 .heroLogoWrap {
   --hero-scale: 1;
   margin: 12px 0 10px;
-  width: min(320px, 72vw);
+  width: min(280px, 60vw);
   transform: scale(var(--hero-scale));
   transform-origin: left center;
   transition: 220ms cubic-bezier(.2,.9,.2,1);
@@ -79,6 +95,9 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 16px;
 }
 
 .stackCard {
@@ -87,6 +106,9 @@
   background: var(--card);
   padding: 16px;
   transition: 180ms cubic-bezier(.2,.9,.2,1);
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .stackCard:hover {
@@ -111,6 +133,9 @@
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 16px;
 }
 
 .calloutRow::after {
@@ -134,6 +159,9 @@
   position: relative;
   overflow: hidden;
   transition: 180ms cubic-bezier(.2,.9,.2,1);
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .callout:hover {
@@ -178,6 +206,9 @@
   border-radius: 26px;
   background: var(--surface);
   padding: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 16px;
 }
 
 .productSpotHeader {
@@ -204,6 +235,9 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 16px 16px 0;
 }
 
 .phCard {
@@ -211,18 +245,37 @@
   border-radius: 20px;
   border: 1px solid var(--border);
   background: linear-gradient(120deg, color-mix(in oklab, var(--card) 85%, transparent), color-mix(in oklab, var(--card) 55%, transparent));
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 @media (max-width: 980px) {
+  .home {
+    padding: 0;
+    width: 100%;
+  }
+  
   .stackGrid {
     grid-template-columns: 1fr 1fr;
+    margin: 0 16px;
   }
 
   .calloutRow {
     grid-template-columns: 1fr;
+    margin: 0 16px;
   }
 
   .productPlaceholder {
     grid-template-columns: 1fr 1fr;
+    margin: 16px 16px 0;
+  }
+  
+  .heroCard {
+    margin: 0 16px;
+  }
+  
+  .productSpot {
+    margin: 0 16px;
   }
 }
