@@ -1,5 +1,5 @@
 import './Footer.css'
-
+ 
 import logo from '../cacun.png'
 import { useSettings } from '../../contexts/useSettings.js'
 import { IconInstagram, IconTwitter, IconLinkedin, IconMail, IconPhone, IconMapPin, IconMessageCircle } from '../icons.jsx'
