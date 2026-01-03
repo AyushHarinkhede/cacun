@@ -321,3 +321,46 @@ export function IconMail() {
     </svg>
   )
 }
+
+export function IconPhone() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M22 16.92v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-3a10 10 0 0 1 10-10v-1a10 10 0 0 0-10 10v1a10 10 0 0 1 10 10v3a2 2 0 0 1 2 2h16a2 2 0 0 1 2-2z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15.5 8.5a1.5 1.5 0 1 0-3 1.5 1.5 0 0 0 3zm-7 0a1.5 1.5 0 1 0-3 1.5 1.5 0 0 0 3z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+export function IconMapPin() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M21 10c0 7-6 12-6 12s-6-5-6-12 5-6 12 6 12-5 6-12zm0 14c-1.1 0-2-.9-2-2s.9 2 2 2 2-.9 2-2zm-8-8c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+export function IconMessageCircle() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M21 11.5a8.38 8.38 0 0 1-9.5 8.38 8.38 0 0 1 9.5 8.38 8.38 0 0 1-9.5c0-4.63-3.87-8.38-8.5-8.38-4.63 0-8.5 3.75-8.5 8.38v.12c0 4.63 3.87 8.38 8.5 8.38 4.63 0 8.5-3.75 8.5-8.38v-.12z"
+        fill="currentColor"
+      />
+      <path
+        d="M12 17.25L14.25 15l1.5-1.5L12 12.75z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
