@@ -7,7 +7,7 @@
 .appMain {
   flex: 1;
   width: 100%;
-  max-width: none;
+  max-width: none; 
   margin: 0;
   padding: 24px 0 64px;
   box-sizing: border-box;
