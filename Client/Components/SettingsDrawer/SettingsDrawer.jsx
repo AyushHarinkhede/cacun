@@ -1,49 +1,33 @@
-import { useId } from 'react'
-import './SettingsDrawer.css'
-
+import { X, User, Palette, Bell, Shield, HelpCircle, ChevronRight, Moon, Sun } from 'lucide-react'
 import { useSettings } from '../../contexts/useSettings.js'
 
 export default function SettingsDrawer() {
-  const {
-    settingsOpen,
-    setSettingsOpen,
-    theme,
-    toggleTheme,
-    uiScale,
-    setUiScale,
-    notificationsEnabled,
-    setNotificationsEnabled,
-    language,
-    setLanguage,
-    setAuthOpen,
-    bgColor,
-    setBgColor,
-    setAboutPage,
-  } = useSettings()
+  const { settingsOpen, setSettingsOpen, theme, toggleTheme } = useSettings()
 
-  const titleId = useId()
+  if (!settingsOpen) return null
 
   return (
-    <div className={settingsOpen ? 'settingsOverlay settingsOverlayOpen' : 'settingsOverlay'}>
-      <button className="settingsBackdrop" type="button" aria-label="Close settings backdrop" onClick={() => setSettingsOpen(false)} />
-      <div className={settingsOpen ? 'settingsDrawer settingsDrawerOpen' : 'settingsDrawer'} aria-labelledby={titleId}>
+    <div className="settingsOverlay" onClick={() => setSettingsOpen(false)}>
+      <div className="settingsDrawer" onClick={(e) => e.stopPropagation()}>
         <div className="settingsHeader">
-          <div className="settingsTitle" id={titleId}>Settings</div>
-          <button className="settingsClose" type="button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">
-            Close
+          <h2 className="settingsTitle">Settings</h2>
+          <button className="settingsCloseBtn" onClick={() => setSettingsOpen(false)}>
+            <X size={20} />
           </button>
         </div>
 
         <div className="settingsBody">
           <div className="settingsSection">
-            <div className="settingsSectionTitle">Profile</div>
-            <button className="settingsRowBtn" type="button" onClick={() => setAuthOpen(true)}>Edit profile</button>
-          </div>
-
-          <div className="settingsSection">
-            <div className="settingsSectionTitle">Appearance</div>
-            <div className="settingsRow">
-              <span className="settingsRowLabel">Theme Mode</span>
+            <div className="settingsItem">
+              <div className="settingsItemLeft">
+                <div className="settingsIcon">
+                  {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+                </div>
+                <div className="settingsContent">
+                  <div className="settingsLabel">Dark Mode</div>
+                  <div className="settingsDescription">Toggle dark/light theme</div>
+                </div>
+              </div>
               <label className="settingsToggle">
                 <input
                   type="checkbox"
@@ -53,134 +37,74 @@ export default function SettingsDrawer() {
                 <span className="settingsToggleSlider"></span>
               </label>
             </div>
-            <div className="settingsRow">
-              <span className="settingsRowLabel">Background Color</span>
-              <div className="colorSelectorGrid">
-                <button
-                  className={`colorOption colorBlue ${bgColor === 'blue' ? 'active' : ''}`}
-                  onClick={() => setBgColor('blue')}
-                  aria-label="Blue background"
-                  title="Blue"
-                />
-                <button
-                  className={`colorOption colorYellow ${bgColor === 'yellow' ? 'active' : ''}`}
-                  onClick={() => setBgColor('yellow')}
-                  aria-label="Yellow background"
-                  title="Yellow"
-                />
-                <button
-                  className={`colorOption colorPurple ${bgColor === 'purple' ? 'active' : ''}`}
-                  onClick={() => setBgColor('purple')}
-                  aria-label="Purple background"
-                  title="Purple"
-                />
-                <button
-                  className={`colorOption colorTeal ${bgColor === 'teal' ? 'active' : ''}`}
-                  onClick={() => setBgColor('teal')}
-                  aria-label="Teal background"
-                  title="Teal"
-                />
-                <button
-                  className={`colorOption colorOrange ${bgColor === 'orange' ? 'active' : ''}`}
-                  onClick={() => setBgColor('orange')}
-                  aria-label="Orange background"
-                  title="Orange"
-                />
-                <button
-                  className={`colorOption colorPink ${bgColor === 'pink' ? 'active' : ''}`}
-                  onClick={() => setBgColor('pink')}
-                  aria-label="Pink background"
-                  title="Pink"
-                />
-                <button
-                  className={`colorOption colorDarkBlue ${bgColor === 'darkblue' ? 'active' : ''}`}
-                  onClick={() => setBgColor('darkblue')}
-                  aria-label="Dark Blue background"
-                  title="Dark Blue"
-                />
+
+            <div className="settingsItem">
+              <div className="settingsItemLeft">
+                <div className="settingsIcon">
+                  <User size={20} />
+                </div>
+                <div className="settingsContent">
+                  <div className="settingsLabel">Account</div>
+                  <div className="settingsDescription">Manage your profile</div>
+                </div>
               </div>
+              <ChevronRight size={20} className="settingsArrow" />
             </div>
-            <label className="settingsRow">
-              <span className="settingsRowLabel">UI size</span>
-              <input
-                className="settingsRange"
-                type="range"
-                min="0.9"
-                max="1.15"
-                step="0.01"
-                value={uiScale}
-                onChange={(e) => setUiScale(Number(e.target.value))}
-                aria-label="UI size"
-              />
-            </label>
-          </div>
 
-          <div className="settingsSection">
-            <div className="settingsSectionTitle">Accessibility</div>
-            <label className="settingsRow">
-              <span className="settingsRowLabel">Notifications</span>
+            <div className="settingsItem">
+              <div className="settingsItemLeft">
+                <div className="settingsIcon">
+                  <Palette size={20} />
+                </div>
+                <div className="settingsContent">
+                  <div className="settingsLabel">Appearance</div>
+                  <div className="settingsDescription">Customize theme colors</div>
+                </div>
+              </div>
+              <ChevronRight size={20} className="settingsArrow" />
+            </div>
+
+            <div className="settingsItem">
+              <div className="settingsItemLeft">
+                <div className="settingsIcon">
+                  <Bell size={20} />
+                </div>
+                <div className="settingsContent">
+                  <div className="settingsLabel">Notifications</div>
+                  <div className="settingsDescription">Manage notifications</div>
+                </div>
+              </div>
               <label className="settingsToggle">
-                <input
-                  type="checkbox"
-                  checked={notificationsEnabled}
-                  onChange={(e) => setNotificationsEnabled(e.target.checked)}
-                  aria-label="Notifications"
-                />
+                <input type="checkbox" defaultChecked />
                 <span className="settingsToggleSlider"></span>
               </label>
-            </label>
-          </div>
+            </div>
 
-          <div className="settingsSection">
-            <div className="settingsSectionTitle">Support</div>
-            <button className="settingsRowBtn" type="button" onClick={() => window.open('mailto:support@cacun.com')}>
-              📧 Email Support
-            </button>
-            <button className="settingsRowBtn" type="button" onClick={() => window.open('tel:+919876543210')}>
-              📱 Call Us
-            </button>
-            <button className="settingsRowBtn settingsRowBtnRed" type="button" onClick={() => window.open('#feedback')}>
-              💬 Send Feedback
-            </button>
-          </div>
+            <div className="settingsItem">
+              <div className="settingsItemLeft">
+                <div className="settingsIcon">
+                  <Shield size={20} />
+                </div>
+                <div className="settingsContent">
+                  <div className="settingsLabel">Privacy</div>
+                  <div className="settingsDescription">Privacy settings</div>
+                </div>
+              </div>
+              <ChevronRight size={20} className="settingsArrow" />
+            </div>
 
-          <div className="settingsSection">
-            <div className="settingsSectionTitle">Account</div>
-            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('orders')}>
-              📦 My Orders
-            </button>
-            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('wishlist')}>
-              ❤️ Wishlist
-            </button>
-            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('addresses')}>
-              📍 Shipping Addresses
-            </button>
-            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('payment')}>
-              💳 Payment Methods
-            </button>
-          </div>
-
-          <div className="settingsSection">
-            <div className="settingsSectionTitle">Preferences</div>
-            <label className="settingsRow">
-              <span className="settingsRowLabel">Currency</span>
-              <select className="settingsSelect">
-                <option>₹ INR</option>
-                <option>$ USD</option>
-                <option>€ EUR</option>
-              </select>
-            </label>
-            <label className="settingsRow">
-              <span className="settingsRowLabel">Newsletter</span>
-              <label className="settingsToggle">
-                <input
-                  type="checkbox"
-                  defaultChecked={true}
-                  aria-label="Newsletter subscription"
-                />
-                <span className="settingsToggleSlider"></span>
-              </label>
-            </label>
+            <div className="settingsItem">
+              <div className="settingsItemLeft">
+                <div className="settingsIcon">
+                  <HelpCircle size={20} />
+                </div>
+                <div className="settingsContent">
+                  <div className="settingsLabel">Help & Support</div>
+                  <div className="settingsDescription">Get help and support</div>
+                </div>
+              </div>
+              <ChevronRight size={20} className="settingsArrow" />
+            </div>
           </div>
         </div>
       </div>
