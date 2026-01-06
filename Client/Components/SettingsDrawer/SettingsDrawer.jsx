@@ -18,6 +18,7 @@ export default function SettingsDrawer() {
     setAuthOpen,
     bgColor,
     setBgColor,
+    setAboutPage,
   } = useSettings()
 
   const titleId = useId()
@@ -93,21 +94,55 @@ export default function SettingsDrawer() {
           </div>
 
           <div className="settingsSection">
-            <div className="settingsSectionTitle">Language</div>
-            <label className="settingsRow">
-              <span className="settingsRowLabel">Language</span>
-              <select className="settingsSelect" value={language} onChange={(e) => setLanguage(e.target.value)} aria-label="Language">
-                <option value="en">English</option>
-                <option value="hi">Hindi</option>
-              </select>
-            </label>
+            <div className="settingsSectionTitle">Support</div>
+            <button className="settingsRowBtn" type="button" onClick={() => window.open('mailto:support@cacun.com')}>
+              📧 Email Support
+            </button>
+            <button className="settingsRowBtn" type="button" onClick={() => window.open('tel:+919876543210')}>
+              📱 Call Us
+            </button>
+            <button className="settingsRowBtn settingsRowBtnRed" type="button" onClick={() => window.open('#feedback')}>
+              💬 Send Feedback
+            </button>
           </div>
 
           <div className="settingsSection">
-            <div className="settingsSectionTitle">Contact</div>
-            <button className="settingsRowBtn" type="button">📧 Email Support</button>
-            <button className="settingsRowBtn settingsRowBtnRed" type="button">💬 Send Feedback</button>
-            <button className="settingsRowBtn" type="button">📱 Contact Us</button>
+            <div className="settingsSectionTitle">Account</div>
+            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('orders')}>
+              📦 My Orders
+            </button>
+            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('wishlist')}>
+              ❤️ Wishlist
+            </button>
+            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('addresses')}>
+              📍 Shipping Addresses
+            </button>
+            <button className="settingsRowBtn" type="button" onClick={() => setAboutPage && setAboutPage('payment')}>
+              💳 Payment Methods
+            </button>
+          </div>
+
+          <div className="settingsSection">
+            <div className="settingsSectionTitle">Preferences</div>
+            <label className="settingsRow">
+              <span className="settingsRowLabel">Currency</span>
+              <select className="settingsSelect">
+                <option>₹ INR</option>
+                <option>$ USD</option>
+                <option>€ EUR</option>
+              </select>
+            </label>
+            <label className="settingsRow">
+              <span className="settingsRowLabel">Newsletter</span>
+              <label className="settingsToggle">
+                <input
+                  type="checkbox"
+                  defaultChecked={true}
+                  aria-label="Newsletter subscription"
+                />
+                <span className="settingsToggleSlider"></span>
+              </label>
+            </label>
           </div>
         </div>
       </div>

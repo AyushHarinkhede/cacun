@@ -55,14 +55,16 @@
 }
 
 .brandLogo {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
-  transition: transform 200ms ease-out;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .brand:hover .brandLogo {
-  transform: scale(1.08);
+  transform: scale(1.12) rotate(2deg);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
 }
 
 .navSearch {

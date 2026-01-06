@@ -213,25 +213,40 @@
   width: 40px;
   border-radius: var(--radius-md);
   border: 1.5px solid var(--divider);
-  background: var(--bg-white);
+  background: var(--container-bg);
   color: var(--text-secondary);
   display: grid;
   place-items: center;
   cursor: pointer;
   transition: all 200ms ease-out;
   font-size: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
 .prodIconBtn:hover {
   border-color: var(--accent-red);
-  background: rgba(255, 82, 82, 0.08);
+  background: rgba(255, 82, 82, 0.1);
   color: var(--accent-red);
+  transform: scale(1.05);
+}
+
+.prodIconBtn:active {
+  transform: scale(0.95);
 }
 
 .prodIconBtnActive {
   border-color: var(--accent-red);
   background: var(--accent-red);
   color: var(--bg-white);
+  animation: likeHeartbeat 0.6s ease-out;
+}
+
+@keyframes likeHeartbeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
 }
 
 .prodAddBtn {
