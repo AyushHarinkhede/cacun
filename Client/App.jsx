@@ -1,6 +1,7 @@
 import './App.css'
 
 import { SettingsProvider } from './contexts/SettingsContext.jsx'
+import { useSettings } from './contexts/useSettings.js'
 import Navbar from './Components/Navbar/Navbar.jsx'
 import Home from './Components/Home/Home.jsx'
 import Footer from './Components/Footer/Footer.jsx'
@@ -12,23 +13,32 @@ import ProductModal from './Components/ProductModal/ProductModal.jsx'
 import AboutModal from './Components/AboutModal/AboutModal.jsx'
 import LegalModal from './Components/LegalModal/LegalModal.jsx'
 
+function AppContent() {
+  const { settingsOpen, authOpen, vanieOpen, activeProductId, aboutPage, legalPage } = useSettings()
+  const isModalOpen = settingsOpen || authOpen || vanieOpen || activeProductId || aboutPage || legalPage
+
+  return (
+    <div className={`appShell ${isModalOpen ? 'overflowHidden' : ''}`}>
+      <Navbar />
+      <main className="appMain">
+        <Home />
+      </main>
+      <Footer />
+      <FloatingControls />
+      <VaniePanel />
+      <SettingsDrawer />
+      <AuthDrawer />
+      <ProductModal />
+      <AboutModal />
+      <LegalModal />
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <SettingsProvider>
-      <div className="appShell">
-        <Navbar />
-        <main className="appMain">
-          <Home />
-        </main>
-        <Footer />
-        <FloatingControls />
-        <VaniePanel />
-        <SettingsDrawer />
-        <AuthDrawer />
-        <ProductModal />
-        <AboutModal />
-        <LegalModal />
-      </div>
+      <AppContent />
     </SettingsProvider>
   )
 }

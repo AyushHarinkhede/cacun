@@ -22,12 +22,11 @@
   transform: translate(-50%, -50%) scale(0.98);
   opacity: 0;
   border-radius: var(--radius-lg);
-  border: 1.5px solid rgba(230, 57, 70, 0.25);
-  background: linear-gradient(135deg, rgba(27, 38, 59, 0.95) 0%, rgba(13, 27, 42, 0.98) 100%);
-  box-shadow: 0 40px 120px rgba(230, 57, 70, 0.3),
-              inset 0 1px 0 rgba(230, 57, 70, 0.1);
+  border: 1px solid var(--divider);
+  background: var(--bg-white);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 300ms ease-out;
 }
 
 .pmOverlayOpen .pmCard {
@@ -41,43 +40,42 @@
   align-items: flex-start;
   gap: 12px;
   padding: 18px;
-  border-bottom: 1px solid rgba(230, 57, 70, 0.15);
-  background: linear-gradient(135deg, rgba(230, 57, 70, 0.1) 0%, rgba(13, 27, 42, 0.5) 100%);
+  border-bottom: 1px solid var(--divider);
+  background: var(--primary-blue);
 }
 
 .pmTitle {
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--text-light);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  color: var(--bg-white);
 }
 
 .pmMeta {
   margin-top: 6px;
-  color: rgba(241, 250, 254, 0.7);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
+  font-size: 13px;
 }
 
 .pmClose {
-  height: 44px;
-  width: 44px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid rgba(230, 57, 70, 0.3);
-  background: rgba(230, 57, 70, 0.1);
-  color: var(--primary-red);
+  height: 40px;
+  width: 40px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--bg-white);
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 200ms ease-out;
   font-size: 20px;
   font-weight: 600;
 }
 
 .pmClose:hover {
-  transform: rotate(90deg);
-  background: rgba(230, 57, 70, 0.2);
-  border-color: var(--primary-red);
-  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.15);
 }
 
 .pmBody {
@@ -91,9 +89,9 @@
   position: relative;
   height: 280px;
   border-radius: var(--radius-md);
-  border: 1.5px solid rgba(230, 57, 70, 0.25);
+  border: 1px solid var(--divider);
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(230, 57, 70, 0.15) 0%, rgba(13, 27, 42, 0.5) 100%);
+  background: var(--surface-light);
 }
 
 .pmImg {
@@ -152,32 +150,48 @@
 }
 
 .pmIcon {
-  height: 48px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text);
-  font-weight: 950;
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--divider);
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
-  transition: 180ms cubic-bezier(.2,.9,.2,1);
+  transition: all 200ms ease-out;
+  font-size: 13px;
+}
+
+.pmIcon:hover {
+  border-color: var(--accent-red);
+  background: rgba(255, 82, 82, 0.08);
+  color: var(--accent-red);
 }
 
 .pmIconActive {
-  background: color-mix(in oklab, var(--maroon) 16%, transparent);
-  border-color: color-mix(in oklab, var(--maroon) 60%, var(--border));
+  border-color: var(--accent-red);
+  background: var(--accent-red);
+  color: var(--bg-white);
 }
 
 .pmPrimary {
-  height: 48px;
-  border-radius: 16px;
+  height: 44px;
+  border-radius: var(--radius-md);
   border: 0;
-  background: var(--royal-blue);
-  color: var(--royal-gold);
-  font-weight: 950;
+  background: var(--primary-blue);
+  color: var(--bg-white);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+  font-size: 13px;
+}
   display: inline-flex;
   align-items: center;
   justify-content: center;

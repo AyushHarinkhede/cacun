@@ -112,6 +112,38 @@
   background: color-mix(in oklab, var(--card) 80%, transparent);
 }
 
+.colorSelector {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.colorOption {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.colorBlue {
+  background: var(--primary-blue);
+}
+
+.colorYellow {
+  background: var(--secondary-yellow);
+}
+
+.colorOption.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--bg-white);
+}
+
+.colorOption:hover {
+  transform: scale(1.05);
+}
+
 .settingsRowLabel {
   font-weight: 800;
 }
@@ -191,9 +223,20 @@
 }
 
 .settingsToggle input:checked + .settingsToggleSlider {
-  background-color: var(--royal-blue);
+  background-color: var(--primary-blue);
 }
 
 .settingsToggle input:checked + .settingsToggleSlider:before {
   transform: translateX(24px);
+}
+
+.settingsRowBtnRed {
+  background: var(--accent-red);
+  color: var(--bg-white);
+  font-weight: 600;
+}
+
+.settingsRowBtnRed:hover {
+  background: #FF3A3A;
+  box-shadow: 0 4px 12px rgba(255, 82, 82, 0.2);
 }

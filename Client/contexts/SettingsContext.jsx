@@ -8,6 +8,12 @@ function getInitialTheme() {
   return 'light'
 }
 
+function getInitialBgColor() {
+  const stored = localStorage.getItem('cacun.bgColor')
+  if (stored === 'blue' || stored === 'yellow') return stored
+  return 'blue'
+}
+
 function getInitialScale() {
   const stored = Number(localStorage.getItem('cacun.uiScale'))
   if (!Number.isFinite(stored)) return 1
@@ -40,6 +46,7 @@ function getInitialIdSet(key) {
 
 export function SettingsProvider({ children }) {
   const [theme, setTheme] = useState(getInitialTheme)
+  const [bgColor, setBgColor] = useState(getInitialBgColor)
   const [uiScale, setUiScale] = useState(getInitialScale)
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const [language, setLanguage] = useState('en')
@@ -58,6 +65,11 @@ export function SettingsProvider({ children }) {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('cacun.theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    document.documentElement.dataset.bgColor = bgColor
+    localStorage.setItem('cacun.bgColor', bgColor)
+  }, [bgColor])
 
   useEffect(() => {
     document.documentElement.style.setProperty('--ui-scale', String(uiScale))
@@ -95,6 +107,8 @@ export function SettingsProvider({ children }) {
       theme,
       setTheme,
       toggleTheme: () => setTheme((t) => (t === 'light' ? 'dark' : 'light')),
+      bgColor,
+      setBgColor,
       uiScale,
       setUiScale,
       notificationsEnabled,
@@ -124,6 +138,7 @@ export function SettingsProvider({ children }) {
     }),
     [
       theme,
+      bgColor,
       uiScale,
       notificationsEnabled,
       language,

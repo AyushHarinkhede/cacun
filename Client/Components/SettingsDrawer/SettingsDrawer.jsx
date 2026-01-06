@@ -16,6 +16,8 @@ export default function SettingsDrawer() {
     language,
     setLanguage,
     setAuthOpen,
+    bgColor,
+    setBgColor,
   } = useSettings()
 
   const titleId = useId()
@@ -42,6 +44,23 @@ export default function SettingsDrawer() {
             <button className="settingsRowBtn" type="button" onClick={toggleTheme}>
               Theme: {theme === 'light' ? 'Royal Gold' : 'Royal Blue'}
             </button>
+            <div className="settingsRow">
+              <span className="settingsRowLabel">Background Color</span>
+              <div className="colorSelector">
+                <button
+                  className={`colorOption colorBlue ${bgColor === 'blue' ? 'active' : ''}`}
+                  onClick={() => setBgColor('blue')}
+                  aria-label="Blue background"
+                  title="Blue"
+                />
+                <button
+                  className={`colorOption colorYellow ${bgColor === 'yellow' ? 'active' : ''}`}
+                  onClick={() => setBgColor('yellow')}
+                  aria-label="Yellow background"
+                  title="Yellow"
+                />
+              </div>
+            </div>
             <label className="settingsRow">
               <span className="settingsRowLabel">UI size</span>
               <input
@@ -86,8 +105,9 @@ export default function SettingsDrawer() {
 
           <div className="settingsSection">
             <div className="settingsSectionTitle">Contact</div>
-            <button className="settingsRowBtn" type="button">Support</button>
-            <button className="settingsRowBtn settingsRowBtnMaroon" type="button">Send feedback</button>
+            <button className="settingsRowBtn" type="button">📧 Email Support</button>
+            <button className="settingsRowBtn settingsRowBtnRed" type="button">💬 Send Feedback</button>
+            <button className="settingsRowBtn" type="button">📱 Contact Us</button>
           </div>
         </div>
       </div>

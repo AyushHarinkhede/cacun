@@ -54,6 +54,17 @@ body {
   box-sizing: border-box;
 }
 
+/* Background color themes */
+html[data-bgColor='blue'] {
+  --bg-light: #FAFAFA;
+  --bg-gradient: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
+}
+
+html[data-bgColor='yellow'] {
+  --bg-light: #FFFDE7;
+  --bg-gradient: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -97,16 +108,13 @@ body {
 @keyframes bounceIn {
   0% {
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.8);
   }
   50% {
     opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
   }
   100% {
+    opacity: 1;
     transform: scale(1);
   }
 }
@@ -114,40 +122,47 @@ body {
 @keyframes slideInScale {
   from {
     opacity: 0;
-    transform: translateY(50px) scale(0.8);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(230, 57, 70, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(230, 57, 70, 0.8);
-  }
-}
-
-@keyframes rotateGradient {
+@keyframes ripple {
   0% {
-    background-position: 0% 50%;
+    box-shadow: 0 0 0 0 rgba(30, 136, 229, 0.4);
   }
-  50% {
-    background-position: 100% 50%;
+  70% {
+    box-shadow: 0 0 0 10px rgba(30, 136, 229, 0);
   }
   100% {
-    background-position: 0% 50%;
+    box-shadow: 0 0 0 0 rgba(30, 136, 229, 0);
   }
 }
 
-@keyframes slideDown {
+@keyframes scaleUp {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: scale(0.9);
   }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
   to {
     opacity: 1;
     transform: translateY(0);
