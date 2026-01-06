@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-light);
+  background: var(--page-bg);
   position: relative;
 }
 
@@ -22,6 +22,8 @@
 .appShell.overflowHidden {
   overflow: hidden;
   height: 100vh;
+  position: fixed;
+  width: 100%;
 }
 
 .appMain {

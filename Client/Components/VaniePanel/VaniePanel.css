@@ -2,9 +2,9 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  width: min(420px, 92vw);
-  height: min(600px, 80vh);
-  background: var(--bg-white);
+  width: min(500px, 95vw);
+  height: min(650px, 85vh);
+  background: var(--container-bg);
   border: 1px solid var(--divider);
   border-radius: var(--radius-lg);
   transform: translate(-50%, -50%) scale(0.9);
@@ -33,7 +33,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
   z-index: -1;
 }
 
@@ -197,37 +197,34 @@
 }
 
 .vanieComposer {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  gap: 8px;
-  padding: 12px;
-  border-top: 1px solid var(--divider);
+  display: flex;
   align-items: center;
-  background: var(--bg-white);
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--divider);
+  background: var(--surface-light);
 }
 
 .vanieInput {
+  flex: 1;
   height: 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--divider);
-  background: var(--surface-light);
-  color: var(--text-primary);
   padding: 0 12px;
-  font-size: 13px;
-  font-weight: 400;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  background: var(--container-bg);
+  color: var(--container-text);
+  font-size: 14px;
+  outline: none;
   transition: all 200ms ease-out;
 }
 
 .vanieInput:focus {
-  outline: none;
   border-color: var(--primary-blue);
-  background: var(--bg-white);
   box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
 }
 
 .vanieInput::placeholder {
   color: var(--text-secondary);
-  font-size: 13px;
 }
 
 .vanieVoiceBtn {
@@ -235,8 +232,8 @@
   width: 36px;
   border-radius: var(--radius-sm);
   border: none;
-  background: var(--surface-light);
-  color: var(--text-secondary);
+  background: var(--primary-blue);
+  color: var(--bg-white);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -245,8 +242,8 @@
 }
 
 .vanieVoiceBtn:hover {
-  background: var(--primary-blue);
-  color: var(--bg-white);
+  background: var(--primary-blue-dark);
+  transform: scale(1.05);
 }
 
 .vanieVoiceBtn.recording {
@@ -260,8 +257,8 @@
   width: 36px;
   border-radius: var(--radius-sm);
   border: none;
-  background: var(--surface-light);
-  color: var(--text-secondary);
+  background: var(--secondary-yellow);
+  color: var(--text-primary);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -270,8 +267,8 @@
 }
 
 .vanieUploadBtn:hover {
-  background: var(--primary-blue);
-  color: var(--bg-white);
+  background: var(--secondary-yellow-dark);
+  transform: scale(1.05);
 }
 
 .vanieSend {
