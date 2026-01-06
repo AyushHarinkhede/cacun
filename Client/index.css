@@ -74,6 +74,46 @@ html[data-bgColor='yellow'] {
   --bg-gradient: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
 }
 
+html[data-bgColor='purple'] {
+  --page-bg: #6A1B9A; /* deep purple page background */
+  --container-bg: #F3E5F5; /* light purple containers */
+  --container-text: #212121;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #6A1B9A 0%, #4A148C 100%);
+}
+
+html[data-bgColor='teal'] {
+  --page-bg: #00897B; /* teal page background */
+  --container-bg: #E0F2F1; /* light teal containers */
+  --container-text: #212121;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #00897B 0%, #00695C 100%);
+}
+
+html[data-bgColor='orange'] {
+  --page-bg: #FF6F00; /* orange page background */
+  --container-bg: #FFF3E0; /* light orange containers */
+  --container-text: #212121;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+}
+
+html[data-bgColor='pink'] {
+  --page-bg: #C2185B; /* pink page background */
+  --container-bg: #FCE4EC; /* light pink containers */
+  --container-text: #212121;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #C2185B 0%, #880E4F 100%);
+}
+
+html[data-bgColor='darkblue'] {
+  --page-bg: #0D47A1; /* dark blue page background */
+  --container-bg: #E3F2FD; /* light blue containers */
+  --container-text: #212121;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

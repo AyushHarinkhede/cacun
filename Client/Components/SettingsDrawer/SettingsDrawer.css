@@ -135,6 +135,26 @@
   background: var(--secondary-yellow);
 }
 
+.colorPurple {
+  background: #6A1B9A;
+}
+
+.colorTeal {
+  background: #00897B;
+}
+
+.colorOrange {
+  background: #FF6F00;
+}
+
+.colorPink {
+  background: #C2185B;
+}
+
+.colorDarkBlue {
+  background: #0D47A1;
+}
+
 .colorOption.active {
   border-color: var(--text-primary);
   box-shadow: 0 0 0 2px var(--bg-white);

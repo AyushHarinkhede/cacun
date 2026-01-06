@@ -34,9 +34,10 @@
   padding: 8px 0 16px;
   position: sticky;
   top: 0;
-  background: linear-gradient(135deg, rgba(27, 38, 59, 0.95) 0%, rgba(13, 27, 42, 0.98) 100%);
+  background: var(--container-bg);
+  backdrop-filter: blur(20px);
   z-index: 10;
-  border-bottom: 1px solid rgba(230, 57, 70, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .shopCloseBtn {
@@ -59,13 +60,6 @@
   border-color: var(--primary-red);
   transform: rotate(90deg);
   box-shadow: 0 8px 20px rgba(230, 57, 70, 0.2);
-}
-}
-
-.shopCloseBtn:hover {
-  background: var(--maroon);
-  color: var(--royal-gold);
-  border-color: var(--maroon);
 }
 
 .shopTitle {
@@ -229,8 +223,6 @@
 .shopAdd:hover {
   background: var(--primary-blue-dark);
   box-shadow: 0 4px 12px rgba(30, 136, 229, 0.2);
-}
-  cursor: pointer;
 }
 
 .shopAddActive {

@@ -60,6 +60,36 @@ export default function SettingsDrawer() {
                   aria-label="Yellow background"
                   title="Yellow"
                 />
+                <button
+                  className={`colorOption colorPurple ${bgColor === 'purple' ? 'active' : ''}`}
+                  onClick={() => setBgColor('purple')}
+                  aria-label="Purple background"
+                  title="Purple"
+                />
+                <button
+                  className={`colorOption colorTeal ${bgColor === 'teal' ? 'active' : ''}`}
+                  onClick={() => setBgColor('teal')}
+                  aria-label="Teal background"
+                  title="Teal"
+                />
+                <button
+                  className={`colorOption colorOrange ${bgColor === 'orange' ? 'active' : ''}`}
+                  onClick={() => setBgColor('orange')}
+                  aria-label="Orange background"
+                  title="Orange"
+                />
+                <button
+                  className={`colorOption colorPink ${bgColor === 'pink' ? 'active' : ''}`}
+                  onClick={() => setBgColor('pink')}
+                  aria-label="Pink background"
+                  title="Pink"
+                />
+                <button
+                  className={`colorOption colorDarkBlue ${bgColor === 'darkblue' ? 'active' : ''}`}
+                  onClick={() => setBgColor('darkblue')}
+                  aria-label="Dark Blue background"
+                  title="Dark Blue"
+                />
               </div>
             </div>
             <label className="settingsRow">
