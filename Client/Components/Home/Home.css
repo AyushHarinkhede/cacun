@@ -29,9 +29,9 @@
 }
 
 .heroCard:hover {
-  box-shadow: var(--shadow-xl), 0 0 40px rgba(139, 92, 246, 0.3);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(124, 58, 237, 0.3);
   transform: translateY(-8px) scale(1.02);
-  border-color: var(--primary-purple);
+  border-color: var(--secondary-purple);
 }
 
 .heroCard::after {
@@ -87,7 +87,7 @@
 }
 
 .pill:hover {
-  background: var(--bg-gradient);
+  background: var(--primary-purple);
   color: var(--text-primary);
   border-color: var(--primary-purple);
   transform: translateY(-2px);

@@ -115,14 +115,6 @@ export default function Navbar() {
               'Sign in'
             )}
           </button>
-          <button 
-            className="navIconBtn" 
-            type="button" 
-            onClick={handleSettingsClick}
-            aria-label="Settings"
-          >
-            <span>⚙️</span>
-          </button>
         </div>
       </div>
     </header>

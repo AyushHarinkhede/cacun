@@ -31,7 +31,7 @@ export default function SettingsDrawer() {
                 <input
                   type="checkbox"
                   checked={theme === 'dark'}
-                  onChange={toggleTheme}
+                  onChange={() => toggleTheme()}
                 />
                 <span className="settingsToggleSlider"></span>
               </label>

@@ -36,10 +36,10 @@
 
 .brand {
   display: inline-flex;
-  align-items: center;
+  align-2px;
   text-decoration: none;
-  color: var(--primary-purple);
-  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--primary-blue);
+  padding: 8px 12px;
   border-radius: var(--radius-md);
   border: none;
   transition: all 200ms ease-out;
@@ -87,8 +87,8 @@
 .navSearch:focus-within {
   max-width: 520px;
   height: 42px;
-  background: var(--bg-card);
-  box-shadow: var(--shadow-md);
+  background: var(--bg-white);
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.2);
 }
 
 .navSearchIcon {
@@ -101,7 +101,7 @@
 }
 
 .navSearch:focus-within .navSearchIcon {
-  color: var(--primary-purple);
+  color: var(--primary-blue);
 }
 
 .navSearchInput {
@@ -165,9 +165,9 @@
 
 .navSuggestItem:hover {
   transform: translateX(4px);
-  background: var(--bg-card);
-  border-color: var(--primary-purple);
-  box-shadow: var(--shadow-md);
+  background: var(--bg-white);
+  border-color: var(--primary-blue);
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.1);
 }
 
 .navSuggestLabel {
@@ -178,12 +178,12 @@
 }
 
 .navSuggestType {
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.7px;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-xs);
-  background: var(--bg-gradient);
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--secondary-yellow);
   color: var(--text-primary);
   text-transform: uppercase;
 }
@@ -213,9 +213,8 @@
 }
 
 .navIconBtn:hover {
-  background: var(--bg-card);
-  color: var(--primary-purple);
-  box-shadow: var(--shadow-md);
+  background: rgba(30, 136, 229, 0.1);
+  color: var(--primary-blue);
 }
 
 .navIconBtn:active {
@@ -226,47 +225,47 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  background: var(--accent-purple);
-  color: var(--text-primary);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  background: var(--accent-red);
+  color: var(--bg-white);
+  border-radius: 50%;
+  font-size: 10px;
   font-weight: 700;
-  padding: var(--spacing-xs) var(--spacing-xs);
-  border: 2px solid var(--text-primary);
+  padding: 2px 5px;
+  border: 2px solid var(--bg-white);
   min-width: 16px;
   height: 16px;
   display: grid;
   place-items: center;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 4px rgba(255, 82, 82, 0.3);
 }
 
 .navAuthBtn {
   border: none;
   height: 36px;
   border-radius: var(--radius-md);
-  padding: 0 var(--spacing-md);
+  padding: 0 16px;
   font-weight: 500;
   letter-spacing: 0.3px;
-  background: var(--primary-purple);
-  color: var(--text-primary);
+  background: var(--primary-blue);
+  color: var(--bg-white);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background 200ms ease-out, box-shadow 200ms ease-out;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  box-shadow: var(--shadow-sm);
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(30, 136, 229, 0.2);
   text-transform: uppercase;
-  font-size: var(--font-size-sm);
+  font-size: 12px;
 }
 
 .navAuthBtn:hover {
-  background: var(--primary-purple-dark);
-  box-shadow: var(--shadow-md);
+  background: var(--primary-blue-dark);
+  box-shadow: 0 4px 8px rgba(30, 136, 229, 0.3);
 }
 
 .navAuthBtn:active {
-  background: var(--primary-purple-dark);
-  box-shadow: var(--shadow-sm);
+  background: var(--primary-blue-dark);
+  box-shadow: 0 2px 4px rgba(30, 136, 229, 0.2);
 }
 
 .navProfile {
@@ -283,20 +282,21 @@
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--primary-purple);
-  box-shadow: var(--shadow-md);
+  border: 2px solid var(--primary-blue);
+  box-shadow: 0 2px 4px rgba(30, 136, 229, 0.2);
+}
 }
 
 .navProfilePlaceholder {
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-full);
-  background: var(--bg-gradient);
-  color: var(--text-primary);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+  color: var(--text-light);
   display: grid;
   place-items: center;
   font-weight: 700;
-  font-size: var(--font-size-sm);
+  font-size: 12px;
   border: 2px solid rgba(230, 57, 70, 0.5);
   box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
 }
