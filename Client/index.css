@@ -81,6 +81,11 @@ html {
   scroll-behavior: smooth;
   margin: 0;
   padding: 0;
+  --page-bg: #F3E8FF;
+  --container-bg: #FFFFFF;
+  --container-text: #1F2937;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
 }
 
 body {

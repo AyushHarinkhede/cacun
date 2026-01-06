@@ -7,7 +7,7 @@ import { IconBasket, IconHeart, IconSearch } from '../icons.jsx'
 import { searchIndex } from '../../data/searchIndex.js'
 
 export default function Navbar() {
-  const { setAuthOpen, user, likesCount, basketCount } = useSettings()
+  const { setAuthOpen, setSettingsOpen, user, likesCount, basketCount } = useSettings()
   const [query, setQuery] = useState('')
 
   const suggestions = useMemo(() => {

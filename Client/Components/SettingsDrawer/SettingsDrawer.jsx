@@ -1,4 +1,3 @@
-import { X, User, Palette, Bell, Shield, HelpCircle, ChevronRight, Moon, Sun } from 'lucide-react'
 import { useSettings } from '../../contexts/useSettings.js'
 
 export default function SettingsDrawer() {
@@ -12,7 +11,7 @@ export default function SettingsDrawer() {
         <div className="settingsHeader">
           <h2 className="settingsTitle">Settings</h2>
           <button className="settingsCloseBtn" onClick={() => setSettingsOpen(false)}>
-            <X size={20} />
+            <span aria-hidden>×</span>
           </button>
         </div>
 
@@ -21,7 +20,7 @@ export default function SettingsDrawer() {
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+                  <span aria-hidden>{theme === 'dark' ? '🌙' : '☀'}</span>
                 </div>
                 <div className="settingsContent">
                   <div className="settingsLabel">Dark Mode</div>
@@ -41,7 +40,7 @@ export default function SettingsDrawer() {
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  <Palette size={20} />
+                  <span aria-hidden>🎨</span>
                 </div>
                 <div className="settingsContent">
                   <div className="settingsLabel">Theme Color</div>
@@ -110,20 +109,20 @@ export default function SettingsDrawer() {
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  <User size={20} />
+                  <span aria-hidden>👤</span>
                 </div>
                 <div className="settingsContent">
                   <div className="settingsLabel">Account</div>
                   <div className="settingsDescription">Manage your profile</div>
                 </div>
               </div>
-              <ChevronRight size={20} className="settingsArrow" />
+              <span className="settingsArrow" aria-hidden>›</span>
             </div>
 
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  <Bell size={20} />
+                  <span aria-hidden>🔔</span>
                 </div>
                 <div className="settingsContent">
                   <div className="settingsLabel">Notifications</div>
@@ -139,27 +138,27 @@ export default function SettingsDrawer() {
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  <Shield size={20} />
+                  <span aria-hidden>🛡</span>
                 </div>
                 <div className="settingsContent">
                   <div className="settingsLabel">Privacy</div>
                   <div className="settingsDescription">Privacy settings</div>
                 </div>
               </div>
-              <ChevronRight size={20} className="settingsArrow" />
+              <span className="settingsArrow" aria-hidden>›</span>
             </div>
 
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  <HelpCircle size={20} />
+                  <span aria-hidden>❓</span>
                 </div>
                 <div className="settingsContent">
                   <div className="settingsLabel">Help & Support</div>
                   <div className="settingsDescription">Get help and support</div>
                 </div>
               </div>
-              <ChevronRight size={20} className="settingsArrow" />
+              <span className="settingsArrow" aria-hidden>›</span>
             </div>
           </div>
         </div>
