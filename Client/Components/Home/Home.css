@@ -1,6 +1,6 @@
 .home {
   display: grid;
-  gap: 26px;
+  gap: 32px;
   max-width: none;
   margin: 0;
   padding: 0;
@@ -10,26 +10,29 @@
 }
 
 .hero {
-  padding-top: 10px;
+  padding-top: 16px;
 }
 
 .heroCard {
-  border-radius: 26px;
-  background: linear-gradient(140deg, var(--surface) 0%, color-mix(in oklab, var(--surface) 70%, var(--royal-blue)) 140%);
-  border: 1px solid var(--border);
-  padding: 28px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(230, 57, 70, 0.12) 0%, rgba(27, 38, 59, 0.8) 50%, rgba(13, 27, 42, 0.95) 100%);
+  border: 1.5px solid rgba(230, 57, 70, 0.3);
+  padding: 40px 32px;
   position: relative;
   overflow: hidden;
   animation: fadeInUp 0.8s ease-out;
   width: 100%;
   box-sizing: border-box;
   margin: 0 16px;
+  box-shadow: 0 20px 60px rgba(230, 57, 70, 0.15),
+              inset 0 1px 0 rgba(230, 57, 70, 0.1);
 }
 
 .heroCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 60px color-mix(in oklab, var(--royal-blue) 20%, transparent);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(-6px);
+  box-shadow: 0 30px 80px rgba(230, 57, 70, 0.25),
+              inset 0 1px 0 rgba(230, 57, 70, 0.15);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .heroCard::after {
@@ -39,56 +42,86 @@
   right: -20px;
   bottom: -40px;
   height: 120px;
-  background: radial-gradient(closest-side at 20% 40%, color-mix(in oklab, var(--royal-gold) 55%, transparent), transparent 70%),
-    radial-gradient(closest-side at 70% 60%, color-mix(in oklab, var(--royal-blue) 24%, transparent), transparent 70%);
-  filter: blur(10px);
-  opacity: 0.55;
+  background: radial-gradient(closest-side at 20% 40%, rgba(230, 57, 70, 0.4), transparent 70%),
+    radial-gradient(closest-side at 70% 60%, rgba(13, 27, 42, 0.3), transparent 70%);
+  filter: blur(12px);
+  opacity: 0.6;
+}
+
+.heroCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 20%, rgba(230, 57, 70, 0.05) 50%, transparent 80%);
+  pointer-events: none;
 }
 
 .heroKicker {
   margin: 0;
-  color: var(--muted);
+  color: var(--primary-red);
   font-weight: 800;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-size: 12px;
 }
 
 .heroLogoWrap {
   --hero-scale: 1;
-  margin: 12px 0 10px;
+  margin: 14px 0 12px;
   width: min(280px, 60vw);
-  transform: scale(var(--hero-scale));
+  transform: scale(var(--hero-scale)) perspective(1000px) rotateX(0deg);
   transform-origin: left center;
-  transition: 220ms cubic-bezier(.2,.9,.2,1);
+  transition: all 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.heroCard:hover .heroLogoWrap {
+  transform: scale(1.05) perspective(1000px) rotateX(-5deg);
 }
 
 .heroLogo {
   width: 100%;
   height: auto;
   display: block;
-  filter: drop-shadow(0 28px 60px color-mix(in oklab, #000 28%, transparent));
+  filter: drop-shadow(0 20px 40px rgba(230, 57, 70, 0.3));
 }
 
 .heroSub {
   margin: 0;
   max-width: 62ch;
-  color: var(--text);
+  color: var(--text-light);
   font-weight: 600;
+  line-height: 1.7;
 }
 
 .heroPills {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .pill {
-  border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--surface) 70%, transparent);
-  padding: 8px 12px;
+  border: 1.5px solid rgba(230, 57, 70, 0.4);
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--primary-red);
+  padding: 10px 16px;
   border-radius: 999px;
-  font-weight: 800;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: default;
+}
+
+.pill:hover {
+  background: rgba(230, 57, 70, 0.2);
+  border-color: var(--primary-red);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(230, 57, 70, 0.2);
 }
 
 .stackGrid {
