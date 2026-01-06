@@ -16,6 +16,9 @@
   --bg-white: #FFFFFF;
   --surface-light: #F5F5F5;
   --surface-dark: #EEEEEE;
+  --page-bg: var(--bg-light);
+  --container-bg: var(--bg-white);
+  --container-text: var(--text-primary);
   --divider: #BDBDBD;
 
   --font-body: 'Roboto', -apple-system, system-ui, Segoe UI, Helvetica, Arial, sans-serif;
@@ -47,7 +50,7 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--bg-light);
+  background: var(--page-bg);
   color: var(--text-primary);
   overflow-x: hidden;
   width: 100%;
@@ -56,12 +59,18 @@ body {
 
 /* Background color themes */
 html[data-bgColor='blue'] {
-  --bg-light: #FAFAFA;
+  --page-bg: #E3F2FD; /* light blue page */
+  --container-bg: #FFF8E1; /* pale yellow containers (opposite) */
+  --container-text: #212121;
+  --bg-white: #FFFFFF;
   --bg-gradient: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
 }
 
 html[data-bgColor='yellow'] {
-  --bg-light: #FFFDE7;
+  --page-bg: #FFF8E1; /* light yellow page */
+  --container-bg: #E3F2FD; /* pale blue containers (opposite) */
+  --container-text: #212121;
+  --bg-white: #FFFFFF;
   --bg-gradient: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
 }
 
