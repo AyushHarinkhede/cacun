@@ -357,7 +357,7 @@
   }
   
   .stackGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     margin: 0 16px;
   }
 
@@ -367,7 +367,7 @@
   }
 
   .productPlaceholder {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     margin: 16px 16px 0;
   }
   
@@ -377,5 +377,24 @@
   
   .productSpot {
     margin: 0 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stackGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .productPlaceholder {
+    grid-template-columns: 1fr;
+  }
+
+  .heroCard {
+    padding: 24px 20px;
+  }
+
+  .callout {
+    padding: 18px;
   }
 }
