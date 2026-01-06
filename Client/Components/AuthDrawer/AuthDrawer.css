@@ -25,7 +25,7 @@
 }
 
 .authDrawer {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   width: min(480px, calc(100% - 28px));
@@ -33,7 +33,7 @@
   max-height: calc(100vh - 40px);
   border-radius: var(--radius-lg);
   border: 1px solid var(--divider);
-  background: var(--bg-white);
+  background: var(--container-bg);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   transform: translate(-50%, -50%) scale(0.98);
   transition: all 300ms ease-out;
@@ -61,7 +61,7 @@
   font-weight: 600;
   letter-spacing: 0.3px;
   text-transform: none;
-  color: var(--bg-white);
+  color: var(--container-text);
   font-size: 18px;
 }
 
@@ -70,7 +70,7 @@
   border-radius: var(--radius-md);
   border: none;
   background: rgba(255, 255, 255, 0.15);
-  color: var(--bg-white);
+  color: var(--container-text);
   font-weight: 600;
   cursor: pointer;
   padding: 0 12px;
@@ -124,10 +124,6 @@
   color: var(--primary-blue);
   box-shadow: 0 2px 4px rgba(30, 136, 229, 0.1);
 }
-  background: var(--royal-blue);
-  color: var(--royal-gold);
-  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
-}
 
 .authForm {
   display: grid;
@@ -154,7 +150,7 @@
   height: 40px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--divider);
-  background: var(--bg-white);
+  background: var(--container-bg);
   color: var(--text-primary);
   padding: 0 12px;
   font-size: 13px;
@@ -198,7 +194,7 @@
   border-radius: var(--radius-md);
   border: 0;
   background: var(--primary-blue);
-  color: var(--bg-white);
+  color: var(--container-text);
   font-weight: 600;
   letter-spacing: 0.2px;
   cursor: pointer;

@@ -42,12 +42,20 @@ export default function SettingsDrawer() {
 
           <div className="settingsSection">
             <div className="settingsSectionTitle">Appearance</div>
-            <button className="settingsRowBtn" type="button" onClick={toggleTheme}>
-              Theme: {theme === 'light' ? 'Royal Gold' : 'Royal Blue'}
-            </button>
+            <div className="settingsRow">
+              <span className="settingsRowLabel">Theme Mode</span>
+              <label className="settingsToggle">
+                <input
+                  type="checkbox"
+                  checked={theme === 'dark'}
+                  onChange={toggleTheme}
+                />
+                <span className="settingsToggleSlider"></span>
+              </label>
+            </div>
             <div className="settingsRow">
               <span className="settingsRowLabel">Background Color</span>
-              <div className="colorSelector">
+              <div className="colorSelectorGrid">
                 <button
                   className={`colorOption colorBlue ${bgColor === 'blue' ? 'active' : ''}`}
                   onClick={() => setBgColor('blue')}
