@@ -2,14 +2,16 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #0D1B2A 100%);
 }
- 
+
 .appMain {
   flex: 1;
   width: 100%;
   max-width: none; 
   margin: 0;
-  padding: 24px 0 64px;
+  padding: 28px 0 80px;
   box-sizing: border-box;
+  animation: fadeInUp 0.8s ease-out;
 }
   
