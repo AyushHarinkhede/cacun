@@ -1,46 +1,55 @@
 .shopCtaWrap {
-  margin: 10px 16px 0;
+  margin: 16px;
   animation: fadeInRight 0.8s ease-out 0.6s both;
   width: calc(100% - 32px);
   box-sizing: border-box;
 }
 
 .shopCtaCard {
-  border: 1px solid var(--border);
-  border-radius: 26px;
-  background: linear-gradient(
-    140deg,
-    color-mix(in oklab, var(--surface) 82%, transparent),
-    color-mix(in oklab, var(--royal-gold) 26%, var(--surface))
-  );
-  padding: 18px;
-  box-shadow: 0 26px 80px color-mix(in oklab, #000 14%, transparent);
+  border: 1.5px solid rgba(230, 57, 70, 0.3);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(230, 57, 70, 0.12) 0%, rgba(27, 38, 59, 0.8) 50%, rgba(13, 27, 42, 0.95) 100%);
+  padding: 32px;
+  box-shadow: 0 24px 60px rgba(230, 57, 70, 0.2), inset 0 1px 0 rgba(230, 57, 70, 0.1);
   overflow: hidden;
-  transition: 300ms cubic-bezier(.2,.9,.2,1);
+  transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+}
+
+.shopCtaCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent 20%, rgba(230, 57, 70, 0.05) 50%, transparent 80%);
+  pointer-events: none;
 }
 
 .shopCtaCard:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 40px 100px color-mix(in oklab, var(--royal-blue) 25%, transparent);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 32px 80px rgba(230, 57, 70, 0.3), inset 0 1px 0 rgba(230, 57, 70, 0.15);
+  border-color: rgba(230, 57, 70, 0.5);
 }
 
 .shopCtaTitle {
-  font-weight: 950;
-  letter-spacing: 0.6px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  color: var(--text-light);
+  font-size: 18px;
 }
 
 .shopCtaText {
-  margin-top: 6px;
-  color: var(--muted);
-  font-weight: 650;
+  margin-top: 8px;
+  color: rgba(241, 250, 254, 0.8);
+  font-weight: 500;
   max-width: 72ch;
+  line-height: 1.6;
 }
 
 .shopCtaRow {
-  margin-top: 14px;
+  margin-top: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,20 +58,24 @@
 }
 
 .shopCtaBtn {
-  height: 46px;
-  border-radius: 16px;
+  height: 48px;
+  border-radius: var(--radius-sm);
   border: 0;
-  padding: 0 16px;
-  background: var(--royal-blue);
-  color: var(--royal-gold);
-  font-weight: 950;
+  padding: 0 24px;
+  background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+  color: var(--text-light);
+  font-weight: 700;
   cursor: pointer;
-  transition: 180ms cubic-bezier(.2,.9,.2,1);
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 13px;
+  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.3);
 }
 
 .shopCtaBtn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(230, 57, 70, 0.4);
 }
 
 .shopCtaBtn:active {
@@ -70,13 +83,14 @@
 }
 
 .shopCtaHint {
-  color: var(--muted);
-  font-weight: 650;
+  color: rgba(241, 250, 254, 0.6);
+  font-weight: 500;
+  font-size: 13px;
 }
 
 @media (max-width: 980px) {
   .shopCtaWrap {
-    margin: 10px 16px 0;
+    margin: 16px;
     width: calc(100% - 32px);
   }
 }
