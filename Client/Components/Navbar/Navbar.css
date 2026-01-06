@@ -146,14 +146,17 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% + 10px);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 10px;
+  top: calc(100% + 12px);
+  background: rgba(27, 38, 59, 0.95);
+  border: 1px solid rgba(230, 57, 70, 0.3);
+  border-radius: var(--radius-md);
+  padding: 12px;
   display: grid;
   gap: 8px;
-  box-shadow: 0 30px 90px color-mix(in oklab, #000 22%, transparent);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5),
+              0 0 30px rgba(230, 57, 70, 0.2);
+  backdrop-filter: blur(20px);
+  animation: slideDown 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .navSuggestItem {
@@ -162,12 +165,20 @@
   align-items: center;
   gap: 12px;
   height: 44px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--card) 86%, transparent);
-  color: var(--text);
-  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(230, 57, 70, 0.2);
+  background: rgba(230, 57, 70, 0.08);
+  color: var(--text-light);
+  padding: 0 14px;
   cursor: pointer;
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.navSuggestItem:hover {
+  transform: translateX(4px);
+  background: rgba(230, 57, 70, 0.15);
+  border-color: rgba(230, 57, 70, 0.4);
+  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.2);
 }
 
 .navSuggestItem:hover {
