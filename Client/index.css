@@ -1,17 +1,27 @@
 :root {
   --ui-scale: 1;
 
-  --royal-gold: #d4af37;
-  --royal-blue: #1e3a8a;
-  --maroon: #7b1e2b;
+  /* New Professional Color Scheme - Red + Dark Teal */
+  --primary-red: #E63946;
+  --primary-red-dark: #D62828;
+  --primary-red-light: #F77F88;
+  --secondary-teal: #0D1B2A;
+  --secondary-teal-light: #1B263B;
+  --accent-teal: #415A77;
+  --text-light: #F1FAEE;
+  --text-dark: #0D1B2A;
+  --surface-light: #E8F4F8;
+  --surface-dark: #1B263B;
+  --accent-gold: #FFB703;
 
   --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 
-  --radius-lg: 26px;
-  --radius-md: 18px;
+  --radius-lg: 32px;
+  --radius-md: 20px;
+  --radius-sm: 12px;
 
   font-family: var(--font-body);
-  line-height: 1.5;
+  line-height: 1.6;
   font-weight: 450;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
