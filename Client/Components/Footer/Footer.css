@@ -294,21 +294,6 @@
 
 
 
-
-
-
-
-**Theme**: Material Design - Blue + Yellow + Red Accents**Date**: January 6, 2026**Status**: 40% Complete | 60% Remaining---- Footer: `Client/Components/Footer/Footer.css`- Home: `Client/Components/Home/Home.css`- Navbar: `Client/Components/Navbar/Navbar.css`- Material Guide: `MATERIAL_DESIGN_GUIDE.md`- Global Styles: `Client/App.css`- Color Variables: `Client/index.css` (Lines 1-20)## 💾 Files Reference---5. **User testing** to verify usability improvements4. **Mobile device testing** for responsive design3. **Test across all browsers** (Chrome, Safari, Firefox, Edge)2. **Update Material Design Icons** for all icon elements1. **Complete remaining CSS files** using the patterns provided## 📞 Next Steps---- Pill-shaped buttons and badges- Clean, minimal design aesthetic- Teal/cyan elements (mapped to primary-blue)- Yellow/gold UI elements (mapped to secondary-yellow)- Soft salmon/pink backgrounds (mapped to light backgrounds)The design follows the Material Design specification with colors inspired by the reference images showing:## 🎓 Color Reference Images Used---2. **This file** - Implementation status report1. **MATERIAL_DESIGN_GUIDE.md** - Complete Material Design reference guide## 📄 Documentation Files Created---```}  color: var(--text-primary);  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);  border: 1px solid var(--divider);  background: var(--bg-white);  /* NEW */  color: var(--text-light);  box-shadow: 0 12px 36px rgba(230, 57, 70, 0.15);  border: 1.5px solid rgba(230, 57, 70, 0.3);  background: linear-gradient(135deg, rgba(27, 38, 59, 0.7) 0%, rgba(13, 27, 42, 0.85) 100%);  /* OLD */.component {```css### Example Update Template:7. Remove `backdrop-filter` and `transform` from hover states6. Update hover states to slightly darker blue or yellow5. Change button backgrounds from gradient to solid blue4. Replace complex shadows with simple elevation: `0 2px 4px rgba(0, 0, 0, 0.1)`3. Replace red text with `var(--primary-blue)` or `var(--secondary-yellow)`2. Replace red borders with `var(--divider)` or `1px solid #BDBDBD`1. Replace dark gradients with `var(--bg-white)`### Quick Pattern to Apply:## 🔧 How to Complete Remaining Components---- `ripple` - Material Design ripple effect (for future use)- `scaleUp` - Scale in for components- `slideUp` - Simple slide up for new elements### Added/Kept:- `bounceIn` - Bounce scaling- `fadeInLeft` - Complex fade with side movement- `fadeInUp` - Complex fade with translate### Removed:## ✨ Animation Updates---- Stack grids use `repeat(auto-fit, minmax(...))` for flexibility- Kept Material Design principles at all screen sizes- Removed complex grid changes- Maintained responsive breakpoints## 📱 Responsive Design Notes---```}  background: var(--secondary-yellow-light);.btn-accent:hover {}  color: var(--text-primary);  background: var(--secondary-yellow);.btn-accent {/* Accent (Yellow) */}  border-color: var(--primary-blue);.btn-secondary:hover {}  border: 1px solid var(--divider);  color: var(--text-primary);  background: var(--bg-white);.btn-secondary {/* Secondary Action (White) */}  background: var(--primary-blue-dark);.btn-primary:hover {}  color: var(--bg-white);  background: var(--primary-blue);.btn-primary {/* Primary Action (Blue) */```css### Button Patterns```}  color: var(--text-primary);  background: var(--surface-light);.modalClose:hover {}  border-bottom: 1px solid var(--divider);  color: var(--bg-white);  background: var(--primary-blue);.modalHeader {}  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);  border-radius: var(--radius-lg);  border: 1px solid var(--divider);  background: var(--bg-white);.modalCard {/* Apply to all modal containers */```css### Modal Components Pattern## 🎯 Reference: Remaining Component Updates---| VaniePanel.css | ⏳ | Not updated yet || NewsletterSection.css | ⏳ | Not updated yet || ShopCtaSection.css | ⏳ | Not updated yet || ShopSection.css | ⏳ | Not updated yet || FloatingControls.css | ⏳ | Not updated yet || SettingsDrawer.css | ⏳ | Not updated yet || LegalModal.css | ⏳ | Not updated yet || AboutModal.css | ⏳ | Not updated yet || AuthDrawer.css | ⏳ | Not updated yet || ProductModal.css | ⏳ | Not updated yet || ProductsSection.css | 🟡 | Partial update || Footer.css | ✅ | Styling updates || Home.css | ✅ | Complete redesign || Navbar.css | ✅ | Complete redesign || App.css | ✅ | Background, layout || index.css | ✅ | Colors, animations ||------|--------|---------|| File | Status | Changes |## 📋 CSS Files Modified---- Smaller rounded corners (16px, 12px, 8px)- Subtle elevations (2-5px shadows)- Solid colors only- Blue primary, yellow secondary- No blur effects- White/light backgrounds### After (Material Design)- Rounded corners (32px, 20px)- Large drop-shadows- Complex gradients (135deg)- Red accent color throughout- Blur effects (`backdrop-filter`)- Dark backgrounds with 80% opacity overlays### Before (Glassmorphic)## 🚀 Key Design Changes Made---```--divider: #BDBDBD;               /* Border color */--surface-light: #F5F5F5;         /* Surface color */--bg-white: #FFFFFF;              /* Card backgrounds */--bg-light: #FAFAFA;              /* Page background */--text-secondary: #616161;        /* Muted text */--text-primary: #212121;          /* Main text */```css### Background & Text```--accent-red-light: #FF6E40;      /* Hover effects */--accent-red: #FF5252;            /* Small highlights */```css### Accent Red (Used Sparingly)```--secondary-yellow-light: #FFD54F;/* Light backgrounds */--secondary-yellow-dark: #FFA000; /* Darker states */--secondary-yellow: #FFC107;      /* Badges, pills */```css### Secondary Yellow Theme```--primary-blue-light: #42A5F5;    /* Light accents */--primary-blue-dark: #1565C0;     /* Hover states */--primary-blue: #1E88E5;          /* Main CTAs */```css### Primary Blue Theme## 🎨 Color Scheme Applied---   - NewsletterSection.css   - ShopCtaSection.css   - ShopSection.css4. **Shop Section Components** - Need Material Design:3. **Floating Controls** - Need Material Design update   - VaniePanel.css   - SettingsDrawer.css   - LegalModal.css   - AboutModal.css   - AuthDrawer.css   - ProductModal.css2. **All Modals & Drawers** - Need Material Design:   - Icon styling updates   - Badge color updates   - Complete product card styling review1. **ProductsSection** - Needs:The following components have been partially updated or identified but need completion:### 🟡 IN PROGRESS / NEEDS REVIEW---   - Material shadows   - Proper text colors (primary/secondary)   - Blue "View More" button   - White container background5. **ProductsSection** (`ProductsSection.css`) - Partial   - Proper spacing and light shadow   - Yellow hover states on social icons   - Blue social icons   - White background with top border4. **Footer** (`Footer.css`)   - Removed all gradients and dark overlays   - Clean stack grid with Material styling   - Blue primary CTA button   - Yellow-themed pills and badges   - White hero card background3. **Home Section** (`Home.css`)   - Subtle box-shadow elevation   - Proper icon sizing and spacing   - Material Design search bar with blue focus   - Blue primary buttons   - Stable 64px height (reduced from 80px)   - Clean white background2. **Navbar** (`Navbar.css`)   - Removed glassmorphic effects   - Updated animation keyframes   - Changed background from gradient to light `#FAFAFA`   - Updated color variables to Material Design palette1. **Global Styles** (`index.css`, `App.css`)### ✅ COMPLETED Components## 📊 Current Status  border-top: 1px solid var(--divider);
-  background: var(--bg-white);
-  overflow: hidden;
-  margin-top: 60px;
-  color: var(--text-primary);
-  animation: slideUp 0.8s ease-out 0.8s both;
-  width: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.08);
-}
-
 .footerWave {
   display: none;
 }
@@ -371,7 +356,7 @@
   border-radius: 50%;
   border: none;
   background: var(--primary-blue);
-  color: var(--bg-white);
+  color: var(--container-text);
   display: grid;
   place-items: center;
   transition: all 200ms ease-out;
@@ -386,16 +371,9 @@
 
 .socialIcon:hover {
   background: var(--secondary-yellow);
-  color: var(--text-primary);
-  transform: translateY(-4px);
-}
-
-.socialIcon:hover {
+  color: var(--container-text);
   transform: translateY(-4px) scale(1.08);
-  background: var(--royal-blue);
-  color: var(--royal-gold);
-  border-color: var(--royal-blue);
-  box-shadow: 0 16px 32px color-mix(in oklab, var(--royal-blue) 40%, transparent);
+  box-shadow: 0 16px 32px color-mix(in oklab, var(--secondary-yellow) 40%, transparent);
 }
 
 .footerCols {
