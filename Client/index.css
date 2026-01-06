@@ -43,9 +43,7 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: radial-gradient(1200px 700px at 20% 10%, color-mix(in oklab, var(--bg) 70%, var(--royal-gold)) 0%, var(--bg) 55%),
-    radial-gradient(900px 500px at 88% 30%, color-mix(in oklab, var(--royal-blue) 18%, transparent) 0%, transparent 55%),
-    var(--bg);
+  background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #0D1B2A 100%);
   color: var(--text);
   overflow-x: hidden;
   width: 100%;
