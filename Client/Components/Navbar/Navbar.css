@@ -216,98 +216,110 @@
 
 .navIconBtn {
   position: relative;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  border-radius: 16px;
+  border: 1px solid rgba(230, 57, 70, 0.3);
+  background: rgba(230, 57, 70, 0.08);
+  color: var(--primary-red);
+  border-radius: var(--radius-sm);
   height: 44px;
   width: 44px;
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: 160ms cubic-bezier(.2,.9,.2,1);
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   font-size: 18px;
+  font-weight: 600;
 }
 
 .navIconBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px color-mix(in oklab, #000 12%, transparent);
-  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
-  background: color-mix(in oklab, var(--royal-blue) 8%, transparent);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(230, 57, 70, 0.3);
+  border-color: var(--primary-red);
+  background: rgba(230, 57, 70, 0.15);
 }
 
 .navIconBtn:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.95);
 }
 
 .navBadge {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  background: var(--maroon);
-  color: var(--royal-gold);
+  top: -8px;
+  right: -8px;
+  background: var(--primary-red);
+  color: var(--text-light);
   border-radius: 999px;
   font-size: 10px;
-  font-weight: 950;
-  padding: 2px 6px;
-  border: 1px solid color-mix(in oklab, var(--maroon) 75%, #000);
-  min-width: 16px;
-  height: 16px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border: 2px solid var(--secondary-teal);
+  min-width: 18px;
+  height: 18px;
   display: grid;
   place-items: center;
+  font-weight: 900;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
 }
 
 .navAuthBtn {
   border: 0;
   height: 44px;
-  border-radius: 16px;
-  padding: 0 16px;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-  background: var(--royal-blue);
-  color: var(--royal-gold);
+  border-radius: var(--radius-sm);
+  padding: 0 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+  color: var(--text-light);
   cursor: pointer;
-  transition: 160ms cubic-bezier(.2,.9,.2,1);
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
   gap: 8px;
+  box-shadow: 0 8px 24px rgba(230, 57, 70, 0.3);
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.navAuthBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(230, 57, 70, 0.5);
+}
+
+.navAuthBtn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .navProfile {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--text-light);
+  font-weight: 600;
 }
 
 .navProfileAvatar {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
   object-fit: cover;
-  border: 2px solid var(--royal-gold);
+  border: 2px solid var(--primary-red);
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
 }
 
 .navProfilePlaceholder {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--royal-gold) 30%, transparent);
-  color: var(--royal-gold);
+  background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+  color: var(--text-light);
   display: grid;
   place-items: center;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 12px;
-  border: 2px solid var(--royal-gold);
-}
-
-.navAuthBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px color-mix(in oklab, #000 12%, transparent);
-  border-color: color-mix(in oklab, var(--royal-blue) 40%, var(--border));
+  border: 2px solid rgba(230, 57, 70, 0.5);
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
 }
 
 @media (max-width: 980px) {
   .navInner {
     grid-template-columns: 1fr;
-  }
-}
+    gap:
