@@ -1,47 +1,55 @@
 .floatDock {
   position: fixed;
-  right: 18px;
-  bottom: 18px;
+  right: 24px;
+  bottom: 24px;
   z-index: 50;
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .floatToggle,
 .floatBtn,
 .vanieBtn {
-  height: 54px;
-  width: 54px;
+  height: 56px;
+  width: 56px;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
+  border: 1.5px solid rgba(230, 57, 70, 0.3);
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--primary-red);
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 18px 44px color-mix(in oklab, #000 18%, transparent);
-  transition: 180ms cubic-bezier(.2,.9,.2,1);
+  box-shadow: 0 12px 32px rgba(230, 57, 70, 0.2),
+              0 0 20px rgba(230, 57, 70, 0.1);
+  transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-size: 22px;
+  font-weight: 600;
 }
 
-.floatToggle {
-  background: var(--royal-blue);
-  color: var(--royal-gold);
-  border-color: color-mix(in oklab, var(--royal-blue) 45%, var(--border));
-}
-
+.floatToggle,
 .floatToggleOpen {
-  background: var(--maroon);
-  color: var(--royal-gold);
-  border-color: color-mix(in oklab, var(--maroon) 55%, var(--border));
+  background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+  color: var(--text-light);
+  border-color: rgba(230, 57, 70, 0.5);
+  box-shadow: 0 16px 40px rgba(230, 57, 70, 0.35),
+              0 0 20px rgba(230, 57, 70, 0.15);
+}
+
+.floatBtn:hover,
+.floatToggle:hover,
+.vanieBtn:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 16px 48px rgba(230, 57, 70, 0.3);
+  border-color: rgba(230, 57, 70, 0.6);
 }
 
 .floatStack {
   display: grid;
-  gap: 10px;
-  transform: translateY(8px);
+  gap: 12px;
+  transform: translateY(12px);
   opacity: 0;
   pointer-events: none;
-  transition: 200ms cubic-bezier(.2,.9,.2,1);
+  transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .floatStackOpen {
@@ -52,12 +60,14 @@
 
 .floatBtn:hover,
 .vanieBtn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.08);
 }
 
 .floatBtn:active,
 .vanieBtn:active,
 .floatToggle:active {
+  transform: translateY(0) scale(0.95);
+}
   transform: translateY(0) scale(0.98);
 }
 
