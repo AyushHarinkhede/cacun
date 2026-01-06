@@ -2,7 +2,7 @@ import { X, User, Palette, Bell, Shield, HelpCircle, ChevronRight, Moon, Sun } f
 import { useSettings } from '../../contexts/useSettings.js'
 
 export default function SettingsDrawer() {
-  const { settingsOpen, setSettingsOpen, theme, toggleTheme } = useSettings()
+  const { settingsOpen, setSettingsOpen, theme, toggleTheme, bgColor, setBgColor } = useSettings()
 
   if (!settingsOpen) return null
 
@@ -41,24 +41,80 @@ export default function SettingsDrawer() {
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  <User size={20} />
+                  <Palette size={20} />
                 </div>
                 <div className="settingsContent">
-                  <div className="settingsLabel">Account</div>
-                  <div className="settingsDescription">Manage your profile</div>
+                  <div className="settingsLabel">Theme Color</div>
+                  <div className="settingsDescription">Choose your favorite color</div>
                 </div>
               </div>
-              <ChevronRight size={20} className="settingsArrow" />
+            </div>
+
+            <div className="colorSelectorGrid">
+              <button
+                className={`colorOption colorPurple ${bgColor === 'purple' ? 'active' : ''}`}
+                onClick={() => setBgColor('purple')}
+                aria-label="Purple theme"
+                title="Purple"
+              />
+              <button
+                className={`colorOption colorBlue ${bgColor === 'blue' ? 'active' : ''}`}
+                onClick={() => setBgColor('blue')}
+                aria-label="Blue theme"
+                title="Blue"
+              />
+              <button
+                className={`colorOption colorPink ${bgColor === 'pink' ? 'active' : ''}`}
+                onClick={() => setBgColor('pink')}
+                aria-label="Pink theme"
+                title="Pink"
+              />
+              <button
+                className={`colorOption colorGreen ${bgColor === 'green' ? 'active' : ''}`}
+                onClick={() => setBgColor('green')}
+                aria-label="Green theme"
+                title="Green"
+              />
+              <button
+                className={`colorOption colorYellow ${bgColor === 'yellow' ? 'active' : ''}`}
+                onClick={() => setBgColor('yellow')}
+                aria-label="Yellow theme"
+                title="Yellow"
+              />
+              <button
+                className={`colorOption colorOrange ${bgColor === 'orange' ? 'active' : ''}`}
+                onClick={() => setBgColor('orange')}
+                aria-label="Orange theme"
+                title="Orange"
+              />
+              <button
+                className={`colorOption colorTeal ${bgColor === 'teal' ? 'active' : ''}`}
+                onClick={() => setBgColor('teal')}
+                aria-label="Teal theme"
+                title="Teal"
+              />
+              <button
+                className={`colorOption colorRed ${bgColor === 'red' ? 'active' : ''}`}
+                onClick={() => setBgColor('red')}
+                aria-label="Red theme"
+                title="Red"
+              />
+              <button
+                className={`colorOption colorIndigo ${bgColor === 'indigo' ? 'active' : ''}`}
+                onClick={() => setBgColor('indigo')}
+                aria-label="Indigo theme"
+                title="Indigo"
+              />
             </div>
 
             <div className="settingsItem">
               <div className="settingsItemLeft">
                 <div className="settingsIcon">
-                  <Palette size={20} />
+                  <User size={20} />
                 </div>
                 <div className="settingsContent">
-                  <div className="settingsLabel">Appearance</div>
-                  <div className="settingsDescription">Customize theme colors</div>
+                  <div className="settingsLabel">Account</div>
+                  <div className="settingsDescription">Manage your profile</div>
                 </div>
               </div>
               <ChevronRight size={20} className="settingsArrow" />
