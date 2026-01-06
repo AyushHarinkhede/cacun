@@ -2,18 +2,27 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: transparent;
-  border: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
-  border-radius: 40px;
-  backdrop-filter: blur(14px);
-  margin: 8px auto 0;
+  background: rgba(13, 27, 42, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(230, 57, 70, 0.2);
+  border-radius: var(--radius-lg);
+  margin: 12px auto 0;
   max-width: 1400px;
-  width: calc(100% - 32px);
+  width: calc(100% - 24px);
   height: 80px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
+              0 0 20px rgba(230, 57, 70, 0.1);
+  transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.navWrap:hover {
+  border-color: rgba(230, 57, 70, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+              0 0 30px rgba(230, 57, 70, 0.2);
 }
 
 .navInner {
@@ -23,7 +32,7 @@
   grid-template-columns: 340px 1fr 380px;
   gap: 16px;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 24px;
   height: 100%;
   justify-items: center;
 }
@@ -33,25 +42,33 @@
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  color: var(--text);
-  padding: 8px 10px;
-  border-radius: 18px;
+  color: var(--text-light);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
-  transition: 160ms cubic-bezier(.2,.9,.2,1);
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   justify-self: start;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .brand:hover {
-  border-color: var(--border);
-  background: color-mix(in oklab, var(--surface) 75%, transparent);
-  transform: translateY(-1px);
+  border-color: var(--primary-red);
+  background: rgba(230, 57, 70, 0.1);
+  transform: translateY(-2px);
 }
 
 .brandLogo {
   width: 80px;
   height: 80px;
   object-fit: contain;
-  transition: 220ms cubic-bezier(.2,.9,.2,1);
+  transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: drop-shadow(0 8px 16px rgba(230, 57, 70, 0.3));
+}
+
+.brand:hover .brandLogo {
+  filter: drop-shadow(0 12px 24px rgba(230, 57, 70, 0.5));
+  transform: scale(1.05);
 }
 
 .navSearch {
