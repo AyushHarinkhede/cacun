@@ -1,15 +1,32 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import axios from 'axios'
 import './ProductsSection.css'
 
-import { products } from '../../data/products.js'
 import { IconBasket, IconHeart } from '../icons.jsx'
 import { useSettings } from '../../contexts/useSettings.js'
 
 export default function ProductsSection({ showViewMore = false }) {
   const { likedIds, cartIds, toggleLiked, toggleCart, setActiveProductId } = useSettings()
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const items = useMemo(() => products, [])
-  const displayed = useMemo(() => (showViewMore ? items.slice(0, 5) : items), [items, showViewMore])
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/products')
+        setProducts(response.data)
+        setLoading(false)
+      } catch (err) {
+        setError(err)
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  const displayed = useMemo(() => (showViewMore ? products.slice(0, 5) : products), [products, showViewMore])
 
   const goShop = () => {
     // Remove scrolling behavior - shop section will appear as overlay
@@ -17,6 +34,14 @@ export default function ProductsSection({ showViewMore = false }) {
     if (shopSection) {
       shopSection.classList.add('shopSectionVisible')
     }
+  }
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error fetching products: {error.message}</div>
   }
 
   return (
@@ -38,18 +63,18 @@ export default function ProductsSection({ showViewMore = false }) {
 
       <div className="prodRail" role="list">
         {displayed.map((p) => {
-          const isLiked = likedIds.has(p.id)
-          const inCart = cartIds.has(p.id)
+          const isLiked = likedIds.has(p._id)
+          const inCart = cartIds.has(p._id)
 
           return (
             <article
-              key={p.id}
+              key={p._id}
               className="prodCard"
               role="listitem"
               tabIndex={0}
-              onClick={() => setActiveProductId(p.id)}
+              onClick={() => setActiveProductId(p._id)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') setActiveProductId(p.id)
+                if (e.key === 'Enter') setActiveProductId(p._id)
               }}
             >
               <div className="prodMedia">
@@ -70,7 +95,7 @@ export default function ProductsSection({ showViewMore = false }) {
                     aria-label="Like"
                     onClick={(e) => {
                       e.stopPropagation()
-                      toggleLiked(p.id)
+                      toggleLiked(p._id)
                     }}
                   >
                     <IconHeart filled={isLiked} />
@@ -81,7 +106,7 @@ export default function ProductsSection({ showViewMore = false }) {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation()
-                      toggleCart(p.id)
+                      toggleCart(p._id)
                     }}
                   >
                     <IconBasket />

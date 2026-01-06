@@ -1,0 +1,255 @@
+.quickActions {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+.actionsContainer {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.actionsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.actionsTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.tabNavigation {
+  display: flex;
+  background: var(--surface-purple);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  gap: 4px;
+}
+
+.tabBtn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tabBtn:hover {
+  color: var(--text-primary);
+}
+
+.tabBtn.active {
+  background: var(--bg-white);
+  color: var(--primary-purple);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Actions Grid */
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.actionCard {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-align: left;
+  width: 100%;
+}
+
+.actionCard:hover {
+  background: var(--surface-purple);
+  border-color: var(--primary-purple);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.actionIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  color: var(--bg-white);
+  flex-shrink: 0;
+}
+
+.actionIcon--purple {
+  background: var(--primary-purple);
+}
+
+.actionIcon--pink {
+  background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+}
+
+.actionIcon--yellow {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.actionIcon--blue {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+}
+
+.actionContent {
+  flex: 1;
+}
+
+.actionTitle {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.actionDesc {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Profile Grid */
+.profileGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.profileCard {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  transition: all var(--transition-normal);
+}
+
+.profileCard:hover {
+  background: var(--surface-purple);
+  border-color: var(--primary-purple);
+}
+
+.profileIcon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-purple);
+  color: var(--bg-white);
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.profileContent {
+  flex: 1;
+}
+
+.profileTitle {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.profileDesc {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.profileValue {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--primary-purple);
+  background: var(--bg-white);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--secondary-purple);
+  display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .quickActions {
+    padding: var(--spacing-lg);
+  }
+
+  .actionsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+  }
+
+  .tabNavigation {
+    justify-content: center;
+  }
+
+  .actionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionCard {
+    padding: var(--spacing-md);
+  }
+
+  .profileCard {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .quickActions {
+    padding: var(--spacing-md);
+  }
+
+  .actionsTitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .tabBtn {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .actionIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .profileIcon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}

@@ -6,6 +6,7 @@ import ProductsSection from '../ProductsSection/ProductsSection.jsx'
 import NewsletterSection from '../NewsletterSection/NewsletterSection.jsx'
 import ShopCtaSection from '../ShopCtaSection/ShopCtaSection.jsx'
 import ShopSection from '../ShopSection/ShopSection.jsx'
+import EnhancedFeatures from '../EnhancedFeatures/EnhancedFeatures.jsx'
 
 export default function Home() {
   const heroRef = useRef(null)
@@ -70,6 +71,8 @@ export default function Home() {
       </section>
 
       <ShopCtaSection />
+
+      <EnhancedFeatures />
 
       <ProductsSection showViewMore />
 

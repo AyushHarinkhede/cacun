@@ -350,11 +350,205 @@ export function IconMapPin() {
   )
 }
 
+export function IconLeaf() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M2 22c1-2.5 2.5-4.5 4.5-6s4.5-2.5 7.5-2.5c3 0 5.5 1 7.5 2.5s3.5 3.5 4.5 6"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 2C7 2 3 6 3 11s4 9 9 9 9-4 9-9-4-9-9-9z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 2v9l6 3"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconRecycle() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M7 20L2 15l5-5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 15h6c1.7 0 3 1.3 3 3v6"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17 4l5 5-5 5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22 9h-6c-1.7 0-3-1.3-3-3V0"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 9c0 1.7-1.3 3-3 3H3"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 15c0 1.7 1.3 3 3 3h6"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconStar() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconTrendingUp() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M22 12l-4-4-3 3-6-6-3 3-6-6"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22 12h-4"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconAward() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle
+        cx="12"
+        cy="8"
+        r="6"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 14l-2 4-2-4-4 2 2-4-4-2 4 2 2-4 2 4 4-2-4 2z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconShoppingBag() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M6 2L3 6v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l-3-4H6z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 6h18"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 6V4a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v2"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconFilter() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconGrid() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  )
+}
+
+export function IconList() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="1.6" />
+      <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="1.6" />
+      <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  )
+}
+
 export function IconMessageCircle() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path
-        d="M21 11.5a8.38 8.38 0 0 1-9.5 8.38 8.38 0 0 1 9.5 8.38 8.38 0 0 1-9.5c0-4.63-3.87-8.38-8.5-8.38-4.63 0-8.5 3.75-8.5 8.38v.12c0 4.63 3.87 8.38 8.5 8.38 4.63 0 8.5-3.75 8.5-8.38v-.12z"
+        d="M21 11.5a8.38 8.38 0 0 1-9.5 8.38 8.38 8.38 0 0 1 9.5 8.38 8.38 0 0 1-9.5c0-4.63-3.87-8.38-8.5-8.38-4.63 0-8.5 3.75-8.5 8.38v.12c0 4.63 3.87 8.38 8.5 8.38 4.63 0 8.5-3.75 8.5-8.38v-.12z"
         fill="currentColor"
       />
       <path

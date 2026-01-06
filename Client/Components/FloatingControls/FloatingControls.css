@@ -15,27 +15,27 @@
   border-radius: 999px;
   border: none;
   background: var(--bg-white);
-  color: var(--primary-blue);
+  color: var(--primary-purple);
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(30, 136, 229, 0.2);
-  transition: all 200ms ease-out;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-normal);
   font-size: 24px;
   font-weight: 600;
 }
 
 .floatToggle {
-  background: var(--primary-blue);
+  background: var(--primary-purple);
   color: var(--bg-white);
-  box-shadow: 0 12px 32px rgba(30, 136, 229, 0.3);
+  box-shadow: var(--shadow-xl);
 }
 
 .floatBtn:hover,
 .floatToggle:hover,
 .vanieBtn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(30, 136, 229, 0.3);
+  box-shadow: var(--shadow-xl);
 }
 
 .floatStack {
@@ -60,7 +60,7 @@
 }
 
 .vanieBtn {
-  background: var(--secondary-yellow);
+  background: var(--bg-gradient);
   color: var(--bg-white);
-  box-shadow: 0 8px 24px rgba(255, 193, 7, 0.2);
+  box-shadow: var(--shadow-lg);
 }

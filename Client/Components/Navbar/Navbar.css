@@ -36,13 +36,13 @@
 
 .brand {
   display: inline-flex;
-  align-2px;
+  align-items: center;
   text-decoration: none;
-  color: var(--primary-blue);
+  color: var(--primary-purple);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border: none;
-  transition: all 200ms ease-out;
+  transition: all var(--transition-normal);
   justify-self: start;
   font-weight: 700;
   font-size: 18px;
@@ -50,7 +50,7 @@
 }
 
 .brand:hover {
-  background: rgba(30, 136, 229, 0.08);
+  background: var(--surface-purple);
   transform: none;
 }
 
@@ -88,7 +88,7 @@
   max-width: 520px;
   height: 42px;
   background: var(--bg-white);
-  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.2);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
 }
 
 .navSearchIcon {
@@ -101,7 +101,7 @@
 }
 
 .navSearch:focus-within .navSearchIcon {
-  color: var(--primary-blue);
+  color: var(--primary-purple);
 }
 
 .navSearchInput {
@@ -166,8 +166,8 @@
 .navSuggestItem:hover {
   transform: translateX(4px);
   background: var(--bg-white);
-  border-color: var(--primary-blue);
-  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.1);
+  border-color: var(--primary-purple);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
 }
 
 .navSuggestLabel {
@@ -183,8 +183,8 @@
   letter-spacing: 0.7px;
   padding: 4px 8px;
   border-radius: 4px;
-  background: var(--secondary-yellow);
-  color: var(--text-primary);
+  background: var(--accent-purple);
+  color: var(--primary-purple);
   text-transform: uppercase;
 }
 
@@ -213,12 +213,12 @@
 }
 
 .navIconBtn:hover {
-  background: rgba(30, 136, 229, 0.1);
-  color: var(--primary-blue);
+  background: var(--surface-purple);
+  color: var(--primary-purple);
 }
 
 .navIconBtn:active {
-  background: rgba(30, 136, 229, 0.2);
+  background: var(--secondary-purple);
 }
 
 .navBadge {
@@ -246,26 +246,26 @@
   padding: 0 16px;
   font-weight: 500;
   letter-spacing: 0.3px;
-  background: var(--primary-blue);
+  background: var(--primary-purple);
   color: var(--bg-white);
   cursor: pointer;
-  transition: background 200ms ease-out, box-shadow 200ms ease-out;
+  transition: all var(--transition-normal);
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 2px 4px rgba(30, 136, 229, 0.2);
+  box-shadow: var(--shadow-sm);
   text-transform: uppercase;
   font-size: 12px;
 }
 
 .navAuthBtn:hover {
-  background: var(--primary-blue-dark);
-  box-shadow: 0 4px 8px rgba(30, 136, 229, 0.3);
+  background: var(--primary-purple-dark);
+  box-shadow: var(--shadow-md);
 }
 
 .navAuthBtn:active {
-  background: var(--primary-blue-dark);
-  box-shadow: 0 2px 4px rgba(30, 136, 229, 0.2);
+  background: var(--primary-purple-dark);
+  box-shadow: var(--shadow-sm);
 }
 
 .navProfile {
@@ -282,23 +282,22 @@
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--primary-blue);
-  box-shadow: 0 2px 4px rgba(30, 136, 229, 0.2);
-}
+  border: 2px solid var(--primary-purple);
+  box-shadow: var(--shadow-sm);
 }
 
 .navProfilePlaceholder {
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
-  color: var(--text-light);
+  background: var(--bg-gradient);
+  color: var(--bg-white);
   display: grid;
   place-items: center;
   font-weight: 700;
   font-size: 12px;
-  border: 2px solid rgba(230, 57, 70, 0.5);
-  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+  border: 2px solid var(--secondary-purple);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 980px) {
