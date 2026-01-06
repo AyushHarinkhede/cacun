@@ -59,16 +59,16 @@ body {
 
 /* Background color themes */
 html[data-bgColor='blue'] {
-  --page-bg: #E3F2FD; /* light blue page */
-  --container-bg: #FFF8E1; /* pale yellow containers (opposite) */
+  --page-bg: #1E88E5; /* blue page background */
+  --container-bg: #FFFFFF; /* white containers for contrast */
   --container-text: #212121;
   --bg-white: #FFFFFF;
   --bg-gradient: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
 }
 
 html[data-bgColor='yellow'] {
-  --page-bg: #FFF8E1; /* light yellow page */
-  --container-bg: #E3F2FD; /* pale blue containers (opposite) */
+  --page-bg: #FFC107; /* yellow page background */
+  --container-bg: #FFFFFF; /* white containers for contrast */
   --container-text: #212121;
   --bg-white: #FFFFFF;
   --bg-gradient: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
