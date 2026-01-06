@@ -1,10 +1,11 @@
 .shopWrap {
-  margin-top: 10px;
-  border: 1px solid var(--border);
-  border-radius: 26px;
-  background: color-mix(in oklab, var(--surface) 88%, transparent);
-  padding: 16px;
-  box-shadow: 0 26px 80px color-mix(in oklab, #000 14%, transparent);
+  margin-top: 16px;
+  border: 1.5px solid rgba(230, 57, 70, 0.25);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(27, 38, 59, 0.95) 0%, rgba(13, 27, 42, 0.98) 100%);
+  padding: 20px;
+  box-shadow: 0 32px 80px rgba(230, 57, 70, 0.25),
+              inset 0 1px 0 rgba(230, 57, 70, 0.1);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -15,7 +16,7 @@
   z-index: 100;
   opacity: 0;
   pointer-events: none;
-  transition: 260ms cubic-bezier(.2,.9,.2,1);
+  transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   overflow-y: auto;
 }
 
@@ -30,24 +31,35 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
-  padding: 6px 4px 14px;
+  padding: 8px 0 16px;
   position: sticky;
   top: 0;
-  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  background: linear-gradient(135deg, rgba(27, 38, 59, 0.95) 0%, rgba(13, 27, 42, 0.98) 100%);
   z-index: 10;
+  border-bottom: 1px solid rgba(230, 57, 70, 0.15);
 }
 
 .shopCloseBtn {
-  height: 36px;
-  width: 36px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--card) 70%, transparent);
-  color: var(--text);
+  height: 40px;
+  width: 40px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(230, 57, 70, 0.3);
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--primary-red);
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: 160ms cubic-bezier(.2,.9,.2,1);
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.shopCloseBtn:hover {
+  background: rgba(230, 57, 70, 0.2);
+  border-color: var(--primary-red);
+  transform: rotate(90deg);
+  box-shadow: 0 8px 20px rgba(230, 57, 70, 0.2);
+}
 }
 
 .shopCloseBtn:hover {
