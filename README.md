@@ -8,7 +8,7 @@
   <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=FF0000&background=00000000&center=false&vCenter=true&width=50&startDelay=1500&lines=is" alt="is" />
   
   <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=23F709&background=00000000&center=false&vCenter=true&width=220&startDelay=3000&lines=Live!🌱" alt="Live" />
-</div>
+</div> 
 
 ---
 
