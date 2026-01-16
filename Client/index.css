@@ -135,12 +135,28 @@ html[data-bgColor='berry'] {
   --bg-gradient: linear-gradient(135deg, #EC4899 0%, #BE185D 100%);
 }
 
-html[data-bgColor='midnight'] {
-  --page-bg: #1E293B;
+html[data-bgColor='aurora'] {
+  --page-bg: #F3E8FF;
   --container-bg: #FFFFFF;
-  --container-text: #F8FAFC;
+  --container-text: #0F172A;
   --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+  --bg-gradient: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+}
+
+html[data-bgColor='candy'] {
+  --page-bg: #FFF5F5;
+  --container-bg: #FFFFFF;
+  --container-text: #0F172A;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFC93D 100%);
+}
+
+html[data-bgColor='volcano'] {
+  --page-bg: #FEF2F2;
+  --container-bg: #FFFFFF;
+  --container-text: #0F172A;
+  --bg-white: #FFFFFF;
+  --bg-gradient: linear-gradient(135deg, #EF4444 0%, #F59E0B 100%);
 }
 
 * {

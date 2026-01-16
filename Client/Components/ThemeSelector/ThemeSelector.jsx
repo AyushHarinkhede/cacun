@@ -19,8 +19,8 @@ export default function ThemeSelector() {
   return (
     <div className="themeSelector">
       <div className="themeSelectorHeader">
-        <h3>Choose Theme</h3>
-        <p>Select your preferred color scheme</p>
+        <h3>🎨 Choose Theme</h3>
+        <p>Select your preferred color scheme for Cacun</p>
       </div>
       
       <div className="themeGrid">
