@@ -7,7 +7,10 @@ const themes = [
   { id: 'sunset', name: 'Sunset', bgClass: 'sunset', preview: 'linear-gradient(135deg, #F59E0B 0%, #DC2626 100%)' },
   { id: 'forest', name: 'Forest', bgClass: 'forest', preview: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' },
   { id: 'berry', name: 'Berry', bgClass: 'berry', preview: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)' },
-  { id: 'midnight', name: 'Midnight', bgClass: 'midnight', preview: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)' }
+  { id: 'midnight', name: 'Midnight', bgClass: 'midnight', preview: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)' },
+  { id: 'aurora', name: 'Aurora', bgClass: 'aurora', preview: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)' },
+  { id: 'candy', name: 'Candy', bgClass: 'candy', preview: 'linear-gradient(135deg, #FF6B6B 0%, #FFC93D 100%)' },
+  { id: 'volcano', name: 'Volcano', bgClass: 'volcano', preview: 'linear-gradient(135deg, #EF4444 0%, #F59E0B 100%)' }
 ]
 
 export default function ThemeSelector() {
