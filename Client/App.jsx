@@ -32,6 +32,7 @@ function AppContent() {
       <ProductModal />
       <AboutModal />
       <LegalModal />
+      <ThemeSelector />
     </div>
   )
 }
