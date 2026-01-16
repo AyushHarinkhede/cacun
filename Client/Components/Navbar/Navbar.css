@@ -88,7 +88,7 @@
   max-width: 520px;
   height: 42px;
   background: var(--bg-white);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
 }
 
 .navSearchIcon {
@@ -101,7 +101,7 @@
 }
 
 .navSearch:focus-within .navSearchIcon {
-  color: var(--primary-purple);
+  color: var(--primary-blue);
 }
 
 .navSearchInput {
@@ -166,8 +166,8 @@
 .navSuggestItem:hover {
   transform: translateX(4px);
   background: var(--bg-white);
-  border-color: var(--primary-purple);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+  border-color: var(--primary-blue);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
 }
 
 .navSuggestLabel {
@@ -183,8 +183,8 @@
   letter-spacing: 0.7px;
   padding: 4px 8px;
   border-radius: 4px;
-  background: var(--accent-purple);
-  color: var(--primary-purple);
+  background: var(--surface-blue);
+  color: var(--primary-blue);
   text-transform: uppercase;
 }
 
@@ -213,12 +213,12 @@
 }
 
 .navIconBtn:hover {
-  background: var(--surface-purple);
-  color: var(--primary-purple);
+  background: var(--surface-blue);
+  color: var(--primary-blue);
 }
 
 .navIconBtn:active {
-  background: var(--secondary-purple);
+  background: var(--secondary-teal);
 }
 
 .navBadge {
@@ -246,7 +246,7 @@
   padding: 0 16px;
   font-weight: 500;
   letter-spacing: 0.3px;
-  background: var(--primary-purple);
+  background: var(--primary-blue);
   color: var(--bg-white);
   cursor: pointer;
   transition: all var(--transition-normal);
@@ -259,12 +259,12 @@
 }
 
 .navAuthBtn:hover {
-  background: var(--primary-purple-dark);
+  background: var(--primary-blue-dark);
   box-shadow: var(--shadow-md);
 }
 
 .navAuthBtn:active {
-  background: var(--primary-purple-dark);
+  background: var(--primary-blue-dark);
   box-shadow: var(--shadow-sm);
 }
 
@@ -277,12 +277,30 @@
   font-size: 13px;
 }
 
+.navProfile.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  transition: all var(--transition-fast);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+}
+
+.brand:hover {
+  color: var(--primary-blue);
+  background: var(--surface-blue);
+}
+
 .navProfileAvatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--primary-purple);
+  border: 2px solid var(--primary-blue);
   box-shadow: var(--shadow-sm);
 }
 
@@ -296,7 +314,7 @@
   place-items: center;
   font-weight: 700;
   font-size: 12px;
-  border: 2px solid var(--secondary-purple);
+  border: 2px solid var(--secondary-teal);
   box-shadow: var(--shadow-md);
 }
 
