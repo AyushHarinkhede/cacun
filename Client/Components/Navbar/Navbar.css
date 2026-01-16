@@ -38,7 +38,7 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
-  color: var(--primary-purple);
+  color: var(--light-blue);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border: none;
@@ -101,7 +101,7 @@
 }
 
 .navSearch:focus-within .navSearchIcon {
-  color: var(--primary-blue);
+  color: var(--light-blue);
 }
 
 .navSearchInput {
@@ -166,8 +166,8 @@
 .navSuggestItem:hover {
   transform: translateX(4px);
   background: var(--bg-white);
-  border-color: var(--primary-blue);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
+  border-color: var(--light-blue);
+  box-shadow: 0 4px 12px rgba(186, 230, 253, 0.1);
 }
 
 .navSuggestLabel {
@@ -183,8 +183,8 @@
   letter-spacing: 0.7px;
   padding: 4px 8px;
   border-radius: 4px;
-  background: var(--surface-blue);
-  color: var(--primary-blue);
+  background: var(--light-blue-light);
+  color: var(--light-blue);
   text-transform: uppercase;
 }
 
