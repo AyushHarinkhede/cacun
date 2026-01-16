@@ -1,67 +1,74 @@
 :root {
   --ui-scale: 1;
 
-  /* Modern Vibrant Theme System - Rich Color Palettes */
-  --primary-blue: #0EA5E9;
-  --primary-blue-dark: #0284C7;
-  --primary-blue-light: #38BDF8;
-  --secondary-teal: #14B8A6;
-  --secondary-teal-dark: #0F766E;
-  --secondary-teal-light: #2DD4BF;
+  /* Blue and Yellow Theme System - Vibrant Professional Colors */
+  --primary-blue: #1E40AF;
+  --primary-blue-dark: #1E3A8A;
+  --primary-blue-light: #3B82F6;
+  --secondary-yellow: #F59E0B;
+  --secondary-yellow-dark: #D97706;
+  --secondary-yellow-light: #FCD34D;
   --accent-cyan: #06B6D4;
-  --surface-blue: #F0F9FF;
-  --surface-blue-light: #FAFCFF;
-  --container-blue: rgba(14, 165, 233, 0.08);
-  --container-blue-border: rgba(14, 165, 233, 0.15);
+  --surface-blue: #EFF6FF;
+  --surface-blue-light: #F0F9FF;
+  --container-blue: rgba(30, 64, 175, 0.08);
+  --container-blue-border: rgba(30, 64, 175, 0.15);
   
-  /* Rich Forest Theme - Deep Natural Greens */
-  --forest-primary: #059669;
-  --forest-secondary: #10B981;
-  --forest-accent: #047857;
-  --forest-light: #D1FAE5;
-  --forest-dark: #022C22;
+  /* Ocean Blue Theme - Deep Blues */
+  --ocean-primary: #1E40AF;
+  --ocean-secondary: #3B82F6;
+  --ocean-accent: #2563EB;
+  --ocean-light: #EFF6FF;
+  --ocean-dark: #1E3A8A;
   
-  /* Vibrant Sunset Theme - Warm Oranges */
-  --sunset-primary: #DC2626;
-  --sunset-secondary: #F59E0B;
-  --sunset-accent: #F97316;
-  --sunset-light: #FEF3C7;
-  --sunset-dark: #B91C1C;
+  /* Sunshine Yellow Theme - Bright Yellows */
+  --sunshine-primary: #F59E0B;
+  --sunshine-secondary: #FCD34D;
+  --sunshine-accent: #FBBF24;
+  --sunshine-light: #FEF3C7;
+  --sunshine-dark: #D97706;
   
-  /* Deep Berry Theme - Rich Purples */
-  --berry-primary: #BE185D;
-  --berry-secondary: #EC4899;
-  --berry-accent: #A855F7;
-  --berry-light: #FCE7F3;
-  --berry-dark: #7E22CE;
+  /* Sky Blue Theme - Light Blues */
+  --sky-primary: #0EA5E9;
+  --sky-secondary: #38BDF8;
+  --sky-accent: #0284C7;
+  --sky-light: #F0F9FF;
+  --sky-dark: #075985;
   
-  /* Midnight Theme - Dark Blues */
-  --midnight-primary: #334155;
-  --midnight-secondary: #1E293B;
-  --midnight-accent: #475569;
-  --midnight-light: #F8FAFC;
-  --midnight-dark: #0F172A;
+  /* Gold Theme - Rich Golds */
+  --gold-primary: #D97706;
+  --gold-secondary: #F59E0B;
+  --gold-accent: #FCD34D;
+  --gold-light: #FEF3C7;
+  --gold-dark: #92400E;
   
-  /* Aurora Theme - Northern Lights */
-  --aurora-primary: #8B5CF6;
-  --aurora-secondary: #A78BFA;
-  --aurora-accent: #C084FC;
-  --aurora-light: #F3E8FF;
-  --aurora-dark: #6D28D9;
+  /* Navy Theme - Deep Navy Blues */
+  --navy-primary: #1E3A8A;
+  --navy-secondary: #1E40AF;
+  --navy-accent: #2563EB;
+  --navy-light: #F0F9FF;
+  --navy-dark: #1E293B;
   
-  /* Candy Theme - Sweet Pinks */
-  --candy-primary: #FF6B6B;
-  --candy-secondary: #FFC93D;
-  --candy-accent: #FFB4AB;
-  --candy-light: #FFF5F5;
-  --candy-dark: #E11D48;
+  /* Amber Theme - Warm Ambers */
+  --amber-primary: #F59E0B;
+  --amber-secondary: #FCD34D;
+  --amber-accent: #FBBF24;
+  --amber-light: #FEF3C7;
+  --amber-dark: #B45309;
   
-  /* Volcano Theme - Fiery Reds */
-  --volcano-primary: #EF4444;
-  --volcano-secondary: #F59E0B;
-  --volcano-accent: #FCA5A5;
-  --volcano-light: #FEF2F2;
-  --volcano-dark: #DC2626;
+  /* Azure Theme - Azure Blues */
+  --azure-primary: #0EA5E9;
+  --azure-secondary: #38BDF8;
+  --azure-accent: #06B6D4;
+  --azure-light: #F0F9FF;
+  --azure-dark: #0C4A6E;
+  
+  /* Lemon Theme - Bright Lemons */
+  --lemon-primary: #FCD34D;
+  --lemon-secondary: #FDE68A;
+  --lemon-accent: #F59E0B;
+  --lemon-light: #FFFBEB;
+  --lemon-dark: #D97706;
   
   /* Text Colors */
   --text-primary: #0F172A;
@@ -77,7 +84,7 @@
   /* UI Elements */
   --border-color: #E2E8F0;
   --divider-color: #F1F5F9;
-  --shadow-color: rgba(14, 165, 233, 0.1);
+  --shadow-color: rgba(30, 64, 175, 0.1);
   
   /* Spacing & Sizing */
   --spacing-xs: 4px;
@@ -151,105 +158,242 @@ body {
   box-sizing: border-box;
 }
 
-/* Modern Vibrant Color Themes */
+/* Blue and Yellow Color Themes - Solid Colors Only */
 html[data-bgColor='ocean'] {
-  --page-bg: var(--surface-blue);
+  --page-bg: var(--ocean-light);
   --container-bg: var(--bg-primary);
   --container-text: var(--text-primary);
   --bg-white: var(--bg-primary);
-  --bg-gradient: var(--bg-gradient);
+  --bg-gradient: var(--ocean-primary);
 }
 
-html[data-bgColor='forest'] {
-  --page-bg: var(--forest-light);
-  --container-bg: var(--bg-primary);
-  --container-text: var(--text-primary);
-  --bg-white: var(--bg-primary);
-  --bg-gradient: linear-gradient(135deg, var(--forest-primary) 0%, var(--forest-secondary) 50%, var(--forest-primary) 100%);
-}
-
-html[data-bgColor='forest'] .callout {
-  background: var(--forest-primary);
+html[data-bgColor='ocean'] .callout {
+  background: var(--ocean-primary);
   color: var(--bg-white);
-  border: 2px solid var(--forest-accent);
+  border: 2px solid var(--ocean-accent);
 }
 
-html[data-bgColor='forest'] .primaryBtn {
+html[data-bgColor='ocean'] .primaryBtn {
   background: var(--bg-white);
-  color: var(--forest-primary);
-  border: 2px solid var(--forest-primary);
+  color: var(--ocean-primary);
+  border: 2px solid var(--ocean-primary);
 }
 
-html[data-bgColor='forest'] .primaryBtn:hover {
-  background: var(--forest-secondary);
-  border-color: var(--forest-primary);
+html[data-bgColor='ocean'] .primaryBtn:hover {
+  background: var(--ocean-secondary);
+  border-color: var(--ocean-primary);
   box-shadow: var(--shadow-md);
 }
 
-html[data-bgColor='sunset'] {
-  --page-bg: var(--sunset-light);
+html[data-bgColor='ocean'] .hero {
+  background: var(--ocean-primary);
+}
+
+html[data-bgColor='ocean'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--ocean-accent);
+}
+
+html[data-bgColor='sunshine'] {
+  --page-bg: var(--sunshine-light);
   --container-bg: var(--bg-primary);
   --container-text: var(--text-primary);
   --bg-white: var(--bg-primary);
-  --bg-gradient: linear-gradient(135deg, var(--sunset-primary) 0%, var(--sunset-secondary) 50%, var(--sunset-primary) 100%);
+  --bg-gradient: var(--sunshine-primary);
 }
 
-html[data-bgColor='sunset'] .callout {
-  background: var(--sunset-primary);
+html[data-bgColor='sunshine'] .callout {
+  background: var(--sunshine-primary);
   color: var(--bg-white);
-  border: 2px solid var(--sunset-accent);
+  border: 2px solid var(--sunshine-accent);
 }
 
-html[data-bgColor='sunset'] .primaryBtn {
+html[data-bgColor='sunshine'] .primaryBtn {
   background: var(--bg-white);
-  color: var(--sunset-primary);
-  border: 2px solid var(--sunset-primary);
+  color: var(--sunshine-primary);
+  border: 2px solid var(--sunshine-primary);
 }
 
-html[data-bgColor='sunset'] .primaryBtn:hover {
-  background: var(--sunset-secondary);
-  border-color: var(--sunset-primary);
+html[data-bgColor='sunshine'] .primaryBtn:hover {
+  background: var(--sunshine-secondary);
+  border-color: var(--sunshine-primary);
   box-shadow: var(--shadow-md);
 }
 
-html[data-bgColor='berry'] {
-  --page-bg: var(--berry-light);
-  --container-bg: var(--bg-primary);
-  --container-text: var(--text-primary);
-  --bg-white: var(--bg-primary);
-  --bg-gradient: linear-gradient(135deg, var(--berry-primary) 0%, var(--berry-secondary) 50%, var(--berry-primary) 100%);
+html[data-bgColor='sunshine'] .hero {
+  background: var(--sunshine-primary);
 }
 
-html[data-bgColor='midnight'] {
-  --page-bg: var(--midnight-light);
-  --container-bg: var(--bg-primary);
-  --container-text: var(--text-primary);
-  --bg-white: var(--bg-primary);
-  --bg-gradient: linear-gradient(135deg, var(--midnight-primary) 0%, var(--midnight-secondary) 50%, var(--midnight-primary) 100%);
+html[data-bgColor='sunshine'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--sunshine-accent);
 }
 
-html[data-bgColor='aurora'] {
-  --page-bg: var(--aurora-light);
+html[data-bgColor='sky'] {
+  --page-bg: var(--sky-light);
   --container-bg: var(--bg-primary);
   --container-text: var(--text-primary);
   --bg-white: var(--bg-primary);
-  --bg-gradient: linear-gradient(135deg, var(--aurora-primary) 0%, var(--aurora-secondary) 50%, var(--aurora-primary) 100%);
+  --bg-gradient: var(--sky-primary);
 }
 
-html[data-bgColor='candy'] {
-  --page-bg: var(--candy-light);
-  --container-bg: var(--bg-primary);
-  --container-text: var(--text-primary);
-  --bg-white: var(--bg-primary);
-  --bg-gradient: linear-gradient(135deg, var(--candy-primary) 0%, var(--candy-secondary) 50%, var(--candy-primary) 100%);
+html[data-bgColor='sky'] .hero {
+  background: var(--sky-primary);
 }
 
-html[data-bgColor='volcano'] {
-  --page-bg: var(--volcano-light);
+html[data-bgColor='sky'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--sky-accent);
+}
+
+html[data-bgColor='gold'] {
+  --page-bg: var(--gold-light);
   --container-bg: var(--bg-primary);
   --container-text: var(--text-primary);
   --bg-white: var(--bg-primary);
-  --bg-gradient: linear-gradient(135deg, var(--volcano-primary) 0%, var(--volcano-secondary) 50%, var(--volcano-primary) 100%);
+  --bg-gradient: var(--gold-primary);
+}
+
+html[data-bgColor='gold'] .hero {
+  background: var(--gold-primary);
+}
+
+html[data-bgColor='gold'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--gold-accent);
+}
+
+html[data-bgColor='navy'] {
+  --page-bg: var(--navy-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: var(--navy-primary);
+}
+
+html[data-bgColor='navy'] .hero {
+  background: var(--navy-primary);
+}
+
+html[data-bgColor='navy'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--navy-accent);
+}
+
+html[data-bgColor='amber'] {
+  --page-bg: var(--amber-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: var(--amber-primary);
+}
+
+html[data-bgColor='amber'] .hero {
+  background: var(--amber-primary);
+}
+
+html[data-bgColor='amber'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--amber-accent);
+}
+
+html[data-bgColor='azure'] {
+  --page-bg: var(--azure-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: var(--azure-primary);
+}
+
+html[data-bgColor='azure'] .hero {
+  background: var(--azure-primary);
+}
+
+html[data-bgColor='azure'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--azure-accent);
+}
+
+html[data-bgColor='lemon'] {
+  --page-bg: var(--lemon-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: var(--lemon-primary);
+}
+
+html[data-bgColor='lemon'] .hero {
+  background: var(--lemon-primary);
+}
+
+/* Newsletter Button - Red with Hover Animation */
+.newsletterBtn {
+  background: #DC2626 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #DC2626 !important;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.newsletterBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-normal);
+}
+
+.newsletterBtn:hover {
+  background: #B91C1C !important;
+  border-color: #B91C1C !important;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+}
+
+.newsletterBtn:hover::before {
+  left: 100%;
+}
+
+.newsletterBtn:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 5px 15px rgba(220, 38, 38, 0.2);
+}
+
+/* Override theme-specific newsletter button styles */
+html[data-bgColor='ocean'] .newsletterBtn,
+html[data-bgColor='sunshine'] .newsletterBtn,
+html[data-bgColor='sky'] .newsletterBtn,
+html[data-bgColor='gold'] .newsletterBtn,
+html[data-bgColor='navy'] .newsletterBtn,
+html[data-bgColor='amber'] .newsletterBtn,
+html[data-bgColor='azure'] .newsletterBtn,
+html[data-bgColor='lemon'] .newsletterBtn {
+  background: #DC2626 !important;
+  color: #FFFFFF !important;
+  border-color: #DC2626 !important;
+}
+
+html[data-bgColor='ocean'] .newsletterBtn:hover,
+html[data-bgColor='sunshine'] .newsletterBtn:hover,
+html[data-bgColor='sky'] .newsletterBtn:hover,
+html[data-bgColor='gold'] .newsletterBtn:hover,
+html[data-bgColor='navy'] .newsletterBtn:hover,
+html[data-bgColor='amber'] .newsletterBtn:hover,
+html[data-bgColor='azure'] .newsletterBtn:hover,
+html[data-bgColor='lemon'] .newsletterBtn:hover {
+  background: #B91C1C !important;
+  border-color: #B91C1C !important;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
 }
 
 * {

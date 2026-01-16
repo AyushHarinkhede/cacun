@@ -3,14 +3,14 @@ import './ThemeSelector.css'
 import { useSettings } from '../../contexts/useSettings.js'
 
 const themes = [
-  { id: 'ocean', name: 'Ocean', bgClass: 'ocean', preview: 'linear-gradient(135deg, #0EA5E9 0%, #14B8A6 100%)' },
-  { id: 'sunset', name: 'Sunset', bgClass: 'sunset', preview: 'linear-gradient(135deg, #F59E0B 0%, #DC2626 100%)' },
-  { id: 'forest', name: 'Forest', bgClass: 'forest', preview: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #10B981 100%)' },
-  { id: 'berry', name: 'Berry', bgClass: 'berry', preview: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)' },
-  { id: 'midnight', name: 'Midnight', bgClass: 'midnight', preview: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)' },
-  { id: 'aurora', name: 'Aurora', bgClass: 'aurora', preview: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)' },
-  { id: 'candy', name: 'Candy', bgClass: 'candy', preview: 'linear-gradient(135deg, #FF6B6B 0%, #FFC93D 100%)' },
-  { id: 'volcano', name: 'Volcano', bgClass: 'volcano', preview: 'linear-gradient(135deg, #EF4444 0%, #F59E0B 100%)' }
+  { id: 'ocean', name: 'Ocean', bgClass: 'ocean', preview: '#1E40AF' },
+  { id: 'sunshine', name: 'Sunshine', bgClass: 'sunshine', preview: '#F59E0B' },
+  { id: 'sky', name: 'Sky', bgClass: 'sky', preview: '#0EA5E9' },
+  { id: 'gold', name: 'Gold', bgClass: 'gold', preview: '#D97706' },
+  { id: 'navy', name: 'Navy', bgClass: 'navy', preview: '#1E3A8A' },
+  { id: 'amber', name: 'Amber', bgClass: 'amber', preview: '#F59E0B' },
+  { id: 'azure', name: 'Azure', bgClass: 'azure', preview: '#0EA5E9' },
+  { id: 'lemon', name: 'Lemon', bgClass: 'lemon', preview: '#FCD34D' }
 ]
 
 export default function ThemeSelector() {
