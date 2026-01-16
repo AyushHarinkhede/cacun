@@ -5,7 +5,7 @@ import { useSettings } from '../../contexts/useSettings.js'
 const themes = [
   { id: 'ocean', name: 'Ocean', bgClass: 'ocean', preview: 'linear-gradient(135deg, #0EA5E9 0%, #14B8A6 100%)' },
   { id: 'sunset', name: 'Sunset', bgClass: 'sunset', preview: 'linear-gradient(135deg, #F59E0B 0%, #DC2626 100%)' },
-  { id: 'forest', name: 'Forest', bgClass: 'forest', preview: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' },
+  { id: 'forest', name: 'Forest', bgClass: 'forest', preview: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #10B981 100%)' },
   { id: 'berry', name: 'Berry', bgClass: 'berry', preview: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)' },
   { id: 'midnight', name: 'Midnight', bgClass: 'midnight', preview: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)' },
   { id: 'aurora', name: 'Aurora', bgClass: 'aurora', preview: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)' },
