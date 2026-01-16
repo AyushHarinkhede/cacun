@@ -97,6 +97,77 @@ body {
   box-sizing: border-box;
 }
 
+/* Light Blue and Light Yellow Color Themes */
+html[data-bgColor='light-blue'] {
+  --page-bg: var(--light-blue-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: var(--light-blue);
+}
+
+html[data-bgColor='light-blue'] .hero {
+  background: var(--light-blue);
+}
+
+html[data-bgColor='light-blue'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--light-blue-dark);
+}
+
+html[data-bgColor='light-blue'] .callout {
+  background: var(--light-blue);
+  color: var(--text-primary);
+  border: 2px solid var(--light-blue-dark);
+}
+
+html[data-bgColor='light-blue'] .primaryBtn {
+  background: var(--bg-white);
+  color: var(--light-blue);
+  border: 2px solid var(--light-blue);
+}
+
+html[data-bgColor='light-blue'] .primaryBtn:hover {
+  background: var(--light-blue-light);
+  border-color: var(--light-blue);
+  box-shadow: var(--shadow-md);
+}
+
+html[data-bgColor='light-yellow'] {
+  --page-bg: var(--light-yellow-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: var(--light-yellow);
+}
+
+html[data-bgColor='light-yellow'] .hero {
+  background: var(--light-yellow);
+}
+
+html[data-bgColor='light-yellow'] .heroCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--light-yellow-dark);
+}
+
+html[data-bgColor='light-yellow'] .callout {
+  background: var(--light-yellow);
+  color: var(--text-primary);
+  border: 2px solid var(--light-yellow-dark);
+}
+
+html[data-bgColor='light-yellow'] .primaryBtn {
+  background: var(--bg-white);
+  color: var(--light-yellow);
+  border: 2px solid var(--light-yellow);
+}
+
+html[data-bgColor='light-yellow'] .primaryBtn:hover {
+  background: var(--light-yellow-light);
+  border-color: var(--light-yellow);
+  box-shadow: var(--shadow-md);
+}
+
 /* Blue and Yellow Color Themes - Solid Colors Only */
 html[data-bgColor='ocean'] {
   --page-bg: var(--ocean-light);

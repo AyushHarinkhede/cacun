@@ -3,14 +3,8 @@ import './ThemeSelector.css'
 import { useSettings } from '../../contexts/useSettings.js'
 
 const themes = [
-  { id: 'ocean', name: 'Ocean', bgClass: 'ocean', preview: '#1E40AF' },
-  { id: 'sunshine', name: 'Sunshine', bgClass: 'sunshine', preview: '#F59E0B' },
-  { id: 'sky', name: 'Sky', bgClass: 'sky', preview: '#0EA5E9' },
-  { id: 'gold', name: 'Gold', bgClass: 'gold', preview: '#D97706' },
-  { id: 'navy', name: 'Navy', bgClass: 'navy', preview: '#1E3A8A' },
-  { id: 'amber', name: 'Amber', bgClass: 'amber', preview: '#F59E0B' },
-  { id: 'azure', name: 'Azure', bgClass: 'azure', preview: '#0EA5E9' },
-  { id: 'lemon', name: 'Lemon', bgClass: 'lemon', preview: '#FCD34D' }
+  { id: 'light-blue', name: 'Light Blue', bgClass: 'light-blue', preview: '#BAE6FD' },
+  { id: 'light-yellow', name: 'Light Yellow', bgClass: 'light-yellow', preview: '#FEF08A' }
 ]
 
 export default function ThemeSelector() {
