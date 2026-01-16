@@ -1,22 +1,19 @@
+
 :root {
   /* Light Blue - Electric Frost */
   --light-blue: #BAE6FD;
-  
   /* Light Yellow - Mellow Fizz */
   --light-yellow: #FEF08A;
-  
   /* Base Colors */
   --bg-white: #FFFFFF;
   --bg-light: #F5F5F5;
   --text-primary: #1A1A1A;
   --text-secondary: #666666;
   --divider: rgba(0,0,0,0.06);
-  
   /* Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -48,6 +45,75 @@ body {
   }
 }
 
+
+@import "@fontsource/inter/variable.css";
+@import "@fontsource/outfit/variable.css";
+
+:root {
+  --color-obsidian: #18181b;
+  --color-neon-pink: #ff4ecd;
+  --color-deep-purple: #7c3aed;
+  --color-mesh1: #2d0036;
+  --color-mesh2: #ff4ecd;
+  --color-mesh3: #ffb86c;
+  --color-bg: #18181b;
+  --color-card: rgba(24,24,27,0.7);
+  --color-glass: rgba(255,255,255,0.08);
+  --color-border: rgba(255,255,255,0.18);
+  --color-gradient: linear-gradient(90deg, #7c3aed 0%, #ff4ecd 50%, #ffb86c 100%);
+  --color-mesh-gradient: radial-gradient(ellipse at 20% 20%, #7c3aed 0%, #ff4ecd 40%, #18181b 100%);
+  --font-main: 'Inter Variable', 'Outfit Variable', Inter, Outfit, sans-serif;
+  --radius-xl: 2rem;
+  --radius-3xl: 3rem;
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --shadow-glow: 0 0 16px 4px #ff4ecd;
+  --blur-glass: 16px;
+  --letter-spacing-wide: .08em;
+  --letter-spacing-wider: .15em;
+}
+
+/* ...existing code... */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--color-bg);
+  color: #fff;
+  min-height: 100vh;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-mesh-gradient);
+  opacity: 0.25;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(60px);
+}
+
+/* Scroll animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 @keyframes fadeInLeft {
   from {
     opacity: 0;
