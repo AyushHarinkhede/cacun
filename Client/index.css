@@ -1,7 +1,7 @@
 :root {
   --ui-scale: 1;
 
-  /* Modern Ocean Theme - Fresh Blue & Teal System */
+  /* Modern Vibrant Theme System - Rich Color Palettes */
   --primary-blue: #0EA5E9;
   --primary-blue-dark: #0284C7;
   --primary-blue-light: #38BDF8;
@@ -13,6 +13,55 @@
   --surface-blue-light: #FAFCFF;
   --container-blue: rgba(14, 165, 233, 0.08);
   --container-blue-border: rgba(14, 165, 233, 0.15);
+  
+  /* Rich Forest Theme - Deep Natural Greens */
+  --forest-primary: #059669;
+  --forest-secondary: #10B981;
+  --forest-accent: #047857;
+  --forest-light: #D1FAE5;
+  --forest-dark: #022C22;
+  
+  /* Vibrant Sunset Theme - Warm Oranges */
+  --sunset-primary: #DC2626;
+  --sunset-secondary: #F59E0B;
+  --sunset-accent: #F97316;
+  --sunset-light: #FEF3C7;
+  --sunset-dark: #B91C1C;
+  
+  /* Deep Berry Theme - Rich Purples */
+  --berry-primary: #BE185D;
+  --berry-secondary: #EC4899;
+  --berry-accent: #A855F7;
+  --berry-light: #FCE7F3;
+  --berry-dark: #7E22CE;
+  
+  /* Midnight Theme - Dark Blues */
+  --midnight-primary: #334155;
+  --midnight-secondary: #1E293B;
+  --midnight-accent: #475569;
+  --midnight-light: #F8FAFC;
+  --midnight-dark: #0F172A;
+  
+  /* Aurora Theme - Northern Lights */
+  --aurora-primary: #8B5CF6;
+  --aurora-secondary: #A78BFA;
+  --aurora-accent: #C084FC;
+  --aurora-light: #F3E8FF;
+  --aurora-dark: #6D28D9;
+  
+  /* Candy Theme - Sweet Pinks */
+  --candy-primary: #FF6B6B;
+  --candy-secondary: #FFC93D;
+  --candy-accent: #FFB4AB;
+  --candy-light: #FFF5F5;
+  --candy-dark: #E11D48;
+  
+  /* Volcano Theme - Fiery Reds */
+  --volcano-primary: #EF4444;
+  --volcano-secondary: #F59E0B;
+  --volcano-accent: #FCA5A5;
+  --volcano-light: #FEF2F2;
+  --volcano-dark: #DC2626;
   
   /* Text Colors */
   --text-primary: #0F172A;
@@ -102,61 +151,105 @@ body {
   box-sizing: border-box;
 }
 
-/* Modern Ocean Color Themes */
+/* Modern Vibrant Color Themes */
 html[data-bgColor='ocean'] {
-  --page-bg: #F0F9FF;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #0EA5E9 0%, #14B8A6 100%);
-}
-
-html[data-bgColor='sunset'] {
-  --page-bg: #FEF3C7;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #F59E0B 0%, #DC2626 100%);
+  --page-bg: var(--surface-blue);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: var(--bg-gradient);
 }
 
 html[data-bgColor='forest'] {
-  --page-bg: #D1FAE5;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #10B981 0%, #059669 50%, #10B981 100%);
+  --page-bg: var(--forest-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: linear-gradient(135deg, var(--forest-primary) 0%, var(--forest-secondary) 50%, var(--forest-primary) 100%);
+}
+
+html[data-bgColor='forest'] .callout {
+  background: var(--forest-primary);
+  color: var(--bg-white);
+  border: 2px solid var(--forest-accent);
+}
+
+html[data-bgColor='forest'] .primaryBtn {
+  background: var(--bg-white);
+  color: var(--forest-primary);
+  border: 2px solid var(--forest-primary);
+}
+
+html[data-bgColor='forest'] .primaryBtn:hover {
+  background: var(--forest-secondary);
+  border-color: var(--forest-primary);
+  box-shadow: var(--shadow-md);
+}
+
+html[data-bgColor='sunset'] {
+  --page-bg: var(--sunset-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: linear-gradient(135deg, var(--sunset-primary) 0%, var(--sunset-secondary) 50%, var(--sunset-primary) 100%);
+}
+
+html[data-bgColor='sunset'] .callout {
+  background: var(--sunset-primary);
+  color: var(--bg-white);
+  border: 2px solid var(--sunset-accent);
+}
+
+html[data-bgColor='sunset'] .primaryBtn {
+  background: var(--bg-white);
+  color: var(--sunset-primary);
+  border: 2px solid var(--sunset-primary);
+}
+
+html[data-bgColor='sunset'] .primaryBtn:hover {
+  background: var(--sunset-secondary);
+  border-color: var(--sunset-primary);
+  box-shadow: var(--shadow-md);
 }
 
 html[data-bgColor='berry'] {
-  --page-bg: #FCE7F3;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #EC4899 0%, #BE185D 100%);
+  --page-bg: var(--berry-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: linear-gradient(135deg, var(--berry-primary) 0%, var(--berry-secondary) 50%, var(--berry-primary) 100%);
+}
+
+html[data-bgColor='midnight'] {
+  --page-bg: var(--midnight-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: linear-gradient(135deg, var(--midnight-primary) 0%, var(--midnight-secondary) 50%, var(--midnight-primary) 100%);
 }
 
 html[data-bgColor='aurora'] {
-  --page-bg: #F3E8FF;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  --page-bg: var(--aurora-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: linear-gradient(135deg, var(--aurora-primary) 0%, var(--aurora-secondary) 50%, var(--aurora-primary) 100%);
 }
 
 html[data-bgColor='candy'] {
-  --page-bg: #FFF5F5;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFC93D 100%);
+  --page-bg: var(--candy-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: linear-gradient(135deg, var(--candy-primary) 0%, var(--candy-secondary) 50%, var(--candy-primary) 100%);
 }
 
 html[data-bgColor='volcano'] {
-  --page-bg: #FEF2F2;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #EF4444 0%, #F59E0B 100%);
+  --page-bg: var(--volcano-light);
+  --container-bg: var(--bg-primary);
+  --container-text: var(--text-primary);
+  --bg-white: var(--bg-primary);
+  --bg-gradient: linear-gradient(135deg, var(--volcano-primary) 0%, var(--volcano-secondary) 50%, var(--volcano-primary) 100%);
 }
 
 * {

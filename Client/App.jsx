@@ -12,14 +12,13 @@ import AuthDrawer from './Components/AuthDrawer/AuthDrawer.jsx'
 import ProductModal from './Components/ProductModal/ProductModal.jsx'
 import AboutModal from './Components/AboutModal/AboutModal.jsx'
 import LegalModal from './Components/LegalModal/LegalModal.jsx'
-import ThemeSelector from './Components/ThemeSelector/ThemeSelector.jsx'
 
 function AppContent() {
-  const { settingsOpen, authOpen, vanieOpen, activeProductId, aboutPage, legalPage } = useSettings()
+  const { settingsOpen, authOpen, vanieOpen, activeProductId, aboutPage, legalPage, bgColor } = useSettings()
   const isModalOpen = settingsOpen || authOpen || vanieOpen || activeProductId || aboutPage || legalPage
 
   return (
-    <div className={`appShell ${isModalOpen ? 'overflowHidden' : ''}`}>
+    <div className={`appShell ${isModalOpen ? 'overflowHidden' : ''}`} data-bg-color={bgColor}>
       <Navbar />
       <main className="appMain">
         <Home />
@@ -32,7 +31,6 @@ function AppContent() {
       <ProductModal />
       <AboutModal />
       <LegalModal />
-      <ThemeSelector />
     </div>
   )
 }

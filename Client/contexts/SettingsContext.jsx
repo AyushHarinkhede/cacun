@@ -68,6 +68,7 @@ export function SettingsProvider({ children }) {
 
   useEffect(() => {
     document.documentElement.dataset.bgColor = bgColor
+    document.documentElement.setAttribute('data-bg-color', bgColor)
     localStorage.setItem('cacun.bgColor', bgColor)
   }, [bgColor])
 
