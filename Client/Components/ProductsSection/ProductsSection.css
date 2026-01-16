@@ -1,4 +1,4 @@
-.prodWrap {
+n.prodWrap {
   margin: 16px;
   border: 1px solid var(--divider);
   border-radius: var(--radius-lg);
@@ -276,4 +276,24 @@
 
 .prodAddBtnActive {
   background: linear-gradient(135deg, var(--primary-red-dark) 0%, var(--primary-red) 100%);
+}
+
+.products-container {
+  background: var(--bg-white);
+}
+
+.product-card {
+  background: #fff;
+  border: 1px solid var(--divider);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.product-card .badge {
+  background: var(--light-yellow);
+  color: #000;
+}
+
+.product-card .btn {
+  background: var(--light-blue);
+  color: #000;
 }

@@ -38,3 +38,26 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+.app {
+  background: var(--bg-white);
+  min-height: 100vh;
+}
+
+/* Primary accent used for CTAs */
+.cta {
+  background: var(--light-blue);
+  color: #000;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.cta--accent {
+  background: var(--light-yellow);
+  color: #000;
+  border-radius: var(--radius-md);
+}
+
+/* CTA utilities */
+.btn-primary { background: var(--light-blue); color: #000; }
+.btn-accent  { background: var(--light-yellow); color: #000; }

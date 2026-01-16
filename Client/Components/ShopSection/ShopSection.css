@@ -228,3 +228,21 @@
 .shopAddActive {
   background: color-mix(in oklab, var(--royal-blue) 80%, var(--maroon));
 }
+
+.shop-section {
+  background: var(--bg-white);
+}
+
+.shop-card {
+  background: #fff;
+  border: 1px solid var(--divider);
+}
+
+.shop-button {
+  background: var(--light-yellow);
+  color: #000;
+}
+
+.shop-button:hover {
+  background: #FDE76A;
+}

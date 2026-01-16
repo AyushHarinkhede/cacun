@@ -32,27 +32,47 @@ Your Cacun app has been **partially redesigned** from a glassmorphic red/teal th
 
 ---
 
-## 🎨 Color Palette (Ready to Use)
+## 🎨 Color Palette (Updated: only two colors)
 
 ```css
-/* Primary Blue - Use for main actions */
---primary-blue: #1E88E5;
---primary-blue-dark: #1565C0;
+/* Light Blue - Electric Frost */
+--light-blue: #BAE6FD;
 
-/* Secondary Yellow - Use for highlights/badges */
---secondary-yellow: #FFC107;
---secondary-yellow-dark: #FFA000;
+/* Light Yellow - Mellow Fizz */
+--light-yellow: #FEF08A;
 
-/* Red Accent - Use sparingly */
---accent-red: #FF5252;
-
-/* Text & Background */
---text-primary: #212121;         /* Main text */
---text-secondary: #616161;       /* Muted text */
---bg-white: #FFFFFF;             /* Cards */
---bg-light: #FAFAFA;             /* Page background */
---divider: #BDBDBD;              /* Borders */
+/* Use these variables across all .css files:
+   var(--light-blue) and var(--light-yellow)
+*/
 ```
+
+---
+
+## 🎨 Color Replacement Quick Reference
+
+Replace all colors in every .css file with only the following two variables:
+
+```css
+--light-blue: #BAE6FD;   /* Electric Frost */
+--light-yellow: #FEF08A; /* Mellow Fizz */
+```
+
+Guidelines:
+- Remove gradients and replace with solid fills using the two variables.
+- Use var(--light-blue) for primary buttons/accents; var(--light-yellow) for secondary/highlight badges.
+- Keep neutral backgrounds white and subtle dividers; do not introduce other colored palettes.
+- Replace hover tints with slightly darker/lighter tints of the two colors (use opacity or small hex adjustments).
+
+Example replacement:
+```css
+/* before */
+background: linear-gradient(... red..., teal...);
+
+/* after */
+background: var(--light-blue);
+```
+
+Apply this across all Client/Components/*.css and global css files.
 
 ---
 
@@ -245,4 +265,25 @@ The foundation is solid! The remaining components follow the same pattern and ca
 - **This file** - Quick reference guide
 
 All files are in your project root: `c:\Users\AASHU\Documents\Ayush🍌\cacun\`
+
+---
+
+# Palette for repo-wide replace
+
+Use only these variables across all .css files:
+```css
+--light-blue: #BAE6FD;   /* Electric Frost */
+--light-yellow: #FEF08A; /* Mellow Fizz */
+--bg-white: #FFFFFF;
+--divider: rgba(0,0,0,0.06);
+```
+
+Guidelines (apply to every .css):
+- Remove gradients; replace with solid var(--light-blue) or var(--light-yellow) or neutral white.
+- Primary buttons/accents → var(--light-blue). Secondary badges/highlights → var(--light-yellow).
+- Hover states: use rgba of the same color (e.g. background: rgba(186,230,253,0.9)).
+- Keep borders/dividers neutral var(--divider).
+- Update backgrounds, text color overrides, icon fills, shadows accordingly.
+
+Apply these changes to all Client/Components/*.css and any other .css files.
 

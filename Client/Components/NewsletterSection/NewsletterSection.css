@@ -103,3 +103,18 @@
 }
   transform: translateY(0) scale(0.98);
 }
+
+.newsletter-section {
+  background: #fff;
+  border: 1px solid var(--divider);
+}
+
+.newsletter-button {
+  background: var(--light-blue);
+  color: #000;
+}
+
+.newsletter-tag {
+  background: var(--light-yellow);
+  color: #000;
+}

@@ -537,3 +537,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+.footer {
+  background: var(--bg-white);
+  border-top: 1px solid var(--divider);
+  color: #111;
+}
+
+.footer .social-icon {
+  color: var(--light-blue);
+}
+
+.footer .highlight {
+  color: var(--light-yellow);
+}

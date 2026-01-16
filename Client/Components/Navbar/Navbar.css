@@ -2,8 +2,8 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--bg-white);
+  border: 1px solid var(--divider);
   border-radius: 0;
   margin: 0;
   max-width: none;
@@ -359,3 +359,12 @@
     font-size: 12px;
   }
 }
+
+.navbar { background: var(--bg-white); border-bottom: 1px solid var(--divider); }
+
+/* primary / accent buttons */
+.navbar .btn-primary { background: var(--light-blue); color: #000; border: none; }
+.navbar .btn-accent  { background: var(--light-yellow); color: #000; }
+
+/* icon fills */
+.navbar .icon { fill: var(--light-blue); }
