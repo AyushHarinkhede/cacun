@@ -1,74 +1,13 @@
 :root {
   --ui-scale: 1;
 
-  /* Blue and Yellow Theme System - Vibrant Professional Colors */
-  --primary-blue: #1E40AF;
-  --primary-blue-dark: #1E3A8A;
-  --primary-blue-light: #3B82F6;
-  --secondary-yellow: #F59E0B;
-  --secondary-yellow-dark: #D97706;
-  --secondary-yellow-light: #FCD34D;
-  --accent-cyan: #06B6D4;
-  --surface-blue: #EFF6FF;
-  --surface-blue-light: #F0F9FF;
-  --container-blue: rgba(30, 64, 175, 0.08);
-  --container-blue-border: rgba(30, 64, 175, 0.15);
-  
-  /* Ocean Blue Theme - Deep Blues */
-  --ocean-primary: #1E40AF;
-  --ocean-secondary: #3B82F6;
-  --ocean-accent: #2563EB;
-  --ocean-light: #EFF6FF;
-  --ocean-dark: #1E3A8A;
-  
-  /* Sunshine Yellow Theme - Bright Yellows */
-  --sunshine-primary: #F59E0B;
-  --sunshine-secondary: #FCD34D;
-  --sunshine-accent: #FBBF24;
-  --sunshine-light: #FEF3C7;
-  --sunshine-dark: #D97706;
-  
-  /* Sky Blue Theme - Light Blues */
-  --sky-primary: #0EA5E9;
-  --sky-secondary: #38BDF8;
-  --sky-accent: #0284C7;
-  --sky-light: #F0F9FF;
-  --sky-dark: #075985;
-  
-  /* Gold Theme - Rich Golds */
-  --gold-primary: #D97706;
-  --gold-secondary: #F59E0B;
-  --gold-accent: #FCD34D;
-  --gold-light: #FEF3C7;
-  --gold-dark: #92400E;
-  
-  /* Navy Theme - Deep Navy Blues */
-  --navy-primary: #1E3A8A;
-  --navy-secondary: #1E40AF;
-  --navy-accent: #2563EB;
-  --navy-light: #F0F9FF;
-  --navy-dark: #1E293B;
-  
-  /* Amber Theme - Warm Ambers */
-  --amber-primary: #F59E0B;
-  --amber-secondary: #FCD34D;
-  --amber-accent: #FBBF24;
-  --amber-light: #FEF3C7;
-  --amber-dark: #B45309;
-  
-  /* Azure Theme - Azure Blues */
-  --azure-primary: #0EA5E9;
-  --azure-secondary: #38BDF8;
-  --azure-accent: #06B6D4;
-  --azure-light: #F0F9FF;
-  --azure-dark: #0C4A6E;
-  
-  /* Lemon Theme - Bright Lemons */
-  --lemon-primary: #FCD34D;
-  --lemon-secondary: #FDE68A;
-  --lemon-accent: #F59E0B;
-  --lemon-light: #FFFBEB;
-  --lemon-dark: #D97706;
+  /* Light Blue and Light Yellow Theme System */
+  --light-blue: #BAE6FD;
+  --light-blue-dark: #93C5FD;
+  --light-blue-light: #DBEAFE;
+  --light-yellow: #FEF08A;
+  --light-yellow-dark: #FDE047;
+  --light-yellow-light: #FEF3C7;
   
   /* Text Colors */
   --text-primary: #0F172A;
@@ -84,7 +23,7 @@
   /* UI Elements */
   --border-color: #E2E8F0;
   --divider-color: #F1F5F9;
-  --shadow-color: rgba(30, 64, 175, 0.1);
+  --shadow-color: rgba(186, 230, 253, 0.1);
   
   /* Spacing & Sizing */
   --spacing-xs: 4px;
