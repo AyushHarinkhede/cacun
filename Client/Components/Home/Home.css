@@ -29,9 +29,9 @@
 }
 
 .heroCard:hover {
-  box-shadow: var(--shadow-xl), 0 0 40px rgba(124, 58, 237, 0.3);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(14, 165, 233, 0.3);
   transform: translateY(-8px) scale(1.02);
-  border-color: var(--secondary-purple);
+  border-color: var(--secondary-teal);
 }
 
 .heroCard::after {
@@ -42,13 +42,19 @@
   display: none;
 }
 
+.heroCard::after {
+  display: none;
+}
+
 .heroKicker {
   margin: 0;
-  color: var(--primary-purple);
+  color: var(--primary-blue);
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+  margin: 0 0 var(--spacing-md) 0;
 }
 
 .heroLogoWrap {
@@ -75,21 +81,24 @@
 }
 
 .pill {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--container-blue-border);
   border-radius: var(--radius-full);
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-xs);
   font-weight: 600;
-  color: var(--text-secondary);
-  background: var(--bg-input);
+  color: var(--primary-blue);
+  background: var(--surface-blue);
   transition: all var(--transition-fast);
   cursor: pointer;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .pill:hover {
-  background: var(--primary-purple);
+  background: var(--primary-blue);
   color: var(--text-primary);
-  border-color: var(--primary-purple);
+  border-color: var(--primary-blue);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -105,27 +114,38 @@
 
 .stackCard {
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xl);
   background: var(--bg-card);
   color: var(--text-primary);
-  padding: 16px;
+  padding: var(--spacing-xl);
   transition: all var(--transition-normal);
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
   text-align: center;
 }
 
-.stackCard:hover {
-  border-color: var(--primary-purple);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-4px);
+.stackCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--bg-gradient);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 
-.stackCard::before,
+.stackCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-blue);
+}
+
+.stackCard:hover::before {
+  opacity: 1;
+}
+
 .stackCard::after {
   display: none;
 }
@@ -206,28 +226,47 @@
 }
 
 .primaryBtn {
-  height: 36px;
-  padding: 0 16px;
-  border-radius: var(--radius-md);
+  background: var(--primary-blue);
+  color: var(--bg-white);
   border: none;
-  background: var(--bg-white);
-  color: var(--primary-purple);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-normal);
-  font-size: 12px;
   box-shadow: var(--shadow-sm);
+  font-family: var(--font-family);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.primaryBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
 }
 
 .primaryBtn:hover {
-  background: var(--surface-purple);
+  background: var(--primary-blue-dark);
   box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+}
+
+.primaryBtn:hover::before {
+  left: 100%;
 }
 
 .primaryBtn:active {
-  background: var(--accent-purple);
   transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .productSpot {
@@ -243,7 +282,7 @@
 }
 
 .productSpot:hover {
-  border-color: var(--primary-purple);
+  border-color: var(--primary-blue);
   box-shadow: var(--shadow-md);
 }
 
@@ -282,7 +321,7 @@
   height: 180px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  background: var(--surface-purple);
+  background: var(--surface-blue);
   width: 100%;
   box-sizing: border-box;
   min-width: 0;
@@ -293,7 +332,7 @@
 }
 
 .phCard:hover {
-  border-color: var(--primary-purple);
+  border-color: var(--primary-blue);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
