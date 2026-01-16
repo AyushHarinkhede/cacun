@@ -29,9 +29,9 @@
 }
 
 .heroCard:hover {
-  box-shadow: var(--shadow-xl), 0 0 40px rgba(186, 230, 253, 0.3);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(35, 87, 137, 0.3);
   transform: translateY(-8px) scale(1.02);
-  border-color: var(--light-blue);
+  border-color: var(--bright-blue);
 }
 
 .heroCard::after {

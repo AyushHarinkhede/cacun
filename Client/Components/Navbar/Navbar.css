@@ -38,7 +38,7 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
-  color: var(--light-blue);
+  color: var(--bright-blue);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border: none;
@@ -101,7 +101,7 @@
 }
 
 .navSearch:focus-within .navSearchIcon {
-  color: var(--light-blue);
+  color: var(--bright-blue);
 }
 
 .navSearchInput {
@@ -166,8 +166,8 @@
 .navSuggestItem:hover {
   transform: translateX(4px);
   background: var(--bg-white);
-  border-color: var(--light-blue);
-  box-shadow: 0 4px 12px rgba(186, 230, 253, 0.1);
+  border-color: var(--bright-blue);
+  box-shadow: 0 4px 12px rgba(35, 87, 137, 0.1);
 }
 
 .navSuggestLabel {
@@ -183,8 +183,8 @@
   letter-spacing: 0.7px;
   padding: 4px 8px;
   border-radius: 4px;
-  background: var(--light-blue-light);
-  color: var(--light-blue);
+  background: var(--bright-blue-light);
+  color: var(--bright-blue);
   text-transform: uppercase;
 }
 
@@ -213,12 +213,12 @@
 }
 
 .navIconBtn:hover {
-  background: var(--light-blue-light);
-  color: var(--light-blue);
+  background: var(--bright-blue-light);
+  color: var(--bright-blue);
 }
 
 .navIconBtn:active {
-  background: var(--light-blue);
+  background: var(--bright-blue);
 }
 
 .navBadge {
@@ -246,7 +246,7 @@
   padding: 0 16px;
   font-weight: 500;
   letter-spacing: 0.3px;
-  background: var(--light-blue);
+  background: var(--bright-blue);
   color: var(--bg-white);
   cursor: pointer;
   transition: all var(--transition-normal);
@@ -259,12 +259,12 @@
 }
 
 .navAuthBtn:hover {
-  background: var(--light-blue-dark);
+  background: var(--bright-blue-dark);
   box-shadow: var(--shadow-md);
 }
 
 .navAuthBtn:active {
-  background: var(--light-blue-dark);
+  background: var(--bright-blue-dark);
   box-shadow: var(--shadow-sm);
 }
 

@@ -3,8 +3,8 @@ import './ThemeSelector.css'
 import { useSettings } from '../../contexts/useSettings.js'
 
 const themes = [
-  { id: 'light-blue', name: 'Light Blue', bgClass: 'light-blue', preview: '#BAE6FD' },
-  { id: 'light-yellow', name: 'Light Yellow', bgClass: 'light-yellow', preview: '#FEF08A' }
+  { id: 'bright-blue', name: 'Bright Blue', bgClass: 'bright-blue', preview: '#235789' },
+  { id: 'bright-yellow', name: 'Bright Yellow', bgClass: 'bright-yellow', preview: '#FFED29' }
 ]
 
 export default function ThemeSelector() {

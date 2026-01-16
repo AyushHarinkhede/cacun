@@ -355,7 +355,7 @@
   width: 40px;
   border-radius: 50%;
   border: none;
-  background: var(--primary-blue);
+  background: var(--bright-blue);
   color: var(--container-text);
   display: grid;
   place-items: center;

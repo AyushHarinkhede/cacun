@@ -10,8 +10,8 @@ function getInitialTheme() {
 
 function getInitialBgColor() {
   const stored = localStorage.getItem('cacun.bgColor')
-  if (stored === 'light-blue' || stored === 'light-yellow') return stored
-  return 'light-blue'
+  if (stored === 'bright-blue' || stored === 'bright-yellow') return stored
+  return 'bright-blue'
 }
 
 function getInitialScale() {

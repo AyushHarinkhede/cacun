@@ -97,74 +97,74 @@ body {
   box-sizing: border-box;
 }
 
-/* Light Blue and Light Yellow Color Themes */
-html[data-bgColor='light-blue'] {
-  --page-bg: var(--light-blue-light);
+/* Bright Blue and Bright Yellow Color Themes */
+html[data-bgColor='bright-blue'] {
+  --page-bg: var(--bright-blue-light);
   --container-bg: var(--bg-primary);
   --container-text: var(--text-primary);
   --bg-white: var(--bg-primary);
-  --bg-gradient: var(--light-blue);
+  --bg-gradient: var(--bright-blue);
 }
 
-html[data-bgColor='light-blue'] .hero {
-  background: var(--light-blue);
+html[data-bgColor='bright-blue'] .hero {
+  background: var(--bright-blue);
 }
 
-html[data-bgColor='light-blue'] .heroCard {
+html[data-bgColor='bright-blue'] .heroCard {
   background: rgba(255, 255, 255, 0.95);
-  border: 2px solid var(--light-blue-dark);
+  border: 2px solid var(--bright-blue-dark);
 }
 
-html[data-bgColor='light-blue'] .callout {
-  background: var(--light-blue);
-  color: var(--text-primary);
-  border: 2px solid var(--light-blue-dark);
+html[data-bgColor='bright-blue'] .callout {
+  background: var(--bright-blue);
+  color: var(--bg-white);
+  border: 2px solid var(--bright-blue-dark);
 }
 
-html[data-bgColor='light-blue'] .primaryBtn {
+html[data-bgColor='bright-blue'] .primaryBtn {
   background: var(--bg-white);
-  color: var(--light-blue);
-  border: 2px solid var(--light-blue);
+  color: var(--bright-blue);
+  border: 2px solid var(--bright-blue);
 }
 
-html[data-bgColor='light-blue'] .primaryBtn:hover {
-  background: var(--light-blue-light);
-  border-color: var(--light-blue);
+html[data-bgColor='bright-blue'] .primaryBtn:hover {
+  background: var(--bright-blue-light);
+  border-color: var(--bright-blue);
   box-shadow: var(--shadow-md);
 }
 
-html[data-bgColor='light-yellow'] {
-  --page-bg: var(--light-yellow-light);
+html[data-bgColor='bright-yellow'] {
+  --page-bg: var(--bright-yellow-light);
   --container-bg: var(--bg-primary);
   --container-text: var(--text-primary);
   --bg-white: var(--bg-primary);
-  --bg-gradient: var(--light-yellow);
+  --bg-gradient: var(--bright-yellow);
 }
 
-html[data-bgColor='light-yellow'] .hero {
-  background: var(--light-yellow);
+html[data-bgColor='bright-yellow'] .hero {
+  background: var(--bright-yellow);
 }
 
-html[data-bgColor='light-yellow'] .heroCard {
+html[data-bgColor='bright-yellow'] .heroCard {
   background: rgba(255, 255, 255, 0.95);
-  border: 2px solid var(--light-yellow-dark);
+  border: 2px solid var(--bright-yellow-dark);
 }
 
-html[data-bgColor='light-yellow'] .callout {
-  background: var(--light-yellow);
+html[data-bgColor='bright-yellow'] .callout {
+  background: var(--bright-yellow);
   color: var(--text-primary);
-  border: 2px solid var(--light-yellow-dark);
+  border: 2px solid var(--bright-yellow-dark);
 }
 
-html[data-bgColor='light-yellow'] .primaryBtn {
+html[data-bgColor='bright-yellow'] .primaryBtn {
   background: var(--bg-white);
-  color: var(--light-yellow);
-  border: 2px solid var(--light-yellow);
+  color: var(--bright-yellow);
+  border: 2px solid var(--bright-yellow);
 }
 
-html[data-bgColor='light-yellow'] .primaryBtn:hover {
-  background: var(--light-yellow-light);
-  border-color: var(--light-yellow);
+html[data-bgColor='bright-yellow'] .primaryBtn:hover {
+  background: var(--bright-yellow-light);
+  border-color: var(--bright-yellow);
   box-shadow: var(--shadow-md);
 }
 
