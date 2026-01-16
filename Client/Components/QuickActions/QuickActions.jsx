@@ -7,7 +7,6 @@ import {
   IconHeart,
   IconStar,
   IconSettings,
-  IconUser,
   IconMapPin,
   IconPhone,
   IconMail,
@@ -57,7 +56,7 @@ export default function QuickActions() {
       id: 'profile',
       title: 'Profile Information',
       description: 'Manage your personal details',
-      icon: IconUser,
+      icon: IconMapPin,
       value: user?.name || 'Guest User'
     },
     {
