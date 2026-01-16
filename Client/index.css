@@ -111,31 +111,15 @@ html[data-bgColor='ocean'] {
   --bg-gradient: linear-gradient(135deg, #0EA5E9 0%, #14B8A6 100%);
 }
 
-html[data-bgColor='purple'] {
-  --page-bg: #F3E8FF;
+html[data-bgColor='sunset'] {
+  --page-bg: #FEF3C7;
   --container-bg: #FFFFFF;
   --container-text: #0F172A;
   --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  --bg-gradient: linear-gradient(135deg, #F59E0B 0%, #DC2626 100%);
 }
 
-html[data-bgColor='blue'] {
-  --page-bg: #E0F2FE;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-}
-
-html[data-bgColor='pink'] {
-  --page-bg: #FCE7F3;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
-}
-
-html[data-bgColor='green'] {
+html[data-bgColor='forest'] {
   --page-bg: #D1FAE5;
   --container-bg: #FFFFFF;
   --container-text: #0F172A;
@@ -143,44 +127,20 @@ html[data-bgColor='green'] {
   --bg-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
 }
 
-html[data-bgColor='yellow'] {
-  --page-bg: #FEF3C7;
+html[data-bgColor='berry'] {
+  --page-bg: #FCE7F3;
   --container-bg: #FFFFFF;
   --container-text: #0F172A;
   --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  --bg-gradient: linear-gradient(135deg, #EC4899 0%, #BE185D 100%);
 }
 
-html[data-bgColor='orange'] {
-  --page-bg: #FED7AA;
+html[data-bgColor='midnight'] {
+  --page-bg: #1E293B;
   --container-bg: #FFFFFF;
-  --container-text: #0F172A;
+  --container-text: #F8FAFC;
   --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #FB923C 0%, #EA580C 100%);
-}
-
-html[data-bgColor='teal'] {
-  --page-bg: #CCFBF1;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
-}
-
-html[data-bgColor='red'] {
-  --page-bg: #FEE2E2;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-}
-
-html[data-bgColor='indigo'] {
-  --page-bg: #E0E7FF;
-  --container-bg: #FFFFFF;
-  --container-text: #0F172A;
-  --bg-white: #FFFFFF;
-  --bg-gradient: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  --bg-gradient: linear-gradient(135deg, #1E293B 0%, #334155 100%);
 }
 
 * {
