@@ -1,13 +1,13 @@
 :root {
   --ui-scale: 1;
 
-  /* Light Blue and Light Yellow Theme System */
-  --light-blue: #BAE6FD;
-  --light-blue-dark: #93C5FD;
-  --light-blue-light: #DBEAFE;
-  --light-yellow: #FEF08A;
-  --light-yellow-dark: #FDE047;
-  --light-yellow-light: #FEF3C7;
+  /* Bright Blue and Bright Yellow Theme System */
+  --bright-blue: #235789;
+  --bright-blue-dark: #1E3A8A;
+  --bright-blue-light: #4A90E2;
+  --bright-yellow: #FFED29;
+  --bright-yellow-dark: #F1D302;
+  --bright-yellow-light: #FFE900;
   
   /* Text Colors */
   --text-primary: #0F172A;
