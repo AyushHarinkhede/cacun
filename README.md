@@ -1,15 +1,7 @@
-# 🌿 Cacun - Nature-first Marketplace
+# Cacun - MERN Stack Redesign
 
-![Cacun Logo](cacun.png)
+A complete rebuild of Cacun webapp using MERN stack (MongoDB, Express, React, Node.js).
 
-<div style="display: flex; align-items: center; justify-content: flex-start; gap: 0px;">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=9643F7&background=00000000&center=false&vCenter=true&width=85&lines=cacun" alt="cacun" />
-  
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=FF0000&background=00000000&center=false&vCenter=true&width=50&startDelay=1500&lines=is" alt="is" />
-  
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=23F709&background=00000000&center=false&vCenter=true&width=220&startDelay=3000&lines=Live!🌱" alt="Live" />
-</div> 
- 
 ---
 
 ## 🌍 About Cacun
@@ -69,7 +61,7 @@ To create a world where every purchase contributes to a healthier planet by offe
 
 ### **Installation**
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/AyushHarinkhede/cacun.git
 
 # Navigate to project directory
@@ -95,120 +87,135 @@ npm run preview
 
 ```
 cacun/
-├── Client/
-│   ├── Components/
-│   │   ├── Home/           # Home page components
-│   │   ├── Navbar/         # Navigation bar
-│   │   ├── Footer/         # Footer section
-│   │   ├── ProductsSection/ # Product listings
-│   │   └── ...             # Other components
-│   ├── scripts/
-│   │   └── animations.js   # Scroll animations
-│   ├── App.css             # Global styles
-│   └── index.css           # Theme variables
-├── public/
-│   └── cacun.png           # Logo
-├── index.html              # Main HTML file
-└── README.md               # This file
+├── server/                 # Node.js/Express backend
+│   ├── config/            # Configuration files
+│   ├── controllers/        # Route controllers
+│   ├── models/            # MongoDB schemas
+│   ├── routes/            # API routes
+│   ├── middleware/        # Custom middleware
+│   ├── server.js          # Entry point
+│   ├── package.json
+│   └── .env              # Environment variables (not in git)
+│
+├── client/               # React frontend
+│   ├── public/           # Static files
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   ├── pages/        # Page components
+│   │   ├── hooks/        # Custom hooks
+│   │   ├── utils/        # Utility functions
+│   │   ├── styles/       # CSS/styling
+│   │   ├── App.jsx       # Main app component
+│   │   └── main.jsx      # Entry point
+│   ├── package.json
+│   ├── vite.config.js
+│   └── .env             # Environment variables (not in git)
+│
+├── .gitignore
+└── README.md
 ```
 
-## 🎨 **Design Features**
+## Getting Started
 
-### **Responsive Design**
-- Mobile-first approach
-- Fluid typography
-- Flexible grid layouts
-- Touch-friendly interactions
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB
+- npm or yarn
 
-### **Animations**
-- Scroll-triggered animations
-- Smooth page transitions
-- Interactive hover effects
-- Loading animations
+### Installation
 
-### **Accessibility**
-- Semantic HTML5
-- ARIA labels
-- Keyboard navigation
-- Screen reader support
+1. **Install Server Dependencies**
+```bash
+cd server
+npm install
+```
 
-## 🌟 **Key Highlights**
+2. **Install Client Dependencies**
+```bash
+cd ../client
+npm install
+```
 
-### **Environmental Impact**
-- Every product is vetted for environmental compliance
-- Carbon footprint tracking for purchases
-- NGO partnership program
-- Campaign impact metrics
+### Configuration
 
-### **User Experience**
-- Intuitive navigation
-- Advanced filtering options
-- Wishlist and favorites
-- Secure checkout process
+1. Create `.env` file in the `server/` directory:
+```
+MONGO_URI=mongodb://localhost:27017/cacun
+PORT=5000
+NODE_ENV=development
+JWT_SECRET=your_jwt_secret_here
+```
 
-### **Community Features**
-- User reviews and ratings
-- Social sharing capabilities
-- Eco-challenges and rewards
-- Community forums
+2. Create `.env` file in the `client/` directory:
+```
+VITE_API_URL=http://localhost:5000
+```
 
-## 🤝 **Contributing**
+### Running the Application
 
-We welcome contributions from developers who share our vision for a sustainable future!
+**Development Mode:**
 
-### **How to Contribute**
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Terminal 1 - Start the server:
+```bash
+cd server
+npm run dev
+```
 
-### **Development Guidelines**
-- Follow existing code style
-- Write clean, commented code
-- Test your changes thoroughly
-- Update documentation as needed
+Terminal 2 - Start the client:
+```bash
+cd client
+npm run dev
+```
 
-## 📞 **Contact & Support**
+**Production Mode:**
 
-### **Get in Touch**
-- **Email**: support@cacun.com
-- **Phone**: +91 98765 43210
-- **Location**: Mumbai, India
-- **Live Chat**: Available on website
+Build the client:
+```bash
+cd client
+npm run build
+```
 
-### **Follow Us**
-- **Instagram**: [@cacun](https://instagram.com/cacun)
-- **Twitter**: [@cacun](https://twitter.com/cacun)
-- **LinkedIn**: [Cacun Official](https://linkedin.com/company/cacun)
+Start the server with environment set to production:
+```bash
+cd server
+NODE_ENV=production npm start
+```
 
-## 📄 **Legal**
+## Technology Stack
 
-- **Privacy Policy**: Comprehensive data protection
-- **Terms of Service**: Clear usage guidelines
-- **User Rights**: Respect for user privacy and rights
+### Backend
+- **Node.js** - Runtime environment
+- **Express** - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - ODM for MongoDB
+- **JWT** - Authentication
 
-## 🏆 **Acknowledgments**
+### Frontend
+- **React** - UI library
+- **Vite** - Build tool
+- **Tailwind CSS** - Utility-first CSS framework
+- **Axios** - HTTP client
 
-- All our NGO partners working towards environmental protection
-- The eco-conscious community that inspires us daily
-- Contributors who help make Cacun better
-- Nature itself - our greatest teacher
+## Development
 
----
+### Available Scripts
 
-## 🌈 **Join the Movement**
+**Server:**
+- `npm run dev` - Start server with hot reload
+- `npm start` - Start production server
 
-Be part of the solution, not the pollution. Every small step counts towards a greener future.
+**Client:**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
 
-**🌱 Together, we can make a difference!**
+## Contributing
 
----
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit changes: `git commit -am 'Add new feature'`
+3. Push to branch: `git push origin feature/your-feature`
+4. Submit a pull request
 
-<div align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=2000&color=9643F7&background=00000000&center=true&vCenter=true&width=400&lines=Made+with+%E2%9D%A4%EF%B8%8F+for+nature+lovers" alt="Made with ❤️ for nature lovers" />
-</div>
+## License
 
----
-
-**© 2025 Cacun. All rights reserved. Made with ❤️ for nature lovers**
+MIT

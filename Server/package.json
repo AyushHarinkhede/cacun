@@ -1,33 +1,25 @@
 {
   "name": "cacun-server",
   "version": "1.0.0",
-  "description": "Backend for Cacun e-commerce platform",
+  "description": "Cacun backend API",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "nodemon server.js"
   },
+  "keywords": ["mern", "express", "mongodb"],
+  "author": "AyushHarinkhede",
+  "license": "MIT",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cacun": "file:..",
-    "cloudinary": "^1.41.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.3",
-    "multer": "^1.4.5-lts.1"
+    "mongoose": "^7.0.0",
+    "dotenv": "^16.0.3",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
-  },
-  "keywords": [
-    "ecommerce",
-    "nature",
-    "sustainable",
-    "backend"
-  ],
-  "author": "Ayush Harinkhede",
-  "license": "MIT"
+    "nodemon": "^2.0.22"
+  }
 }
