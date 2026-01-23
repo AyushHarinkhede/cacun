@@ -1,6 +1,8 @@
+import HomeFeed from '../components/HomeFeed';
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
@@ -10,10 +12,10 @@ export default function Home() {
             Cacun - Fresh redesign powered by MERN stack
           </p>
           <div className="space-x-4">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+            <button className="bg-primary hover:opacity-90 text-white px-8 py-3 rounded-lg font-semibold transition">
               Get Started
             </button>
-            <button className="bg-gray-200 hover:bg-gray-300 text-gray-900 px-8 py-3 rounded-lg font-semibold transition">
+            <button className="bg-white/10 hover:bg-white/20 text-text px-8 py-3 rounded-lg font-semibold transition">
               Learn More
             </button>
           </div>
@@ -46,6 +48,8 @@ export default function Home() {
             </p>
           </div>
         </div>
+        
+        <HomeFeed />
       </div>
     </div>
   );
