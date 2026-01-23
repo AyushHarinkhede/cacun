@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 import CacunContainer from '../components/CacunContainer';
-import { Heart, MessageCircle, MapPin, Calendar, Users, Star } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Calendar, Users, Star, Search, Filter } from 'lucide-react';
 
 export default function Home() {
   return (
     <div className="space-y-6">
-      {/* Social Feed Section */}
+      {/* Social Feed Post */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -70,48 +70,33 @@ export default function Home() {
         </CacunContainer>
       </motion.div>
 
-      {/* Find Travel Partner */}
+      {/* User Profile Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
         <CacunContainer>
-          <h2 className="text-xl font-bold text-text mb-4">Find Travel Partner</h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <select className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text">
-                <option>Destination</option>
-                <option>Bali, Indonesia</option>
-                <option>Tokyo, Japan</option>
-                <option>Paris, France</option>
-              </select>
-              <input 
-                type="date" 
-                className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text"
-              />
+          <div className="flex items-center space-x-4">
+            <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+              <span className="text-primary text-xl font-bold">SC</span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <input 
-                type="number" 
-                placeholder="Budget ($)" 
-                className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text"
-              />
-              <select className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text">
-                <option>Group Size</option>
-                <option>2 people</option>
-                <option>3-4 people</option>
-                <option>5+ people</option>
-              </select>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-text">Sarah Chen</h3>
+              <p className="text-text-muted text-sm">Travel Enthusiast</p>
+              <div className="flex items-center space-x-2 mt-2">
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 fill-primary text-primary" />
+                  <span className="text-sm font-semibold">4.9</span>
+                </div>
+                <span className="text-text-muted text-sm">• 127 trips</span>
+              </div>
             </div>
-            <button className="w-full bg-primary hover:opacity-90 text-white py-3 rounded-lg font-semibold transition">
-              Find Travel Partners
-            </button>
           </div>
         </CacunContainer>
       </motion.div>
 
-      {/* User Reviews */}
+      {/* Partner Reviews */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -122,7 +107,7 @@ export default function Home() {
           <div className="space-y-4">
             <div className="border-l-4 border-primary/30 pl-4">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold text-text">Sarah Chen</h4>
+                <h4 className="font-semibold text-text">Mike Johnson</h4>
                 <div className="flex items-center space-x-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star key={star} className="w-4 h-4 fill-primary text-primary" />
@@ -160,6 +145,47 @@ export default function Home() {
                 "Amazing travel partner! Very organized and great at finding local experiences."
               </p>
             </div>
+          </div>
+        </CacunContainer>
+      </motion.div>
+
+      {/* Find Travel Partner */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <CacunContainer>
+          <h2 className="text-xl font-bold text-text mb-4">Find Travel Partner</h2>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <select className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text">
+                <option>Destination</option>
+                <option>Bali, Indonesia</option>
+                <option>Tokyo, Japan</option>
+                <option>Paris, France</option>
+              </select>
+              <input 
+                type="date" 
+                className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <input 
+                type="number" 
+                placeholder="Budget ($)" 
+                className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text"
+              />
+              <select className="bg-background border border-primary/20 rounded-lg px-3 py-2 text-text">
+                <option>Group Size</option>
+                <option>2 people</option>
+                <option>3-4 people</option>
+                <option>5+ people</option>
+              </select>
+            </div>
+            <button className="w-full bg-primary hover:opacity-90 text-white py-3 rounded-lg font-semibold transition">
+              Find Travel Partners
+            </button>
           </div>
         </CacunContainer>
       </motion.div>
