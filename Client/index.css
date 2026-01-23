@@ -1,24 +1,55 @@
+/* ============================================
+   CACUN UI - Premium Frontend Design System
+   No Glassmorphism | Accent Glows | Spring Physics
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/* ============================================
+   CSS VARIABLES - Strict Neon Color Palette
+   ============================================ */
 
 :root {
-  /* Light Blue - Electric Frost */
-  --light-blue: #BAE6FD;
-  /* Light Yellow - Mellow Fizz */
-  --light-yellow: #FEF08A;
-  /* Base Colors */
-  --bg-white: #FFFFFF;
-  --bg-light: #F5F5F5;
-  --text-primary: #1A1A1A;
-  --text-secondary: #666666;
-  --divider: rgba(0,0,0,0.06);
-  /* Radius */
+  /* PRIMARY COLORS */
+  --color-neon-pink: #FF007F;
+  --color-electric-purple: #7000FF;
+  --color-white: #FFFFFF;
+  --color-obsidian: #050505;
+  --color-dark-gray: #0F0F0F;
+  --color-surface: #111111;
+  --color-border: #222222;
+
+  /* TYPOGRAPHY */
+  --font-family: 'Space Grotesk', 'Syne', 'Inter', system-ui, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* SPACING & SIZING */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+  /* ACCENT GLOWS */
+  --glow-pink: 0 0 32px 0 rgba(255, 0, 127, 0.4);
+  --glow-purple: 0 0 32px 0 rgba(112, 0, 255, 0.4);
+  --glow-pink-subtle: 0 0 16px 0 rgba(255, 0, 127, 0.2);
+  --glow-purple-subtle: 0 0 16px 0 rgba(112, 0, 255, 0.2);
+
+  /* LETTER SPACING */
+  --letter-spacing-tight: -0.05em;
+  --letter-spacing-tighter: -0.03em;
 }
+
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
 
 * {
   margin: 0;
@@ -26,98 +57,82 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  overflow-y: overlay;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-obsidian);
+}
+
+html::-webkit-scrollbar {
+  width: 8px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--color-obsidian);
+}
+
+html::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-pink);
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: var(--bg-white);
-  color: #111; /* neutral text kept */
+  font-family: var(--font-family);
+  background: var(--color-obsidian);
+  color: var(--color-white);
   line-height: 1.6;
-}
-
-/* Scroll animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-@import "@fontsource/inter/variable.css";
-@import "@fontsource/outfit/variable.css";
-
-:root {
-  --color-obsidian: #18181b;
-  --color-neon-pink: #ff4ecd;
-  --color-deep-purple: #7c3aed;
-  --color-mesh1: #2d0036;
-  --color-mesh2: #ff4ecd;
-  --color-mesh3: #ffb86c;
-  --color-bg: #18181b;
-  --color-card: rgba(24,24,27,0.7);
-  --color-glass: rgba(255,255,255,0.08);
-  --color-border: rgba(255,255,255,0.18);
-  --color-gradient: linear-gradient(90deg, #7c3aed 0%, #ff4ecd 50%, #ffb86c 100%);
-  --color-mesh-gradient: radial-gradient(ellipse at 20% 20%, #7c3aed 0%, #ff4ecd 40%, #18181b 100%);
-  --font-main: 'Inter Variable', 'Outfit Variable', Inter, Outfit, sans-serif;
-  --radius-xl: 2rem;
-  --radius-3xl: 3rem;
-  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  --shadow-glow: 0 0 16px 4px #ff4ecd;
-  --blur-glass: 16px;
-  --letter-spacing-wide: .08em;
-  --letter-spacing-wider: .15em;
-}
-
-/* ...existing code... */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: var(--font-main);
-  background: var(--color-bg);
-  color: #fff;
   min-height: 100vh;
-  line-height: 1.6;
-  position: relative;
   overflow-x: hidden;
+  letter-spacing: var(--letter-spacing-tighter);
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: var(--color-mesh-gradient);
-  opacity: 0.25;
-  z-index: -1;
-  pointer-events: none;
-  filter: blur(60px);
+/* Remove default link styling */
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Scroll animations */
+button {
+  font-family: var(--font-family);
+  border: none;
+  cursor: pointer;
+}
+
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes fadeInLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-24px);
   }
   to {
     opacity: 1;
@@ -128,7 +143,7 @@ body::before {
 @keyframes fadeInRight {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(24px);
   }
   to {
     opacity: 1;
@@ -136,19 +151,62 @@ body::before {
   }
 }
 
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.6;
   }
   50% {
     opacity: 1;
   }
+}
+
+@keyframes borderGlow {
+  0% {
+    border-color: var(--color-border);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: var(--glow-pink-subtle);
+  }
   100% {
-    opacity: 1;
-    transform: scale(1);
+    border-color: var(--color-border);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-glow {
+  text-shadow: 0 0 32px rgba(255, 0, 127, 0.35), 0 0 16px rgba(112, 0, 255, 0.2);
+}
+
+.accent-border {
+  border: 1px solid var(--color-border);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.accent-border:hover {
+  border-color: var(--color-neon-pink);
+  box-shadow: var(--glow-pink-subtle);
+}
+
+.neon-glow {
+  box-shadow: var(--glow-pink);
+}
+
+.purple-glow {
+  box-shadow: var(--glow-purple);
+}
+
+/* ============================================
+   TAILWIND DIRECTIVES
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @keyframes slideInScale {
   from {

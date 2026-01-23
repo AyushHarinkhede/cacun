@@ -7,37 +7,41 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        grotesk: ["Space Grotesk", "sans-serif"],
         inter: ["Inter", "sans-serif"],
-        outfit: ["Outfit", "sans-serif"],
       },
       colors: {
-        obsidian: "#18181b",
-        neonPink: "#ff4ecd",
-        deepPurple: "#7c3aed",
-        mesh1: "#2d0036",
-        mesh2: "#ff4ecd",
-        mesh3: "#ffb86c",
+        obsidian: "#050505",
+        darkGray: "#0F0F0F",
+        surface: "#111111",
+        border: "#222222",
+        neonPink: "#FF007F",
+        electricPurple: "#7000FF",
+        white: "#FFFFFF",
       },
       backgroundImage: {
-        'mesh-gradient': 'radial-gradient(ellipse at 20% 20%, #7c3aed 0%, #ff4ecd 40%, #18181b 100%)',
-        'hero-gradient': 'linear-gradient(90deg, #7c3aed 0%, #ff4ecd 50%, #ffb86c 100%)',
+        'accent-glow': 'radial-gradient(circle, rgba(255,0,127,0.2) 0%, rgba(112,0,255,0.1) 70%, transparent 100%)',
       },
       borderRadius: {
-        xl: '2rem',
-        '3xl': '3rem',
+        sm: '8px',
+        md: '12px',
+        lg: '16px',
       },
       boxShadow: {
-        glass: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-        glow: '0 0 16px 4px #ff4ecd',
+        'neon-pink': '0 0 32px 0 rgba(255, 0, 127, 0.4)',
+        'neon-purple': '0 0 32px 0 rgba(112, 0, 255, 0.4)',
+        'accent-glow': '0 0 32px 0 rgba(255, 0, 127, 0.3), 0 0 2px 1px rgba(112, 0, 255, 0.6)',
       },
-      backdropBlur: {
-        glass: '16px',
+      spacing: {
+        128: '32rem',
+        144: '36rem',
       },
       letterSpacing: {
-        wide: '.08em',
-        wider: '.15em',
+        tight: '-0.05em',
+        tighter: '-0.03em',
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [],
 };
+
