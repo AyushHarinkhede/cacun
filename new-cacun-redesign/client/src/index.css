@@ -1,0 +1,10 @@
+body {
+  background-color: #0F2C33;
+  color: #F5F5F5;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}

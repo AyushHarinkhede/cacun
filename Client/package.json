@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "cacun": "file:.."
+  }
+}

@@ -203,83 +203,52 @@ const AnimatedHeroSVG = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8 }}
     >
-      {/* Outer circle - neon pink */}
-      <motion.circle
-        cx="70"
-        cy="70"
-        r="60"
-        stroke={COLORS.neonPink}
-        strokeWidth="3"
-        strokeLinecap="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 1.4, ease: "easeInOut" }}
-        style={{ filter: `drop-shadow(0 0 16px ${COLORS.neonPink}40)` }}
-      />
+      import React from "react";
+      import BottomNav from "./Components/BottomNav";
 
-      {/* Middle circle - electric purple */}
-      <motion.circle
-        cx="70"
-        cy="70"
-        r="42"
-        stroke={COLORS.electricPurple}
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 1.6, ease: "easeInOut", delay: 0.2 }}
-        style={{ filter: `drop-shadow(0 0 12px ${COLORS.electricPurple}40)` }}
-      />
+      // Placeholder components for layout
+      const Feed = () => <div className="card" style={{ minHeight: 400, marginBottom: 24 }}>Feed (Trip Posts)</div>;
+      const HighlightCarousel = () => <div className="card" style={{ minHeight: 180, marginBottom: 24 }}>Trip Highlights Carousel</div>;
+      const PartnerReviews = () => <div className="card" style={{ minHeight: 180, marginBottom: 24 }}>Partner Reviews</div>;
+      const ProfileCard = () => <div className="card" style={{ minHeight: 120, marginBottom: 24 }}>Profile Card</div>;
+      const PartnerFinder = () => <div className="card" style={{ minHeight: 220, marginBottom: 24 }}>Find Travel Partner</div>;
 
-      {/* Inner accent line - neon pink */}
-      <motion.line
-        x1="70"
-        y1="20"
-        x2="70"
-        y2="50"
-        stroke={COLORS.neonPink}
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 0.6 }}
-        transition={{ duration: 1.2, ease: "easeInOut", delay: 0.4 }}
-      />
-
-      {/* Rotating accent element */}
-      <motion.g
-        animate={{ rotate: 360 }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        style={{ transformOrigin: "70px 70px" }}
-      >
-        <circle
-          cx="70"
-          cy="20"
-          r="4"
-          fill={COLORS.neonPink}
-          style={{ filter: `drop-shadow(0 0 8px ${COLORS.neonPink})` }}
-        />
-      </motion.g>
-    </motion.svg>
-  );
-};
-
-// Feature Data
-const FEATURES = [
-  {
-    title: "Accent Glows",
-    description:
-      "Neon pink and electric purple box-shadows create depth without glassmorphism. Pure neon energy.",
-    accentColor: COLORS.neonPink,
-    icon: "✨",
-  },
-  {
-    title: "Bento Grid System",
-    description:
-      "Strict 1px borders with solid #111 surfaces. Tactical hover states that light up with neon accents.",
-    accentColor: COLORS.electricPurple,
-    icon: "📐",
-  },
-  {
+      export default function App() {
+        return (
+          <div style={{ minHeight: "100vh", background: "var(--bg-dark)", display: "flex", flexDirection: "column" }}>
+            <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: 32 }}>
+              <div style={{
+                width: "100%",
+                maxWidth: 1200,
+                background: "var(--bg-dark)",
+                borderRadius: 32,
+                boxShadow: "0 8px 48px rgba(0,0,0,0.25)",
+                padding: 32,
+                display: "grid",
+                gridTemplateColumns: "2fr 2.2fr 1.2fr",
+                gap: 32,
+              }}>
+                {/* Left: Feed */}
+                <div>
+                  <Feed />
+                  <Feed />
+                </div>
+                {/* Center: Highlights & Reviews */}
+                <div>
+                  <HighlightCarousel />
+                  <PartnerReviews />
+                </div>
+                {/* Right: Profile & Partner Finder */}
+                <div>
+                  <ProfileCard />
+                  <PartnerFinder />
+                </div>
+              </div>
+            </div>
+            <BottomNav />
+          </div>
+        );
+      }
     title: "Spotlight Cursor",
     description:
       "A glowing spotlight that follows your mouse, creating an immersive and tactile interaction experience.",

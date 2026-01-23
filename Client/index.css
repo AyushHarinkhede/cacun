@@ -9,43 +9,50 @@
    CSS VARIABLES - Strict Neon Color Palette
    ============================================ */
 
+
 :root {
-  /* PRIMARY COLORS */
-  --color-neon-pink: #FF007F;
-  --color-electric-purple: #7000FF;
-  --color-white: #FFFFFF;
-  --color-obsidian: #050505;
-  --color-dark-gray: #0F0F0F;
-  --color-surface: #111111;
-  --color-border: #222222;
+  /* Main Identity Color */
+  --primary-coral: #E86A56;
+  /* Backgrounds */
+  --bg-dark: #092229;
+  --bg-card: #133B45;
+  --bg-hover: #1F4E58;
+  /* Text Colors */
+  --text-main: #FFFFFF;
+  --text-muted: #94B0B7;
+  /* Reputation System */
+  --star-color: #F2C94C;
+  /* Radius & Shadow */
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --shadow-card: 0 4px 32px rgba(0,0,0,0.18);
+}
 
-  /* TYPOGRAPHY */
-  --font-family: 'Space Grotesk', 'Syne', 'Inter', system-ui, sans-serif;
-  --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+body {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', 'Space Grotesk', sans-serif;
+}
 
-  /* SPACING & SIZING */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+}
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 5px 20px rgba(0, 0, 0, 0.15);
-
-  /* ACCENT GLOWS */
-  --glow-pink: 0 0 32px 0 rgba(255, 0, 127, 0.4);
-  --glow-purple: 0 0 32px 0 rgba(112, 0, 255, 0.4);
-  --glow-pink-subtle: 0 0 16px 0 rgba(255, 0, 127, 0.2);
-  --glow-purple-subtle: 0 0 16px 0 rgba(112, 0, 255, 0.2);
-
-  /* LETTER SPACING */
-  --letter-spacing-tight: -0.05em;
-  --letter-spacing-tighter: -0.03em;
+.btn-primary {
+  background: var(--primary-coral);
+  color: #fff;
+  border-radius: var(--radius-md);
+  border: none;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.btn-primary:hover {
+  background: var(--bg-hover);
 }
 
 /* ============================================
@@ -176,16 +183,31 @@ button {
 }
 
 /* ============================================
-   UTILITY CLASSES
+   UTILITY CLASSES & PREMIUM EFFECTS
    ============================================ */
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 0 48px var(--color-neon-pink), 0 0 24px var(--color-electric-purple);
+  transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
+}
+
+.glass-card:hover {
+  box-shadow: 0 12px 48px rgba(255,0,127,0.18), 0 0 64px var(--color-electric-purple), 0 0 32px var(--color-neon-pink);
+  border-color: var(--color-neon-pink);
+  background: rgba(40, 10, 40, 0.65);
+}
 
 .text-glow {
   text-shadow: 0 0 32px rgba(255, 0, 127, 0.35), 0 0 16px rgba(112, 0, 255, 0.2);
 }
 
 .accent-border {
-  border: 1px solid var(--color-border);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  border: 1.5px solid var(--color-border);
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .accent-border:hover {
@@ -295,21 +317,22 @@ button {
 }
 
 html[data-theme='light'] {
-  --bg: #F1FAEE;
-  --surface: #E8F4F8;
-  --card: #FFFFFF;
-  --text: #0D1B2A;
-  --muted: #415A77;
-  --border: #D5E3E8;
+  --color-obsidian: #F1FAEE;
+  --color-surface: #E8F4F8;
+  --color-white: #0D1B2A;
+  --color-border: #D5E3E8;
+  --color-neon-pink: #FF007F;
+  --color-electric-purple: #7000FF;
+  color-scheme: light;
 }
 
 html[data-theme='dark'] {
-  --bg: #0D1B2A;
-  --surface: #1B263B;
-  --card: #233850;
-  --text: #F1FAEE;
-  --muted: #A8DADC;
-  --border: #415A77;
+  --color-obsidian: #050505;
+  --color-surface: #111111;
+  --color-white: #FFFFFF;
+  --color-border: #222222;
+  --color-neon-pink: #FF007F;
+  --color-electric-purple: #7000FF;
   color-scheme: dark;
 }
 
@@ -342,15 +365,25 @@ input {
 
 button {
   transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-tight);
+  box-shadow: 0 2px 12px rgba(255,0,127,0.08), 0 0 0 transparent;
+  background: var(--color-surface);
+  color: var(--color-white);
+  border: 1.5px solid var(--color-border);
 }
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(230, 57, 70, 0.25);
+button:hover, .magnetic-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 32px var(--color-neon-pink), 0 0 24px var(--color-electric-purple);
+  border-color: var(--color-neon-pink);
+  background: rgba(255,0,127,0.08);
 }
 
 button:active {
   transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px var(--color-neon-pink);
 }
 
 @media (prefers-reduced-motion: reduce) {
