@@ -1,6 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import connectDB from './config/database.js';
+import tripsRouter from './routes/trips.js';
+import usersRouter from './routes/users.js';
 
 // Load environment variables
 dotenv.config();
@@ -11,6 +14,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Connect to MongoDB
+connectDB();
+
+// Routes
+app.use('/api/trips', tripsRouter);
+app.use('/api/users', usersRouter);
 
 // Basic route
 app.get('/api/health', (req, res) => {
