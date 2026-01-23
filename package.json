@@ -12,5 +12,9 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0"
+  },
+  "dependencies": {
+    "framer-motion": "^12.29.0",
+    "lucide-react": "^0.562.0"
   }
 }

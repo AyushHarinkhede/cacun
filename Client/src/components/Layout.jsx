@@ -6,7 +6,7 @@ export default function Layout({ children }) {
       {/* Floating logo: centered on mobile, left on larger screens */}
       <header className="pointer-events-none">
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-6 sm:translate-x-0 z-40">
-          <img src="/cacun.png" alt="Cacun" className="h-10 w-auto" />
+          <img src="/cacun.png" alt="Cacun" className="h-12 w-auto opacity-90" />
         </div>
       </header>
 

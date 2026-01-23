@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Home, Compass, PlusCircle, MessageCircle, User } from 'lucide-react';
 
 const Icon = ({ children, active }) => (
   <div
@@ -17,7 +19,8 @@ export default function BottomNav() {
   
   const getActiveFromPath = () => {
     if (location.pathname === '/') return 'home';
-    if (location.pathname === '/products') return 'search';
+    if (location.pathname === '/explore') return 'explore';
+    if (location.pathname === '/messages') return 'messages';
     if (location.pathname === '/profile') return 'profile';
     return 'home';
   };
@@ -30,118 +33,77 @@ export default function BottomNav() {
       case 'home':
         navigate('/');
         break;
-      case 'search':
-        navigate('/products');
+      case 'explore':
+        navigate('/explore');
+        break;
+      case 'create':
+        console.log('Create post clicked');
+        break;
+      case 'messages':
+        navigate('/messages');
         break;
       case 'profile':
         navigate('/profile');
-        break;
-      case 'add':
-        // Handle add product functionality
-        console.log('Add product clicked');
-        break;
-      case 'messages':
-        // Handle messages functionality
-        console.log('Messages clicked');
         break;
     }
   };
 
   const items = [
-    { id: 'home', label: 'Home', icon: HomeIcon },
-    { id: 'search', label: 'Products', icon: SearchIcon },
-    { id: 'add', label: 'Add', icon: PlusIcon },
-    { id: 'messages', label: 'Messages', icon: MessageIcon },
-    { id: 'profile', label: 'Profile', icon: ProfileIcon },
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'explore', label: 'Explore Trips', icon: Compass },
+    { id: 'create', label: 'Create Post', icon: PlusCircle },
+    { id: 'messages', label: 'Messages', icon: MessageCircle },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   return (
-    <div className="fixed left-1/2 transform -translate-x-1/2 bottom-6 z-50">
+    <motion.div 
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      className="fixed left-1/2 transform -translate-x-1/2 bottom-6 z-50"
+    >
       <div
-        className="relative flex items-center px-4 py-2 rounded-full shadow-2xl"
+        className="relative flex items-center px-6 py-3 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(230,126,95,0.95)',
-          backdropFilter: 'blur(6px)',
+          backgroundColor: '#E67E5F',
+          backdropFilter: 'blur(10px)',
           borderRadius: '9999px',
         }}
       >
-        <div className="flex items-center gap-4">
-          {items.map((it) => {
-            const IconComp = it.icon;
-            if (it.id === 'add') {
-              // central big button
+        <div className="flex items-center gap-3">
+          {items.map((item) => {
+            const IconComp = item.icon;
+            if (item.id === 'create') {
               return (
-                <button
-                  key={it.id}
-                  onClick={() => handleNavigation(it.id)}
-                  aria-label={it.label}
-                  className="-mt-8 flex items-center justify-center w-16 h-16 rounded-full shadow-xl transition-transform duration-200 transform bg-white"
+                <motion.button
+                  key={item.id}
+                  onClick={() => handleNavigation(item.id)}
+                  aria-label={item.label}
+                  className="-mt-6 flex items-center justify-center w-14 h-14 rounded-full shadow-xl transition-all duration-300 transform hover:scale-110 bg-white"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Icon active={active === it.id}>
-                    <IconComp className="w-6 h-6 text-primary" />
-                  </Icon>
-                </button>
+                  <IconComp className="w-7 h-7 text-primary" />
+                </motion.button>
               );
             }
 
             return (
-              <button
-                key={it.id}
-                onClick={() => handleNavigation(it.id)}
-                aria-label={it.label}
-                className="p-1"
+              <motion.button
+                key={item.id}
+                onClick={() => handleNavigation(item.id)}
+                aria-label={item.label}
+                className="p-2 rounded-full transition-all duration-200"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Icon active={active === it.id}>
-                  <IconComp className={`w-5 h-5 ${active === it.id ? 'text-white' : 'text-white/90'}`} />
-                </Icon>
-              </button>
+                <IconComp className={`w-5 h-5 ${active === item.id ? 'text-white' : 'text-white/80'}`} />
+              </motion.button>
             );
           })}
         </div>
       </div>
-    </div>
-  );
-}
-
-function HomeIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path d="M3 10.5L12 4l9 6.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M5 10.5v7a1 1 0 001 1h3v-5h6v5h3a1 1 0 001-1v-7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function SearchIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <circle cx="11" cy="11" r="6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M21 21l-4.35-4.35" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function PlusIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path d="M12 5v14M5 12h14" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function MessageIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ProfileIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="12" cy="7" r="4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    </motion.div>
   );
 }
