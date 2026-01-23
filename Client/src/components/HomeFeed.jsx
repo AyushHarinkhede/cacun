@@ -1,67 +1,76 @@
 import { useEffect, useState } from 'react';
 
-const dummyTrips = [
+const dummyProducts = [
   {
     id: 1,
-    user: 'Anjaan',
-    destination: 'Lakshadweep Islands',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=7d9f2b0d9b1e7a3c4d8f3b3f0b6f6f7a',
+    name: 'Bamboo Water Bottle',
+    seller: 'EcoEssentials',
+    price: 24.99,
+    image: 'https://images.unsplash.com/photo-1602143407151-7111542de0e8?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=7d9f2b0d9b1e7a3c4d8f3b3f0b6f6f7a',
+    ecoScore: 95,
   },
   {
     id: 2,
-    user: 'Anjaan',
-    destination: 'Rann of Kutch',
-    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=2b8b4b7f2b8b4c6b7b6c7d8f9e0a1b2c',
+    name: 'Reusable Produce Bags',
+    seller: 'GreenLiving',
+    price: 12.99,
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=2b8b4b7f2b8b4c6b7b6c7d8f9e0a1b2c',
+    ecoScore: 88,
   },
   {
     id: 3,
-    user: 'Anjaan',
-    destination: 'Valley of Flowers',
-    image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=1a2b3c4d5e6f7g8h9i0j',
+    name: 'Solar Power Bank',
+    seller: 'SunEnergy',
+    price: 45.99,
+    image: 'https://images.unsplash.com/photo-1591025811588-6a9e5b3b5b3b?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=1a2b3c4d5e6f7g8h9i0j',
+    ecoScore: 92,
   },
 ];
 
 export default function HomeFeed() {
-  const [trips, setTrips] = useState([]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     // Simulate fetching dummy data
-    const timer = setTimeout(() => setTrips(dummyTrips), 300);
+    const timer = setTimeout(() => setProducts(dummyProducts), 300);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <section className="mt-12">
-      <h2 className="text-2xl font-semibold mb-6">Trips from Travelers</h2>
+      <h2 className="text-2xl font-semibold text-text mb-6">Featured Eco Products</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trips.map((t) => (
+        {products.map((product) => (
           <article
-            key={t.id}
-            className="overflow-hidden shadow-lg"
-            style={{ borderRadius: '24px 24px 24px 4px', backgroundColor: 'var(--tw-color-card)' }}
+            key={product.id}
+            className="overflow-hidden shadow-lg bg-card"
+            style={{ borderRadius: '24px 24px 24px 4px' }}
           >
             <div className="relative h-48 w-full">
               <img
-                src={t.image}
-                alt={t.destination}
+                src={product.image}
+                alt={product.name}
                 className="object-cover w-full h-full"
                 style={{ borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}
               />
+              <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                🌿 {product.ecoScore}%
+              </div>
             </div>
 
             <div className="p-4 text-text">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-text/80">{t.user}</p>
-                  <h3 className="text-lg font-semibold mt-1">{t.destination}</h3>
+                  <p className="text-sm text-text-muted">{product.seller}</p>
+                  <h3 className="text-lg font-semibold mt-1">{product.name}</h3>
+                  <p className="text-primary font-bold mt-2">${product.price}</p>
                 </div>
 
                 <button
-                  className="ml-4 px-4 py-2 rounded-md font-semibold text-white"
-                  style={{ backgroundColor: 'var(--tw-color-primary)' }}
+                  className="ml-4 px-4 py-2 rounded-md font-semibold text-white bg-primary hover:opacity-90 transition"
                 >
-                  Join
+                  Buy Now
                 </button>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Icon = ({ children, active }) => (
   <div
@@ -11,11 +12,44 @@ const Icon = ({ children, active }) => (
 );
 
 export default function BottomNav() {
-  const [active, setActive] = useState('home');
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const getActiveFromPath = () => {
+    if (location.pathname === '/') return 'home';
+    if (location.pathname === '/products') return 'search';
+    if (location.pathname === '/profile') return 'profile';
+    return 'home';
+  };
+  
+  const [active, setActive] = useState(getActiveFromPath());
+
+  const handleNavigation = (id) => {
+    setActive(id);
+    switch(id) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'search':
+        navigate('/products');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'add':
+        // Handle add product functionality
+        console.log('Add product clicked');
+        break;
+      case 'messages':
+        // Handle messages functionality
+        console.log('Messages clicked');
+        break;
+    }
+  };
 
   const items = [
     { id: 'home', label: 'Home', icon: HomeIcon },
-    { id: 'search', label: 'Search', icon: SearchIcon },
+    { id: 'search', label: 'Products', icon: SearchIcon },
     { id: 'add', label: 'Add', icon: PlusIcon },
     { id: 'messages', label: 'Messages', icon: MessageIcon },
     { id: 'profile', label: 'Profile', icon: ProfileIcon },
@@ -39,7 +73,7 @@ export default function BottomNav() {
               return (
                 <button
                   key={it.id}
-                  onClick={() => setActive(it.id)}
+                  onClick={() => handleNavigation(it.id)}
                   aria-label={it.label}
                   className="-mt-8 flex items-center justify-center w-16 h-16 rounded-full shadow-xl transition-transform duration-200 transform bg-white"
                 >
@@ -53,7 +87,7 @@ export default function BottomNav() {
             return (
               <button
                 key={it.id}
-                onClick={() => setActive(it.id)}
+                onClick={() => handleNavigation(it.id)}
                 aria-label={it.label}
                 className="p-1"
               >
