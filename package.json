@@ -1,0 +1,11 @@
+{
+  "name": "cacun",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start:server": "cd server && npm run start",
+    "dev:server": "cd server && npm run dev",
+    "start:client": "cd client && npm run dev",
+    "install:all": "cd server && npm install && cd ../client && npm install"
+  }
+}
