@@ -287,8 +287,8 @@
   font-size: 12px;
   cursor: pointer;
   transition: all var(--transition-normal);
-}
-
+} 
+  
 .vanieSend:hover {
   background: var(--primary-purple-dark);
   box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
