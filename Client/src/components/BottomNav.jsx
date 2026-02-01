@@ -13,7 +13,7 @@ export default function BottomNav() {
     if (location.pathname === '/profile') return 'profile';
     return 'home';
   };
-  
+   
   const [active, setActive] = useState(getActiveFromPath());
 
   const handleNavigation = (id) => {
