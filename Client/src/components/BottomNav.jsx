@@ -14,7 +14,7 @@ export default function BottomNav() {
     return 'home';
   };
    
-  const [active, setActive] = useState(getActiveFromPath());
+  const [active, setActive] = useState(getActiveFromPath()); 
 
   const handleNavigation = (id) => {
     setActive(id);
