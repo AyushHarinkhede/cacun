@@ -3,11 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start:server": "cd server && npm run start",
-    "dev:server": "cd server && npm run dev",
-    "start:client": "cd client && npm run dev",
-    "dev": "concurrently \"npm run dev:server\" \"npm run start:client\"",
-    "install:all": "cd server && npm install && cd ../client && npm install"
+    "start:server": "npm --prefix server run start",
+    "dev:server": "npm --prefix server run dev",
+    "start:client": "npm --prefix client run dev",
+    "dev": "cross-env COMSPEC=C:\\Windows\\System32\\cmd.exe concurrently --shell powershell.exe \"npm run dev:server\" \"npm run start:client\"",
+    "install:all": "npm --prefix server install && npm --prefix client install"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
