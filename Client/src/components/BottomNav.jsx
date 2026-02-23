@@ -42,6 +42,8 @@ export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [isNavbarHovered, setIsNavbarHovered] = useState(false);
+  const [showIndicators, setShowIndicators] = useState(false);
   
   const getActiveFromPath = () => {
     if (location.pathname === '/') return 'home';
@@ -54,12 +56,24 @@ export default function BottomNav() {
    
   const [active, setActive] = useState(getActiveFromPath());
 
+  // Auto-hide indicators after 3 seconds, but only when not hovering
+  useEffect(() => {
+    if (showIndicators && !isNavbarHovered) {
+      const timer = setTimeout(() => {
+        setShowIndicators(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showIndicators, isNavbarHovered]);
+
   useEffect(() => {
     setActive(getActiveFromPath());
   }, [location.pathname]);
 
   const handleNavigation = (id) => {
     setActive(id);
+    // Show indicators immediately when navigating
+    setShowIndicators(true);
     switch(id) {
       case 'home':
         navigate('/');
@@ -88,7 +102,19 @@ export default function BottomNav() {
   ];
 
   return (
-    <div className="bottom-nav">
+    <div 
+      className="bottom-nav"
+      onMouseEnter={() => {
+        setIsNavbarHovered(true);
+        // Show indicators when entering navbar, but don't reset timer if already shown
+        if (!showIndicators) {
+          setShowIndicators(true);
+        }
+      }}
+      onMouseLeave={() => {
+        setIsNavbarHovered(false);
+      }}
+    >
       <div className="bottom-nav-container">
         <div className="bottom-nav-items">
           {items.map((item) => {
@@ -120,22 +146,19 @@ export default function BottomNav() {
                     <PlusCircle className="w-5 h-5 text-primary" />
                   </motion.div>
                   
-                  {/* Active indicator with side label */}
+                  {/* Active indicator with bottom label */}
                   <AnimatePresence>
-                    {active === 'create' && (
+                    {active === 'create' && showIndicators && (
                       <motion.div
-                        initial={{ scale: 0, opacity: 0, x: 10 }}
-                        animate={{ scale: 1, opacity: 1, x: 0 }}
-                        exit={{ scale: 0, opacity: 0, x: 10 }}
+                        initial={{ scale: 0, opacity: 0, y: -10 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0, opacity: 0, y: -10 }}
                         transition={{ type: "spring", stiffness: 600, damping: 25 }}
-                        className="absolute -right-12 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white text-[8px] px-1 py-0.5 rounded-md font-bold shadow-md"
+                        className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-[10px] px-2 py-1 rounded-md font-bold shadow-md"
                       >
-                        <motion.span
-                          animate={{ opacity: [1, 0.5, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
+                        <span className="text-white text-[10px] font-bold">
                           {item.shortLabel}
-                        </motion.span>
+                        </span>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -172,22 +195,19 @@ export default function BottomNav() {
                   {item.id === 'profile' && <User className="w-4 h-4" />}
                 </motion.div>
                 
-                {/* Active indicator with side label */}
+                {/* Active indicator with bottom label */}
                 <AnimatePresence>
-                  {active === item.id && (
+                  {active === item.id && showIndicators && (
                     <motion.div
-                      initial={{ scale: 0, opacity: 0, x: 10 }}
-                      animate={{ scale: 1, opacity: 1, x: 0 }}
-                      exit={{ scale: 0, opacity: 0, x: 10 }}
+                      initial={{ scale: 0, opacity: 0, y: -10 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      exit={{ scale: 0, opacity: 0, y: -10 }}
                       transition={{ type: "spring", stiffness: 600, damping: 25 }}
-                      className="absolute -right-12 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white text-[8px] px-1 py-0.5 rounded-md font-bold shadow-md"
+                      className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-[10px] px-2 py-1 rounded-md font-bold shadow-md"
                     >
-                      <motion.span
-                        animate={{ opacity: [1, 0.5, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
+                      <span className="text-white text-[10px] font-bold">
                         {item.shortLabel}
-                      </motion.span>
+                      </span>
                     </motion.div>
                   )}
                 </AnimatePresence>
