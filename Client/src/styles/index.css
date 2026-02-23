@@ -57,7 +57,7 @@
   }
 
   .bottom-nav-container {
-    @apply relative flex items-center px-4 py-3 shadow-2xl;
+    @apply relative flex items-center px-3 py-2 shadow-2xl;
     background-color: rgba(230, 126, 95, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 9999px;
@@ -66,11 +66,11 @@
 
   .bottom-nav-items {
     @apply flex items-center;
-    gap: 14px;
+    gap: 10px;
   }
 
   .bottom-nav-item {
-    @apply px-3 py-2 rounded-full transition-all duration-200;
+    @apply px-2 py-2 rounded-full transition-all duration-200 relative;
     color: rgba(255, 255, 255, 0.82);
   }
 
@@ -86,8 +86,8 @@
 
   .bottom-nav-create {
     @apply flex items-center justify-center rounded-full shadow-xl transition-all duration-200;
-    width: 52px;
-    height: 52px;
+    width: 44px;
+    height: 44px;
     background: rgba(255, 255, 255, 0.98);
     border: 2px solid rgba(255, 255, 255, 0.35);
   }

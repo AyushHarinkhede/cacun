@@ -12,5 +12,8 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.575.0"
   }
 }
