@@ -2,6 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom CSS Variables for Purple/Violet Theme */
+:root {
+  /* Light Mode Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9ff;
+  --bg-card: #ffffff;
+  --bg-accent: #f3f0ff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #2d2d4a;
+  --text-muted: #4a4a6a;
+  --primary: #7c3aed;
+  --primary-light: #a78bfa;
+  --primary-dark: #6d28d9;
+  --secondary: #a855f7;
+  --secondary-light: #c084fc;
+  --secondary-dark: #9333ea;
+  --accent: #8b5cf6;
+  --accent-light: #a78bfa;
+  --accent-dark: #7c3aed;
+  --border: #e9d5ff;
+  --shadow: rgba(124, 58, 237, 0.1);
+  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #8b5cf6 100%);
+  --gradient-secondary: linear-gradient(135deg, #a855f7 0%, #c084fc 50%, #d8b4fe 100%);
+  --gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
+  --texture-pattern: radial-gradient(circle at 20% 50%, rgba(124, 58, 237, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 50%), radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+}
+
+[data-theme="dark"] {
+  /* Dark Mode Colors */
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-card: #0f3460;
+  --bg-accent: #1e3a5f;
+  --text-primary: #f3f0ff;
+  --text-secondary: #e9d5ff;
+  --text-muted: #c4b5fd;
+  --primary: #a78bfa;
+  --primary-light: #c4b5fd;
+  --primary-dark: #8b5cf6;
+  --secondary: #c084fc;
+  --secondary-light: #d8b4fe;
+  --secondary-dark: #a855f7;
+  --accent: #a78bfa;
+  --accent-light: #c4b5fd;
+  --accent-dark: #8b5cf6;
+  --border: #4c1d95;
+  --shadow: rgba(167, 139, 250, 0.2);
+  --gradient-primary: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #d8b4fe 100%);
+  --gradient-secondary: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
+  --gradient-accent: linear-gradient(135deg, #c084fc 0%, #d8b4fe 50%, #e9d5ff 100%);
+  --texture-pattern: radial-gradient(circle at 20% 50%, rgba(167, 139, 250, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(192, 132, 252, 0.08) 0%, transparent 50%), radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+}
+
 @layer base {
   * {
     margin: 0;
@@ -10,13 +63,89 @@
   }
 
   body {
-    @apply bg-background text-text;
+    background-color: var(--bg-primary);
+    background-image: var(--texture-pattern);
+    background-attachment: fixed;
+    color: var(--text-primary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Ensure all text uses theme colors */
+  * {
+    color: inherit;
+  }
+  
+  .text-text {
+    color: var(--text-primary) !important;
+  }
+  
+  .text-text-muted {
+    color: var(--text-muted) !important;
+  }
+  
+  .text-primary {
+    color: var(--primary) !important;
+  }
+  
+  .text-secondary {
+    color: var(--secondary) !important;
+  }
+  
+  .text-white {
+    color: #ffffff !important;
+  }
+  
+  .text-black {
+    color: #000000 !important;
+  }
+
+  /* Force proper backgrounds */
+  .bg-background {
+    background-color: var(--bg-primary) !important;
+  }
+  
+  .bg-card {
+    background-color: var(--bg-card) !important;
+  }
+  
+  .bg-white {
+    background-color: #ffffff !important;
+  }
+  
+  /* Ensure all containers use theme backgrounds */
+  .cacun-container {
+    background: var(--bg-card) !important;
+  }
+  
+  .glass-container {
+    background: var(--bg-card) !important;
+  }
+  
+  /* Fix form inputs */
+  input, textarea, select {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+  }
+  
+  input::placeholder {
+    color: var(--text-muted) !important;
+  }
+  
+  /* Fix buttons */
+  button {
+    color: inherit;
+  }
+  
+  /* Fix links */
+  a {
+    color: var(--primary) !important;
   }
 
   code {
@@ -36,6 +165,38 @@
     -ms-overflow-style: none;
   }
 
+  /* Smooth scrolling for all elements */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    scroll-behavior: smooth;
+  }
+
+  /* Fix chat scrolling */
+  .overflow-y-auto {
+    scroll-behavior: smooth;
+  }
+
+  /* Remove borders from layout containers */
+  .max-w-7xl {
+    border: none !important;
+    outline: none !important;
+  }
+
+  /* Remove extra borders */
+  main {
+    border: none !important;
+    outline: none !important;
+  }
+
+  .explore-container,
+  .home-dashboard {
+    border: none !important;
+    outline: none !important;
+  }
+
   /* Hide scrollbar indicators */
   *::-webkit-scrollbar-track {
     display: none;
@@ -49,151 +210,351 @@
     display: none;
   }
 
-  /* Hide scroll indicators for Firefox */
-  * {
-    scrollbar-color: transparent transparent;
+  /* Dark mode specific fixes */
+  [data-theme="dark"] .max-w-7xl {
+    border: none !important;
+    outline: none !important;
+  }
+
+  [data-theme="dark"] main {
+    border: none !important;
+    outline: none !important;
+  }
+
+  [data-theme="dark"] .explore-container,
+  [data-theme="dark"] .home-dashboard {
+    border: none !important;
+    outline: none !important;
+  }
+
+  [data-theme="dark"] .cacun-container {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  [data-theme="dark"] .glass-container {
+    background: var(--bg-card) !important;
+  }
+
+  [data-theme="dark"] input, 
+  [data-theme="dark"] textarea, 
+  [data-theme="dark"] select {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+  }
+
+  [data-theme="dark"] input::placeholder {
+    color: var(--text-muted) !important;
+  }
+
+  [data-theme="dark"] .overflow-y-auto {
+    scroll-behavior: smooth !important;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  /* Update Tailwind custom properties */
+  :root {
+    --background: var(--bg-primary);
+    --foreground: var(--text-primary);
+    --card: var(--bg-card);
+    --card-foreground: var(--text-primary);
+    --popover: var(--bg-card);
+    --popover-foreground: var(--text-primary);
+    --primary: var(--primary);
+    --primary-foreground: #ffffff;
+    --secondary: var(--secondary);
+    --secondary-foreground: #ffffff;
+    --muted: var(--bg-accent);
+    --muted-foreground: var(--text-muted);
+    --accent: var(--accent);
+    --accent-foreground: #ffffff;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: var(--border);
+    --input: var(--bg-secondary);
+    --ring: var(--primary);
+    --radius: 0.75rem;
+  }
+
+  [data-theme="dark"] {
+    --background: var(--bg-primary);
+    --foreground: var(--text-primary);
+    --card: var(--bg-card);
+    --card-foreground: var(--text-primary);
+    --popover: var(--bg-card);
+    --popover-foreground: var(--text-primary);
+    --primary: var(--primary);
+    --primary-foreground: #ffffff;
+    --secondary: var(--secondary);
+    --secondary-foreground: #ffffff;
+    --muted: var(--bg-accent);
+    --muted-foreground: var(--text-muted);
+    --accent: var(--accent);
+    --accent-foreground: #ffffff;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: var(--border);
+    --input: var(--bg-secondary);
+    --ring: var(--primary);
   }
 }
 
 @layer components {
-  /* Cacun Custom Container - "a" shape */
+  /* Cacun Custom Container - Purple/Violet Theme */
   .cacun-container {
-    @apply bg-card p-6 shadow-xl relative transition-all duration-300 ease-out;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px var(--shadow);
+    padding: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease-out;
     border-radius: 24px 24px 24px 4px;
-    border: 1px solid rgba(230, 126, 95, 0.1);
+    backdrop-filter: blur(10px);
   }
 
   .cacun-container::before {
     content: '';
-    @apply absolute inset-0 opacity-10 pointer-events-none;
-    background: linear-gradient(135deg, #E67E5F 0%, transparent 60%);
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    pointer-events: none;
+    background: var(--gradient-primary);
     border-radius: 24px 24px 24px 4px;
   }
 
   .cacun-container > * {
-    @apply relative z-10;
+    position: relative;
+    z-index: 10;
   }
 
   .cacun-container:hover {
-    @apply scale-105;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    transform: scale(1.02);
+    box-shadow: 0 20px 40px var(--shadow);
+    border-color: var(--primary-light);
   }
 
-  /* Floating Bottom Navigation */
+  /* Floating Bottom Navigation - Purple/Violet Theme */
   .bottom-nav {
-    @apply fixed left-1/2 bottom-6 z-50;
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    z-index: 50;
     transform: translateX(-50%);
     width: max-content;
   }
 
   .bottom-nav-container {
-    @apply relative flex items-center px-6 py-2 shadow-2xl;
-    background-color: rgba(230, 126, 95, 0.95);
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 20px 40px var(--shadow);
+    background: var(--gradient-primary);
     backdrop-filter: blur(20px);
     border-radius: 9999px;
-    border: 1px solid rgba(230, 126, 95, 0.3);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+  }
+
+  .bottom-nav-container:hover {
+    box-shadow: 0 25px 50px var(--shadow);
+    transform: translateY(-2px);
   }
 
   .bottom-nav-items {
-    @apply flex items-center;
+    display: flex;
+    align-items: center;
     gap: 16px;
   }
 
   .bottom-nav-item {
-    @apply px-2 py-2 rounded-full transition-all duration-200 relative;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+    position: relative;
     color: rgba(255, 255, 255, 0.82);
   }
 
   .bottom-nav-item:hover {
     color: rgba(255, 255, 255, 1);
-    background: rgba(15, 44, 51, 0.12);
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .bottom-nav-item.is-active {
     color: rgba(255, 255, 255, 1);
-    background: rgba(15, 44, 51, 0.18);
+    background: rgba(255, 255, 255, 0.25);
   }
 
   .bottom-nav-create {
-    @apply flex items-center justify-center rounded-full shadow-xl transition-all duration-200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px var(--shadow);
+    transition: all 0.2s ease;
     width: 44px;
     height: 44px;
-    background: rgba(255, 255, 255, 0.98);
-    border: 2px solid rgba(255, 255, 255, 0.35);
+    background: var(--gradient-secondary);
+    border: 2px solid rgba(255, 255, 255, 0.3);
   }
 
   .bottom-nav-create:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px var(--shadow);
   }
 
   .bottom-nav-create.is-active {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 30px var(--shadow);
   }
 
-  /* Trip Proposal Cards */
+  /* Trip Cards - Purple/Violet Theme */
   .trip-card {
-    @apply cacun-container hover:cursor-pointer overflow-hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px var(--shadow);
+    padding: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease-out;
+    border-radius: 24px 24px 24px 4px;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .trip-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    pointer-events: none;
+    background: var(--gradient-primary);
+    border-radius: 24px 24px 24px 4px;
+  }
+
+  .trip-card > * {
+    position: relative;
+    z-index: 10;
+  }
+
+  .trip-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 20px 40px var(--shadow);
+    border-color: var(--primary-light);
   }
 
   .trip-card-image {
-    @apply w-full h-48 object-cover;
+    width: 100%;
+    height: 12rem;
+    object-fit: cover;
     border-radius: 20px 20px 0 0;
-    margin: -24px -24px 16px -24px;
+    margin: -1.5rem -1.5rem 1rem -1.5rem;
   }
 
   .trip-host-info {
-    @apply flex items-center space-x-3 mb-4;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
   }
 
   .trip-host-avatar {
-    @apply w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
   }
 
   .trip-details {
-    @apply space-y-2 mb-4;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .trip-budget {
-    @apply text-primary font-bold text-lg;
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1.125rem;
   }
 
   .request-button {
-    @apply w-full bg-primary hover:opacity-90 text-white py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105;
+    width: 100%;
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    transform: scale(1);
+    border: none;
+    cursor: pointer;
   }
 
+  .request-button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  /* Home Dashboard - Purple/Violet Theme */
   .home-dashboard {
-    @apply w-full;
+    width: 100%;
     height: calc(100vh - 10rem);
     min-height: 520px;
   }
 
   .home-search {
-    @apply mb-6;
+    margin-bottom: 1.5rem;
   }
 
   .home-search-input {
-    @apply w-full pl-12 pr-4 py-4 rounded-2xl text-text outline-none transition;
-    background: rgba(26, 66, 74, 0.62);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    padding-left: 3rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 1rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s ease;
+    background: var(--bg-accent);
+    border: 1px solid var(--border);
     backdrop-filter: blur(18px);
   }
 
   .home-search-input:focus {
-    border-color: rgba(230, 126, 95, 0.45);
-    box-shadow: 0 0 0 3px rgba(230, 126, 95, 0.12);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--shadow);
   }
 
   .home-search-icon {
-    @apply absolute left-4 top-1/2 -translate-y-1/2;
-    color: rgba(230, 126, 95, 0.95);
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary);
   }
 
   .home-search-results {
-    @apply absolute left-0 right-0 mt-2 rounded-2xl overflow-hidden;
-    background: rgba(15, 44, 51, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     backdrop-filter: blur(18px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    box-shadow: 0 20px 50px var(--shadow);
     z-index: 60;
   }
 
@@ -321,11 +682,11 @@
   }
 
   .pillar-fill-behavior {
-    @apply bg-green-500;
+    background: var(--primary);
   }
 
   .pillar-fill-problem {
-    @apply bg-blue-500;
+    background: var(--secondary);
   }
 
   .pillar-fill-vibe {

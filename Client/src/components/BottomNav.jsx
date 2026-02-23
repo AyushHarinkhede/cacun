@@ -154,7 +154,7 @@ export default function BottomNav() {
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0, opacity: 0, y: -10 }}
                         transition={{ type: "spring", stiffness: 600, damping: 25 }}
-                        className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-[10px] px-2 py-1 rounded-md font-bold shadow-md"
+                        className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white text-[10px] px-2 py-1 rounded-md font-bold shadow-md"
                       >
                         <span className="text-white text-[10px] font-bold">
                           {item.shortLabel}
@@ -203,25 +203,12 @@ export default function BottomNav() {
                       animate={{ scale: 1, opacity: 1, y: 0 }}
                       exit={{ scale: 0, opacity: 0, y: -10 }}
                       transition={{ type: "spring", stiffness: 600, damping: 25 }}
-                      className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-[10px] px-2 py-1 rounded-md font-bold shadow-md"
+                      className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white text-[10px] px-2 py-1 rounded-md font-bold shadow-md"
                     >
                       <span className="text-white text-[10px] font-bold">
                         {item.shortLabel}
                       </span>
                     </motion.div>
-                  )}
-                </AnimatePresence>
-                
-                {/* Active indicator dot */}
-                <AnimatePresence>
-                  {active === item.id && (
-                    <motion.div
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full shadow-lg"
-                    />
                   )}
                 </AnimatePresence>
               </motion.button>

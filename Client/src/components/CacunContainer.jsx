@@ -44,7 +44,7 @@ export default function CacunContainer({
       <div 
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
-          background: 'linear-gradient(135deg, #E67E5F 0%, transparent 60%)',
+          background: 'linear-gradient(135deg, var(--primary) 0%, transparent 60%)',
           borderRadius: '24px 24px 24px 8px',
         }}
       />

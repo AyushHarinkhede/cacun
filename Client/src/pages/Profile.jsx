@@ -5,6 +5,7 @@ import {
   Star, MapPin, Calendar, Award, Users, Shield, LogOut, Edit, Eye, EyeOff, 
   Mail, Lock, User, Camera, Settings, X, Check, AlertCircle, Upload
 } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Simple in-memory auth store
 let authUser = JSON.parse(localStorage.getItem('cacun_user') || 'null');
@@ -24,6 +25,7 @@ function setUserProfile(profile) {
 }
 
 export default function Profile() {
+  const { isDark } = useTheme();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: '', password: '', name: '', rememberMe: false });
@@ -216,7 +218,10 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto space-y-6">
+      <div className="max-w-md mx-auto space-y-6" style={{
+        minHeight: '100vh',
+        padding: '2rem'
+      }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -281,7 +286,7 @@ export default function Profile() {
                 </div>
               )}
               {successMessage && (
-                <div className="text-green-400 text-sm text-center flex items-center justify-center gap-2">
+                <div className="text-purple-400 text-sm text-center flex items-center justify-center gap-2">
                   <Check className="w-4 h-4" />
                   {successMessage}
                 </div>
@@ -381,7 +386,10 @@ export default function Profile() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{
+      minHeight: '100vh',
+      padding: '2rem'
+    }}>
       {/* Profile Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -767,7 +775,7 @@ export default function Profile() {
                 </div>
               )}
               {successMessage && (
-                <div className="mt-4 text-green-400 text-sm flex items-center gap-2">
+                <div className="mt-4 text-purple-400 text-sm flex items-center gap-2">
                   <Check className="w-4 h-4" />
                   {successMessage}
                 </div>

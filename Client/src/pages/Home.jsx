@@ -17,12 +17,22 @@ import {
   Calendar,
   Filter,
   X,
+  Sparkles,
+  Compass,
+  Globe,
+  Map,
+  Camera,
+  Mountain,
+  Waves,
+  TreePine,
 } from 'lucide-react';
 import CacunContainer from '../components/CacunContainer';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const [likedPost, setLikedPost] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -165,10 +175,10 @@ export default function Home() {
   };
 
   const categories = [
-    { id: 'all', label: 'All', icon: TrendingUp },
-    { id: 'adventure', label: 'Adventure', icon: Users },
-    { id: 'beach', label: 'Beach', icon: MapPin },
-    { id: 'cultural', label: 'Cultural', icon: Calendar },
+    { id: 'all', label: 'All', icon: Sparkles },
+    { id: 'adventure', label: 'Adventure', icon: Mountain },
+    { id: 'beach', label: 'Beach', icon: Waves },
+    { id: 'cultural', label: 'Cultural', icon: TreePine },
   ];
 
   const posts = useMemo(
@@ -229,7 +239,9 @@ export default function Home() {
   };
 
   return (
-    <div className="home-dashboard">
+    <div className="home-dashboard" style={{
+      minHeight: '100vh'
+    }}>
       <div className="home-search">
         <div className="relative">
           <Search className="home-search-icon" />
@@ -246,11 +258,17 @@ export default function Home() {
             }}
             placeholder="Search features, trips, or people..."
             className="home-search-input"
+            style={{
+              background: 'var(--bg-accent)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-primary)'
+            }}
           />
           
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-text transition"
+            className="absolute right-4 top-1/2 -translate-y-1/2 transition"
+            style={{ color: 'var(--text-muted)' }}
           >
             <Filter className="w-5 h-5" />
           </button>

@@ -6,8 +6,10 @@ import {
   Paperclip, Mic, Smile, Check, CheckCheck, Ban, Trash2, Download,
   Circle, UserCircle, X, Upload, Play, Pause, Settings
 } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Messages() {
+  const { isDark } = useTheme();
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [message, setMessage] = useState('');
@@ -316,8 +318,11 @@ export default function Messages() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
-      {/* Search Header */}
+    <div className="h-screen flex flex-col overflow-hidden" style={{
+      background: 'var(--bg-primary)',
+      backgroundImage: 'var(--texture-pattern)'
+    }}>
+      {/* Search Header - Fixed */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -330,15 +335,20 @@ export default function Messages() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-card border border-primary/20 rounded-lg text-text placeholder-text-muted focus:outline-none focus:border-primary"
+            className="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none"
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-primary)'
+            }}
           />
         </div>
       </motion.div>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Conversation List */}
-        <div className={`${isMobileView && selectedConversation ? 'hidden' : 'flex'} flex-col w-full md:w-96 border-r border-primary/20 flex-shrink-0`}>
-          <div className="flex-1 overflow-y-auto">
+        {/* Conversation List - Fixed */}
+        <div className={`${isMobileView && selectedConversation ? 'hidden' : 'flex'} flex-col w-full md:w-96 flex-shrink-0`} style={{ borderRight: '1px solid var(--border)' }}>
+          <div className="flex-1 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
             {filteredConversations.map((conversation, index) => (
               <motion.div
                 key={conversation.id}
@@ -349,9 +359,13 @@ export default function Messages() {
                   setSelectedConversation(conversation.id);
                   markAsRead();
                 }}
-                className={`p-4 border-b border-primary/10 cursor-pointer transition-colors ${
+                className={`p-4 border-b cursor-pointer transition-colors ${
                   selectedConversation === conversation.id ? 'bg-primary/10' : 'hover:bg-primary/5'
                 }`}
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-primary)'
+                }}
               >
                 <div className="flex items-center space-x-3">
                   <div className="relative">
@@ -359,7 +373,7 @@ export default function Messages() {
                       <span className="text-primary font-semibold">{conversation.avatar}</span>
                     </div>
                     {conversation.online && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-purple-500 rounded-full border-2 border-background"></div>
                     )}
                     {conversation.typing && (
                       <div className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-background animate-pulse"></div>
@@ -411,7 +425,7 @@ export default function Messages() {
                       <span className="text-primary font-semibold">{currentConversation.avatar}</span>
                     </div>
                     {currentConversation.online && (
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-card"></div>
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-purple-500 rounded-full border-2 border-card"></div>
                     )}
                   </div>
                   <div>

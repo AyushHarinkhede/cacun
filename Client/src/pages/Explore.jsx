@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, MapPin, Calendar, Users, Filter, ChevronLeft, ChevronRight, Heart, Star, Send, User, Loader2, TrendingUp, Globe, Clock, DollarSign, Mountain, TreePine, Waves, Camera, Map, Compass, Home, Plane, Ship, Car, Train } from 'lucide-react';
 import CacunContainer from '../components/CacunContainer';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Explore() {
+  const { isDark } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [priceRange, setPriceRange] = useState([0, 5000]);
@@ -861,7 +863,9 @@ export default function Explore() {
   // No load more function needed - all trips are shown
 
   return (
-    <div className="explore-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="explore-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{
+      minHeight: '100vh'
+    }}>
       {/* Search Section */}
       <div className="slide-in-up">
         <div className="flex items-center justify-between mb-6">
@@ -1168,7 +1172,7 @@ export default function Explore() {
                     </span>
                   )}
                   {trip.accommodation && (
-                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1">
+                    <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
                       <Home className="w-3 h-3" />
                       {trip.accommodation}
                     </span>
@@ -1187,7 +1191,7 @@ export default function Explore() {
                     onClick={() => handleRequestToJoin(trip.id)}
                     className={`flex-1 py-3 rounded-xl font-semibold transition ${
                       requests.includes(trip.id)
-                        ? 'bg-green-500/20 text-green-500 border border-green-500/30'
+                        ? 'bg-purple-500/20 text-purple-500 border border-purple-500/30'
                         : 'request-button'
                     }`}
                   >
