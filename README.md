@@ -1,7 +1,15 @@
 # Cacun - MERN Stack Redesign
 
-A complete rebuild of Cacun webapp using MERN stack (MongoDB, Express, React, Node.js).
+A complete rebuild of the Cacun webapp using the MERN stack (MongoDB, Express, React, Node.js).
 
+<div style="display: flex; align-items: center; justify-content: flex-start; gap: 0px;">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=9643F7&background=00000000&center=false&vCenter=true&width=85&lines=cacun" alt="cacun" />
+  
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=FF0000&background=00000000&center=false&vCenter=true&width=50&startDelay=1500&lines=is" alt="is" />
+  
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=23F709&background=00000000&center=false&vCenter=true&width=220&startDelay=3000&lines=Live!🌱" alt="Live" />
+</div> 
+ 
 ---
 
 ## 🌍 About Cacun
@@ -61,7 +69,7 @@ To create a world where every purchase contributes to a healthier planet by offe
 
 ### **Installation**
 ```bash
-# Clone repository
+# Clone the repository
 git clone https://github.com/AyushHarinkhede/cacun.git
 
 # Navigate to project directory
@@ -84,6 +92,9 @@ npm run preview
 ```
 
 ## 📁 **Project Structure**
+=======
+## Project Structure
+>>>>>>> e412424 (cacun new redesign)
 
 ```
 cacun/

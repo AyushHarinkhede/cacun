@@ -585,7 +585,7 @@ export default function Profile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 pt-24"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
             onClick={() => setIsEditing(false)}
           >
             <motion.div
@@ -593,7 +593,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-background rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto mb-20"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-text">Edit Profile</h3>
@@ -800,7 +800,7 @@ export default function Profile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 pt-24"
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4"
             onClick={() => setShowSettings(false)}
           >
             <motion.div
@@ -808,7 +808,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-md w-full"
+              className="bg-background rounded-xl p-6 max-w-md w-full mb-20"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-text">Settings</h3>
@@ -950,7 +950,7 @@ export default function Profile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 pt-24"
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4"
             onClick={() => setShowLogoutDialog(false)}
           >
             <motion.div
@@ -958,7 +958,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-sm w-full"
+              className="bg-background rounded-xl p-6 max-w-sm w-full mb-20"
             >
               <h3 className="text-lg font-semibold text-text mb-2">Confirm Logout</h3>
               <p className="text-text-muted mb-6">
