@@ -225,7 +225,7 @@ export default function Messages() {
   const sendMessage = () => {
     if (message.trim() && currentConversation) {
       const newMessage = {
-        id: currentConversation.messages.length + 1,
+        id: Date.now(),
         text: message,
         sender: 'me',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -234,38 +234,17 @@ export default function Messages() {
       
       // Add message to conversation
       currentConversation.messages.push(newMessage);
+      
+      // Force re-render by updating state
       setMessage('');
       setShowEmojiPicker(false);
       
       // Mark as read after a delay
       setTimeout(() => {
         newMessage.read = true;
+        // Force re-render again
+        setMessage(prev => prev);
       }, 1000);
-      
-      // Simulate front user reply
-      setTimeout(() => {
-        const replies = [
-          'That sounds great! 👍',
-          'I totally agree with you!',
-          'Interesting, tell me more!',
-          'Sure, let\'s do that!',
-          'Thanks for sharing!',
-          'That\'s awesome! 😊',
-          'I\'m on board with this idea.',
-          'Perfect! Let me know when you\'re ready.'
-        ];
-        
-        const replyMessage = {
-          id: currentConversation.messages.length + 1,
-          text: replies[Math.floor(Math.random() * replies.length)],
-          sender: 'other',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          read: true
-        };
-        
-        currentConversation.messages.push(replyMessage);
-        scrollToBottom();
-      }, 2000 + Math.random() * 2000); // Random delay between 2-4 seconds
       
       scrollToBottom();
     }
@@ -337,7 +316,7 @@ export default function Messages() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden fixed inset-0">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       {/* Search Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -410,7 +389,7 @@ export default function Messages() {
 
         {/* Chat Area */}
         {currentConversation ? (
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-h-0">
             {/* Chat Header */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -502,7 +481,7 @@ export default function Messages() {
             </motion.div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
               {currentConversation.messages.map((msg) => (
                 <motion.div
                   key={msg.id}
