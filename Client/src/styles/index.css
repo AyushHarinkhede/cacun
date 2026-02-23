@@ -7,8 +7,8 @@
   /* Light Mode Colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9ff;
-  --bg-card: #ffffff;
-  --bg-accent: #f3f0ff;
+  --bg-card: #f3f0ff;
+  --bg-accent: #e9d5ff;
   --text-primary: #1a1a2e;
   --text-secondary: #2d2d4a;
   --text-muted: #4a4a6a;
@@ -118,32 +118,40 @@
     background-color: #ffffff !important;
   }
   
-  /* Ensure all containers use theme backgrounds */
+  /* Light mode specific fixes for purple-toned containers */
   .cacun-container {
     background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
   }
-  
+
   .glass-container {
     background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
   }
-  
-  /* Fix form inputs */
+
+  /* Light mode form inputs with purple tones */
   input, textarea, select {
     background-color: var(--bg-card) !important;
     color: var(--text-primary) !important;
     border-color: var(--border) !important;
   }
-  
+
   input::placeholder {
     color: var(--text-muted) !important;
   }
-  
-  /* Fix buttons */
+
+  /* Light mode cards and sections */
+  .bg-card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  /* Light mode buttons and interactive elements */
   button {
     color: inherit;
   }
-  
-  /* Fix links */
+
+  /* Light mode links */
   a {
     color: var(--primary) !important;
   }
@@ -339,13 +347,13 @@
     border-color: var(--primary-light);
   }
 
-  /* Floating Bottom Navigation - Purple/Violet Theme */
+  /* Floating Bottom Navigation - Glass Effect */
   .bottom-nav {
     position: fixed;
     left: 50%;
     bottom: 1.5rem;
-    z-index: 50;
     transform: translateX(-50%);
+    z-index: 50;
     width: max-content;
   }
 
@@ -353,18 +361,30 @@
     position: relative;
     display: flex;
     align-items: center;
-    padding: 0.5rem 1.5rem;
-    box-shadow: 0 20px 40px var(--shadow);
-    background: var(--gradient-primary);
+    justify-content: center;
+    padding: 12px 24px;
+    background: rgba(124, 58, 237, 0.15);
     backdrop-filter: blur(20px);
-    border-radius: 9999px;
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    box-shadow: 
+      0 8px 32px rgba(124, 58, 237, 0.2),
+      0 4px 16px rgba(124, 58, 237, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .bottom-nav-container:hover {
-    box-shadow: 0 25px 50px var(--shadow);
-    transform: translateY(-2px);
+    background: rgba(124, 58, 237, 0.25);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 12px 40px rgba(124, 58, 237, 0.3),
+      0 6px 20px rgba(124, 58, 237, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
   }
 
   .bottom-nav-items {
