@@ -503,10 +503,10 @@ export default function Messages() {
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                  <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl message-bubble ${
                     msg.sender === 'me'
-                      ? 'bg-primary text-white'
-                      : 'bg-card text-text border border-primary/20'
+                      ? 'own'
+                      : ''
                   }`}>
                     <p className="text-sm">{msg.text}</p>
                     <div className={`flex items-center justify-end space-x-1 mt-1 ${
@@ -524,7 +524,7 @@ export default function Messages() {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-primary/20 bg-card flex-shrink-0">
+            <div className="p-4 border-t border-primary/20 glass-effect flex-shrink-0">
               <div className="flex items-center space-x-2">
                 <input
                   type="file"
@@ -535,7 +535,7 @@ export default function Messages() {
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors glass-effect"
                 >
                   <Paperclip className="w-5 h-5 text-text" />
                 </button>

@@ -260,10 +260,373 @@
     scroll-behavior: smooth !important;
   }
 
-  /* Custom scrollbar for webkit browsers */
-  ::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
+  /* Global Purple Glass Effect for All Sections - Always Visible */
+  .glass-effect {
+    background: rgba(124, 58, 237, 0.25) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 16px !important;
+    box-shadow: 
+      0 12px 40px rgba(124, 58, 237, 0.3),
+      0 6px 20px rgba(124, 58, 237, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-effect:hover {
+    background: rgba(124, 58, 237, 0.35) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+      0 16px 50px rgba(124, 58, 237, 0.4),
+      0 8px 25px rgba(124, 58, 237, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-2px);
+  }
+
+  /* Dark mode glass effect - Always Visible */
+  [data-theme="dark"] .glass-effect {
+    background: rgba(167, 139, 250, 0.25) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 
+      0 12px 40px rgba(167, 139, 250, 0.3),
+      0 6px 20px rgba(167, 139, 250, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  }
+
+  [data-theme="dark"] .glass-effect:hover {
+    background: rgba(167, 139, 250, 0.35) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 16px 50px rgba(167, 139, 250, 0.4),
+      0 8px 25px rgba(167, 139, 250, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+
+  /* Apply glass effect to specific sections - Always Visible */
+  .home-search-input {
+    background: rgba(124, 58, 237, 0.25) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 16px !important;
+    box-shadow: 
+      0 12px 40px rgba(124, 58, 237, 0.3),
+      0 6px 20px rgba(124, 58, 237, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .home-search-input:focus {
+    background: rgba(124, 58, 237, 0.35) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(124, 58, 237, 0.4) !important;
+    box-shadow: 
+      0 16px 50px rgba(124, 58, 237, 0.4),
+      0 8px 25px rgba(124, 58, 237, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  }
+
+  .home-search-results {
+    background: rgba(124, 58, 237, 0.25) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 16px !important;
+    box-shadow: 
+      0 12px 40px rgba(124, 58, 237, 0.3),
+      0 6px 20px rgba(124, 58, 237, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* All major sections with glass effect - Always Visible */
+  .cacun-container,
+  .glass-container,
+  .trip-card,
+  .notification-dropdown,
+  .message-bubble,
+  .profile-section,
+  .login-form,
+  .logout-modal,
+  .settings-panel,
+  .edit-profile-form,
+  .confirm-dialog,
+  .hover-card,
+  .dropdown-menu {
+    background: rgba(124, 58, 237, 0.25) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 16px !important;
+    box-shadow: 
+      0 12px 40px rgba(124, 58, 237, 0.3),
+      0 6px 20px rgba(124, 58, 237, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cacun-container:hover,
+  .glass-container:hover,
+  .trip-card:hover,
+  .notification-dropdown:hover,
+  .message-bubble:hover,
+  .profile-section:hover,
+  .login-form:hover,
+  .logout-modal:hover,
+  .settings-panel:hover,
+  .edit-profile-form:hover,
+  .confirm-dialog:hover,
+  .hover-card:hover,
+  .dropdown-menu:hover {
+    background: rgba(124, 58, 237, 0.35) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+      0 16px 50px rgba(124, 58, 237, 0.4),
+      0 8px 25px rgba(124, 58, 237, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-2px);
+  }
+
+  /* Glass effect for all buttons - Always Visible */
+  button {
+    background: rgba(124, 58, 237, 0.25) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 12px !important;
+    box-shadow: 
+      0 8px 32px rgba(124, 58, 237, 0.2),
+      0 4px 16px rgba(124, 58, 237, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--text-primary) !important;
+  }
+
+  button:hover {
+    background: rgba(124, 58, 237, 0.35) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+      0 12px 40px rgba(124, 58, 237, 0.3),
+      0 6px 20px rgba(124, 58, 237, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+  }
+
+  button:active {
+    background: rgba(124, 58, 237, 0.4) !important;
+    backdrop-filter: blur(35px) !important;
+    -webkit-backdrop-filter: blur(35px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 
+      0 8px 32px rgba(124, 58, 237, 0.4),
+      0 4px 16px rgba(124, 58, 237, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-1px) scale(0.98) !important;
+  }
+
+  /* Dark mode buttons */
+  [data-theme="dark"] button {
+    background: rgba(167, 139, 250, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 
+      0 8px 32px rgba(167, 139, 250, 0.2),
+      0 4px 16px rgba(167, 139, 250, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+  }
+
+  [data-theme="dark"] button:hover {
+    background: rgba(167, 139, 250, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 12px 40px rgba(167, 139, 250, 0.3),
+      0 6px 20px rgba(167, 139, 250, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  }
+
+  [data-theme="dark"] button:active {
+    background: rgba(167, 139, 250, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+      0 8px 32px rgba(167, 139, 250, 0.4),
+      0 4px 16px rgba(167, 139, 250, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+
+  /* Special button overrides for primary actions */
+  .request-button,
+  .dashboard-find-btn,
+  .bg-primary,
+  button[type="submit"] {
+    background: var(--gradient-primary) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  }
+
+  .request-button:hover,
+  .dashboard-find-btn:hover,
+  .bg-primary:hover,
+  button[type="submit"]:hover {
+    background: var(--gradient-secondary) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+  }
+
+  .request-button:active,
+  .dashboard-find-btn:active,
+  .bg-primary:active,
+  button[type="submit"]:active {
+    background: var(--gradient-accent) !important;
+    transform: translateY(-1px) scale(0.95) !important;
+  }
+
+  /* Profile section specific glass effects */
+  .edit-profile-section,
+  .confirm-logout-section,
+  .login-section,
+  .signup-section,
+  .profile-hover-section {
+    background: rgba(124, 58, 237, 0.25) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 16px !important;
+    box-shadow: 
+      0 12px 40px rgba(124, 58, 237, 0.3),
+      0 6px 20px rgba(124, 58, 237, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .edit-profile-section:hover,
+  .confirm-logout-section:hover,
+  .login-section:hover,
+  .signup-section:hover,
+  .profile-hover-section:hover {
+    background: rgba(124, 58, 237, 0.35) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+      0 16px 50px rgba(124, 58, 237, 0.4),
+      0 8px 25px rgba(124, 58, 237, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-2px) !important;
+  }
+
+  /* Dark mode profile sections */
+  [data-theme="dark"] .edit-profile-section,
+  [data-theme="dark"] .confirm-logout-section,
+  [data-theme="dark"] .login-section,
+  [data-theme="dark"] .signup-section,
+  [data-theme="dark"] .profile-hover-section {
+    background: rgba(167, 139, 250, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 
+      0 12px 40px rgba(167, 139, 250, 0.3),
+      0 6px 20px rgba(167, 139, 250, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  }
+
+  [data-theme="dark"] .edit-profile-section:hover,
+  [data-theme="dark"] .confirm-logout-section:hover,
+  [data-theme="dark"] .login-section:hover,
+  [data-theme="dark"] .signup-section:hover,
+  [data-theme="dark"] .profile-hover-section:hover {
+    background: rgba(167, 139, 250, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 16px 50px rgba(167, 139, 250, 0.4),
+      0 8px 25px rgba(167, 139, 250, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+
+  /* Message bubbles with glass effect */
+  .message-bubble {
+    background: rgba(124, 58, 237, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+  }
+
+  .message-bubble.own {
+    background: rgba(124, 58, 237, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  /* Profile and auth forms */
+  .login-form,
+  .edit-profile-form {
+    background: rgba(124, 58, 237, 0.12);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 24px;
+    padding: 2rem;
+  }
+
+  /* Modals and dialogs */
+  .logout-modal,
+  .confirm-dialog {
+    background: rgba(124, 58, 237, 0.18);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 1.5rem;
+  }
+
+  /* Dropdown menus */
+  .dropdown-menu,
+  .notification-dropdown {
+    background: rgba(124, 58, 237, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  /* Settings panel */
+  .settings-panel {
+    background: rgba(124, 58, 237, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+  }
+
+  /* Dark mode specific adjustments */
+  [data-theme="dark"] .home-search-input {
+    background: rgba(167, 139, 250, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  [data-theme="dark"] .home-search-input:focus {
+    background: rgba(167, 139, 250, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+  }
+
+  [data-theme="dark"] .message-bubble {
+    background: rgba(167, 139, 250, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  [data-theme="dark"] .message-bubble.own {
+    background: rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   /* Update Tailwind custom properties */
@@ -363,28 +726,28 @@
     align-items: center;
     justify-content: center;
     padding: 12px 24px;
-    background: rgba(124, 58, 237, 0.15);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 24px;
-    box-shadow: 
-      0 8px 32px rgba(124, 58, 237, 0.2),
-      0 4px 16px rgba(124, 58, 237, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .bottom-nav-container:hover {
     background: rgba(124, 58, 237, 0.25);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
     box-shadow: 
       0 12px 40px rgba(124, 58, 237, 0.3),
       0 6px 20px rgba(124, 58, 237, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transform: translateY(-3px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bottom-nav-container:hover {
+    background: rgba(124, 58, 237, 0.35);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+      0 16px 50px rgba(124, 58, 237, 0.4),
+      0 8px 25px rgba(124, 58, 237, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-4px);
   }
 
   .bottom-nav-items {

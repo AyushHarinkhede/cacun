@@ -241,39 +241,10 @@ export default function Profile() {
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder="Your name"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-background/40 border border-white/10 text-text placeholder-text-muted focus:outline-none focus:border-primary/60"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl glass-effect text-text placeholder-text-muted focus:outline-none"
                     />
                   </div>
                 </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-text mb-1">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/60" />
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="you@example.com"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-background/40 border border-white/10 text-text placeholder-text-muted focus:outline-none focus:border-primary/60"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text mb-1">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/60" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-3 rounded-xl bg-background/40 border border-white/10 text-text placeholder-text-muted focus:outline-none focus:border-primary/60"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/60 hover:text-primary"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
