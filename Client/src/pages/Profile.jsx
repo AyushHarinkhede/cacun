@@ -241,10 +241,39 @@ export default function Profile() {
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder="Your name"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl glass-effect text-text placeholder-text-muted focus:outline-none"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-background/40 border border-white/10 text-text placeholder-text-muted focus:outline-none focus:border-primary/60"
                     />
                   </div>
                 </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-text mb-1">Email</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/60" />
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="you@example.com"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-background/40 border border-white/10 text-text placeholder-text-muted focus:outline-none focus:border-primary/60"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-text mb-1">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/60" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-12 py-3 rounded-xl bg-background/40 border border-white/10 text-text placeholder-text-muted focus:outline-none focus:border-primary/60"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/60 hover:text-primary"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -264,7 +293,7 @@ export default function Profile() {
               )}
               <button
                 type="submit"
-                className="w-full bg-primary hover:opacity-90 text-white py-3 rounded-xl font-semibold transition"
+                className="login-button w-full px-4 py-2 rounded-lg font-semibold transition"
               >
                 {isLogin ? 'Login' : 'Sign Up'}
               </button>
@@ -402,7 +431,7 @@ export default function Profile() {
               </button>
               <button
                 onClick={() => setShowLogoutDialog(true)}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition flex items-center gap-2"
+                className="logout-button px-4 py-2 rounded-lg font-semibold transition flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -572,7 +601,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto mb-20"
+              className="glass-effect edit-profile-form bg-background rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto mx-auto"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-text">Edit Profile</h3>
@@ -787,7 +816,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-md w-full mb-20"
+              className="glass-effect settings-panel bg-background rounded-xl p-6 max-w-md w-full mx-auto"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-text">Settings</h3>
@@ -937,7 +966,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-sm w-full mb-20"
+              className="glass-effect logout-modal bg-background rounded-xl p-6 max-w-sm w-full mx-auto"
             >
               <h3 className="text-lg font-semibold text-text mb-2">Confirm Logout</h3>
               <p className="text-text-muted mb-6">
@@ -946,13 +975,13 @@ export default function Profile() {
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowLogoutDialog(false)}
-                  className="flex-1 px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg font-semibold transition"
+                  className="confirm-logout-button flex-1 px-4 py-2 rounded-lg font-semibold transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition"
+                  className="logout-button flex-1 px-4 py-2 rounded-lg font-semibold transition"
                 >
                   Logout
                 </button>

@@ -257,10 +257,7 @@ export default function Home() {
               }
             }}
             placeholder="Search features, trips, or people..."
-            className="home-search-input glass-effect"
-            style={{
-              color: 'var(--text-primary)'
-            }}
+            className="home-search-input w-full px-12 py-4 rounded-xl text-text placeholder-text-muted focus:outline-none"
           />
           
           <button
@@ -302,7 +299,7 @@ export default function Home() {
           )}
 
           {searchOpen && featureResults.length > 0 && (
-            <div className="home-search-results glass-effect">
+            <div className="home-search-results">
               {featureResults.slice(0, 7).map((item) => (
                 <button
                   key={item.id}
@@ -334,7 +331,7 @@ export default function Home() {
                   setSearchQuery(search);
                   handleSearch(search);
                 }}
-                className="px-3 py-1 glass-effect rounded-full text-xs text-text whitespace-nowrap transition"
+                className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-xs text-text whitespace-nowrap hover:bg-white/20 transition"
               >
                 {search}
               </button>
