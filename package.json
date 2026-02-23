@@ -6,7 +6,7 @@
     "start:server": "npm --prefix server run start",
     "dev:server": "npm --prefix server run dev",
     "start:client": "npm --prefix client run dev",
-    "dev": "cross-env COMSPEC=C:\\Windows\\System32\\cmd.exe concurrently --shell powershell.exe \"npm run dev:server\" \"npm run start:client\"",
+    "dev": "node dev-runner.js",
     "install:all": "npm --prefix server install && npm --prefix client install"
   },
   "devDependencies": {

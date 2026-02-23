@@ -45,21 +45,59 @@
   }
 
   .cacun-container:hover {
-    @apply scale-102;
+    @apply scale-105;
     box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   }
 
   /* Floating Bottom Navigation */
   .bottom-nav {
-    @apply fixed left-1/2 transform -translate-x-1/2 bottom-6 z-50;
+    @apply fixed left-1/2 bottom-6 z-50;
+    transform: translateX(-50%);
+    width: max-content;
   }
 
   .bottom-nav-container {
-    @apply relative flex items-center px-6 py-3 shadow-2xl;
+    @apply relative flex items-center px-4 py-3 shadow-2xl;
     background-color: rgba(230, 126, 95, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 9999px;
     border: 1px solid rgba(230, 126, 95, 0.3);
+  }
+
+  .bottom-nav-items {
+    @apply flex items-center;
+    gap: 14px;
+  }
+
+  .bottom-nav-item {
+    @apply px-3 py-2 rounded-full transition-all duration-200;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .bottom-nav-item:hover {
+    color: rgba(255, 255, 255, 1);
+    background: rgba(15, 44, 51, 0.12);
+  }
+
+  .bottom-nav-item.is-active {
+    color: rgba(255, 255, 255, 1);
+    background: rgba(15, 44, 51, 0.18);
+  }
+
+  .bottom-nav-create {
+    @apply flex items-center justify-center rounded-full shadow-xl transition-all duration-200;
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .bottom-nav-create:hover {
+    transform: translateY(-1px);
+  }
+
+  .bottom-nav-create.is-active {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   }
 
   /* Trip Proposal Cards */
@@ -91,6 +129,111 @@
 
   .request-button {
     @apply w-full bg-primary hover:opacity-90 text-white py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105;
+  }
+
+  .home-dashboard {
+    @apply w-full;
+    height: calc(100vh - 10rem);
+    min-height: 520px;
+  }
+
+  .home-search {
+    @apply mb-6;
+  }
+
+  .home-search-input {
+    @apply w-full pl-12 pr-4 py-4 rounded-2xl text-text outline-none transition;
+    background: rgba(26, 66, 74, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(18px);
+  }
+
+  .home-search-input:focus {
+    border-color: rgba(230, 126, 95, 0.45);
+    box-shadow: 0 0 0 3px rgba(230, 126, 95, 0.12);
+  }
+
+  .home-search-icon {
+    @apply absolute left-4 top-1/2 -translate-y-1/2;
+    color: rgba(230, 126, 95, 0.95);
+  }
+
+  .home-search-results {
+    @apply absolute left-0 right-0 mt-2 rounded-2xl overflow-hidden;
+    background: rgba(15, 44, 51, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    z-index: 60;
+  }
+
+  .home-search-result {
+    @apply w-full text-left px-4 py-3 transition;
+  }
+
+  .home-search-result:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .dashboard-grid {
+    @apply grid gap-6;
+    grid-template-columns: 340px minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+
+  .dashboard-left,
+  .dashboard-center,
+  .dashboard-right {
+    @apply space-y-6;
+    max-height: 100%;
+    overflow: auto;
+    padding-right: 4px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .dashboard-left::-webkit-scrollbar,
+  .dashboard-center::-webkit-scrollbar,
+  .dashboard-right::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .glass-container {
+    background: rgba(26, 66, 74, 0.68);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dashboard-icon-btn {
+    @apply w-9 h-9 rounded-full flex items-center justify-center transition;
+    background: rgba(15, 44, 51, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(245, 245, 245, 0.9);
+  }
+
+  .dashboard-icon-btn:hover {
+    background: rgba(15, 44, 51, 0.7);
+  }
+
+  .dashboard-select {
+    @apply w-full px-4 py-3 rounded-xl text-text outline-none transition;
+    background: rgba(15, 44, 51, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .dashboard-select:focus {
+    border-color: rgba(230, 126, 95, 0.45);
+    box-shadow: 0 0 0 3px rgba(230, 126, 95, 0.12);
+  }
+
+  .dashboard-find-btn {
+    @apply w-full py-3 rounded-xl font-semibold text-white transition;
+    background: rgba(230, 126, 95, 0.95);
+  }
+
+  .dashboard-find-btn:hover {
+    opacity: 0.92;
   }
 
   /* Reputation Dashboard */
@@ -277,6 +420,10 @@
     
     .highlights-grid {
       @apply grid-cols-2;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: 1fr;
     }
   }
 }

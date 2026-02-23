@@ -8,7 +8,7 @@ export default function Layout({ children }) {
         <img 
           src="/cacun.png" 
           alt="Cacun" 
-          className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
+          className="h-14 w-auto opacity-95 transition-opacity drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]"
         />
       </header>
 

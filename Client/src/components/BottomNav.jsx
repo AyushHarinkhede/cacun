@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Compass, PlusCircle, MessageCircle, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -9,12 +10,17 @@ export default function BottomNav() {
   const getActiveFromPath = () => {
     if (location.pathname === '/') return 'home';
     if (location.pathname === '/explore') return 'explore';
+    if (location.pathname === '/create') return 'create';
     if (location.pathname === '/messages') return 'messages';
     if (location.pathname === '/profile') return 'profile';
     return 'home';
   };
    
-  const [active, setActive] = useState(getActiveFromPath()); 
+  const [active, setActive] = useState(getActiveFromPath());
+
+  useEffect(() => {
+    setActive(getActiveFromPath());
+  }, [location.pathname]);
 
   const handleNavigation = (id) => {
     setActive(id);
@@ -26,7 +32,7 @@ export default function BottomNav() {
         navigate('/explore');
         break;
       case 'create':
-        console.log('Create post clicked');
+        navigate('/create');
         break;
       case 'messages':
         navigate('/messages');
@@ -48,36 +54,81 @@ export default function BottomNav() {
   return (
     <div className="bottom-nav">
       <div className="bottom-nav-container">
-        <div className="flex items-center gap-3">
+        <div className="bottom-nav-items">
           {items.map((item) => {
             const IconComp = item.icon;
             if (item.id === 'create') {
               return (
-                <button
+                <motion.button
                   key={item.id}
                   onClick={() => handleNavigation(item.id)}
                   aria-label={item.label}
-                  className="-mt-6 flex items-center justify-center w-14 h-14 rounded-full shadow-xl transition-all duration-300 transform hover:scale-110 bg-white"
+                  whileTap={{ scale: 0.88 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className={`bottom-nav-create ${active === 'create' ? 'is-active' : ''}`}
                 >
-                  <IconComp className="w-7 h-7 text-primary" />
-                </button>
+                  <motion.div
+                    animate={{ 
+                      rotate: active === 'create' ? 360 : 0,
+                      scale: active === 'create' ? 1.1 : 1
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <IconComp className="w-7 h-7 text-primary" />
+                  </motion.div>
+                </motion.button>
               );
             }
 
             return (
-              <button
+              <motion.button
                 key={item.id}
                 onClick={() => handleNavigation(item.id)}
                 aria-label={item.label}
-                className="p-2 rounded-full transition-all duration-200"
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.05, y: -1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className={`bottom-nav-item ${active === item.id ? 'is-active' : ''}`}
               >
                 <div className="flex flex-col items-center space-y-1">
-                  <IconComp className={`w-5 h-5 ${active === item.id ? 'text-white' : 'text-white/80'}`} />
-                  <span className={`text-xs ${active === item.id ? 'text-white' : 'text-white/80'}`}>
+                  <motion.div
+                    animate={{ 
+                      scale: active === item.id ? 1.1 : 1,
+                      rotate: active === item.id ? [0, 10, -10, 0] : 0
+                    }}
+                    transition={{ 
+                      scale: { duration: 0.2 },
+                      rotate: { duration: 0.4, ease: "easeInOut" }
+                    }}
+                  >
+                    <IconComp className="w-5 h-5" />
+                  </motion.div>
+                  <motion.span 
+                    className="text-xs"
+                    animate={{ 
+                      fontWeight: active === item.id ? 600 : 400,
+                      scale: active === item.id ? 1.05 : 1
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
                     {item.label}
-                  </span>
+                  </motion.span>
                 </div>
-              </button>
+                
+                {/* Active indicator */}
+                <AnimatePresence>
+                  {active === item.id && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full"
+                    />
+                  )}
+                </AnimatePresence>
+              </motion.button>
             );
           })}
         </div>
