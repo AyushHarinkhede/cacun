@@ -396,19 +396,21 @@
   .bottom-nav-item {
     padding: 0.5rem;
     border-radius: 9999px;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    color: rgba(255, 255, 255, 0.82);
+    color: var(--primary);
   }
 
   .bottom-nav-item:hover {
-    color: rgba(255, 255, 255, 1);
-    background: rgba(255, 255, 255, 0.15);
+    color: var(--primary-dark);
+    background: rgba(124, 58, 237, 0.1);
+    transform: scale(1.05);
   }
 
   .bottom-nav-item.is-active {
-    color: rgba(255, 255, 255, 1);
-    background: rgba(255, 255, 255, 0.25);
+    color: var(--primary-dark);
+    background: rgba(124, 58, 237, 0.15);
+    transform: scale(1.05);
   }
 
   .bottom-nav-create {
@@ -417,7 +419,7 @@
     justify-content: center;
     border-radius: 50%;
     box-shadow: 0 4px 20px var(--shadow);
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 44px;
     height: 44px;
     background: var(--gradient-secondary);
@@ -425,12 +427,42 @@
   }
 
   .bottom-nav-create:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 25px var(--shadow);
   }
 
   .bottom-nav-create.is-active {
     box-shadow: 0 8px 30px var(--shadow);
+    transform: scale(1.1);
+  }
+
+  /* Dark mode navbar fixes */
+  [data-theme="dark"] .bottom-nav-item {
+    color: var(--primary-light);
+  }
+
+  [data-theme="dark"] .bottom-nav-item:hover {
+    color: var(--primary);
+    background: rgba(167, 139, 250, 0.15);
+  }
+
+  [data-theme="dark"] .bottom-nav-item.is-active {
+    color: var(--primary);
+    background: rgba(167, 139, 250, 0.2);
+  }
+
+  [data-theme="dark"] .bottom-nav-create {
+    background: var(--gradient-primary);
+    border: 2px solid rgba(167, 139, 250, 0.4);
+    box-shadow: 0 4px 20px rgba(167, 139, 250, 0.3);
+  }
+
+  [data-theme="dark"] .bottom-nav-create:hover {
+    box-shadow: 0 6px 25px rgba(167, 139, 250, 0.4);
+  }
+
+  [data-theme="dark"] .bottom-nav-create.is-active {
+    box-shadow: 0 8px 30px rgba(167, 139, 250, 0.5);
   }
 
   /* Trip Cards - Purple/Violet Theme */
