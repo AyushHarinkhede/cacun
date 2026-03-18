@@ -6,10 +6,12 @@ import Messages from './pages/Messages';
 import Profile from './pages/Profile';
 import Layout from './components/Layout';
 import { ThemeProvider } from './contexts/ThemeContext';
+import SecurityProtection from './components/SecurityProtection';
 
 function App() {
   return (
     <ThemeProvider>
+      <SecurityProtection />
       <Router>
         <Layout>
           <Routes>

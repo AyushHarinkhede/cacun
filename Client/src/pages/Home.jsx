@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import {
   Bell,
   Bookmark,
@@ -45,6 +45,8 @@ export default function Home() {
   ]);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const filterRef = useRef(null);
 
   const highlightsRef = useRef(null);
   const reviewsRef = useRef(null);
@@ -174,6 +176,23 @@ export default function Home() {
     );
   };
 
+  // Close filter dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilters(false);
+      }
+    };
+
+    if (showFilters) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showFilters]);
+
   const categories = [
     { id: 'all', label: 'All', icon: Sparkles },
     { id: 'adventure', label: 'Adventure', icon: Mountain },
@@ -243,79 +262,114 @@ export default function Home() {
       minHeight: '100vh'
     }}>
       <div className="home-search">
-        <div className="relative">
-          <Search className="home-search-icon" />
-          <input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setSearchOpen(true)}
-            onBlur={() => setTimeout(() => setSearchOpen(false), 120)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleSearch(searchQuery);
-                setSearchOpen(false);
-              }
-            }}
-            placeholder="Search features, trips, or people..."
-            className="home-search-input w-full px-12 py-4 rounded-xl text-text placeholder-text-muted focus:outline-none"
-          />
-          
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 transition"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            <Filter className="w-5 h-5" />
-          </button>
+        <div className="relative flex items-center gap-2">
+          <div className={`relative flex-1 transition-all duration-300 ${isSearchFocused ? 'flex-grow' : ''}`}>
+            <Search className="home-search-icon" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => {
+                setSearchOpen(true);
+                setIsSearchFocused(true);
+              }}
+              onBlur={() => {
+                setTimeout(() => {
+                  setSearchOpen(false);
+                  setIsSearchFocused(false);
+                }, 120);
+              }}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch(searchQuery);
+                  setSearchOpen(false);
+                }
+              }}
+              placeholder="Search features, trips, or people..."
+              className={`home-search-input w-full px-12 py-4 rounded-xl text-text placeholder-text-muted focus:outline-none transition-all duration-300 ${
+                isSearchFocused ? 'px-16 py-5' : 'px-12 py-4'
+              }`}
+              style={{
+                fontSize: isSearchFocused ? '16px' : '14px',
+                minWidth: isSearchFocused ? '300px' : '200px'
+              }}
+            />
 
-          {showFilters && (
-            <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden glass-container border border-white/10 z-50">
-              <div className="p-4">
-                <h3 className="text-text font-semibold mb-3">Quick Filters</h3>
-                <div className="space-y-2">
-                  {categories.map(cat => {
-                    const IconComp = cat.icon;
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          setSelectedCategory(cat.id);
-                          setShowFilters(false);
-                        }}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition ${
-                          selectedCategory === cat.id
-                            ? 'bg-primary/20 text-primary'
-                            : 'hover:bg-white/10 text-text'
-                        }`}
-                      >
-                        <IconComp className="w-4 h-4" />
-                        <span className="text-sm">{cat.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+            {searchOpen && featureResults.length > 0 && (
+              <div className="home-search-results">
+                {featureResults.slice(0, 7).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="home-search-result"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      setSearchOpen(false);
+                      handleSearch(item.title);
+                      item.action();
+                    }}
+                  >
+                    <div className="text-text font-semibold text-sm">{item.title}</div>
+                    <div className="text-text-muted text-xs mt-1">{item.description}</div>
+                  </button>
+                ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {searchOpen && featureResults.length > 0 && (
-            <div className="home-search-results">
-              {featureResults.slice(0, 7).map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="home-search-result"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    setSearchOpen(false);
-                    handleSearch(item.title);
-                    item.action();
-                  }}
-                >
-                  <div className="text-text font-semibold text-sm">{item.title}</div>
-                  <div className="text-text-muted text-xs mt-1">{item.description}</div>
-                </button>
-              ))}
+          {/* Filter Button - Appears when search is focused */}
+          {!isSearchFocused && (
+            <div className="relative">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl glass-container border border-white/10 transition-all duration-300"
+                style={{ 
+                  color: 'var(--text-muted)',
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none',
+                  WebkitUserSelect: 'none',
+                  userSelect: 'none',
+                  outline: 'none',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  transform: 'none',
+                  height: '48px',
+                  minHeight: '48px'
+                }}
+              >
+                <Filter className="w-4 h-4" />
+                <span className="text-sm">Filters</span>
+              </button>
+
+              {showFilters && (
+                <div ref={filterRef} className="absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden glass-container border border-white/10 z-50">
+                  <div className="p-4">
+                    <h3 className="text-text font-semibold mb-3">Quick Filters</h3>
+                    <div className="space-y-2">
+                      {categories.map(cat => {
+                        const IconComp = cat.icon;
+                        return (
+                          <button
+                            key={cat.id}
+                            onClick={() => {
+                              setSelectedCategory(cat.id);
+                              setShowFilters(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition ${
+                              selectedCategory === cat.id
+                                ? 'bg-primary/20 text-primary'
+                                : 'hover:bg-white/10 text-text'
+                            }`}
+                          >
+                            <IconComp className="w-4 h-4" />
+                            <span className="text-sm">{cat.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
