@@ -46,6 +46,7 @@ export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isBlurred, setIsBlurred] = useState(false);
   const filterRef = useRef(null);
 
   const highlightsRef = useRef(null);
@@ -102,7 +103,7 @@ export default function Home() {
 
   const featureResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return features;
+    if (!q) return [];
     return features
       .map((f) => {
         const hay = `${f.title} ${f.description}`.toLowerCase();
@@ -110,7 +111,56 @@ export default function Home() {
         return { f, score };
       })
       .filter((x) => x.score > 0)
-      .map((x) => x.f);
+      .map((x) => ({ ...x.f, type: 'feature', location: 'Home' }));
+  }, [features, searchQuery]);
+
+  // Enhanced search results with all types
+  const allSearchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    
+    const results = [];
+    
+    // Add features
+    features.forEach(f => {
+      const hay = `${f.title} ${f.description}`.toLowerCase();
+      if (hay.includes(q)) {
+        results.push({ ...f, type: 'feature', location: 'Home' });
+      }
+    });
+    
+    // Add chat suggestions
+    const chatSuggestions = [
+      { id: 'chat-1', title: 'Messages', description: 'View conversations with travel partners', type: 'chat', location: 'Messages' },
+      { id: 'chat-2', title: 'Travel Groups', description: 'Join group conversations', type: 'chat', location: 'Messages' },
+      { id: 'chat-3', title: 'Support Chat', description: 'Get help from support team', type: 'chat', location: 'Messages' },
+    ];
+    
+    chatSuggestions.forEach(chat => {
+      const hay = `${chat.title} ${chat.description}`.toLowerCase();
+      if (hay.includes(q)) {
+        results.push(chat);
+      }
+    });
+    
+    // Add webapp options
+    const webappOptions = [
+      { id: 'option-1', title: 'Settings', description: 'Manage app preferences', type: 'option', location: 'Settings' },
+      { id: 'option-2', title: 'Profile', description: 'View and edit profile', type: 'option', location: 'Profile' },
+      { id: 'option-3', title: 'Notifications', description: 'See all notifications', type: 'option', location: 'Home' },
+      { id: 'option-4', title: 'Bookmarks', description: 'View saved items', type: 'option', location: 'Profile' },
+      { id: 'option-5', title: 'Help Center', description: 'Get help and support', type: 'option', location: 'Settings' },
+      { id: 'option-6', title: 'Privacy', description: 'Manage privacy settings', type: 'option', location: 'Settings' },
+    ];
+    
+    webappOptions.forEach(option => {
+      const hay = `${option.title} ${option.description}`.toLowerCase();
+      if (hay.includes(q)) {
+        results.push(option);
+      }
+    });
+    
+    return results.slice(0, 8);
   }, [features, searchQuery]);
 
   const highlights = useMemo(
@@ -193,6 +243,17 @@ export default function Home() {
     };
   }, [showFilters]);
 
+  // Handle search focus/blur animations
+  useEffect(() => {
+    if (isSearchFocused) {
+      // Trigger blur effect immediately when focused
+      setIsBlurred(true);
+    } else {
+      // Remove blur effect with delay for smooth transition
+      setTimeout(() => setIsBlurred(false), 300);
+    }
+  }, [isSearchFocused]);
+
   const categories = [
     { id: 'all', label: 'All', icon: Sparkles },
     { id: 'adventure', label: 'Adventure', icon: Mountain },
@@ -259,139 +320,239 @@ export default function Home() {
 
   return (
     <div className="home-dashboard" style={{
-      minHeight: '100vh'
+      minHeight: '100vh',
+      position: 'relative',
+      zIndex: 1
     }}>
-      <div className="home-search">
-        <div className="relative flex items-center gap-2">
-          <div className={`relative flex-1 transition-all duration-300 ${isSearchFocused ? 'flex-grow' : ''}`}>
-            <Search className="home-search-icon" />
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => {
-                setSearchOpen(true);
-                setIsSearchFocused(true);
-              }}
-              onBlur={() => {
-                setTimeout(() => {
-                  setSearchOpen(false);
-                  setIsSearchFocused(false);
-                }, 120);
-              }}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearch(searchQuery);
-                  setSearchOpen(false);
-                }
-              }}
-              placeholder="Search features, trips, or people..."
-              className={`home-search-input w-full px-12 py-4 rounded-xl text-text placeholder-text-muted focus:outline-none transition-all duration-300 ${
-                isSearchFocused ? 'px-16 py-5' : 'px-12 py-4'
-              }`}
-              style={{
-                fontSize: isSearchFocused ? '16px' : '14px',
-                minWidth: isSearchFocused ? '300px' : '200px'
-              }}
-            />
+      {/* Blur Background Overlay - Lower z-index */}
+      {isBlurred && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-all duration-500 ease-in-out"
+          style={{
+            backdropFilter: isBlurred ? 'blur(8px)' : 'blur(0px)',
+            WebkitBackdropFilter: isBlurred ? 'blur(8px)' : 'blur(0px)',
+            zIndex: 10
+          }}
+        />
+      )}
+      
+      {/* Content Layer - Higher z-index to appear above blur */}
+      <div style={{ position: 'relative', zIndex: 20 }}>
+        <div className="home-search">
+          <div className="relative flex items-center gap-2">
+            <div className={`relative flex-1 transition-all duration-700 ease-out ${isSearchFocused ? 'flex-grow' : ''}`}>
+              <Search className="home-search-icon" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => {
+                  setSearchOpen(true);
+                  setIsSearchFocused(true);
+                }}
+                onBlur={() => {
+                  setTimeout(() => {
+                    setSearchOpen(false);
+                    setIsSearchFocused(false);
+                  }, 150);
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch(searchQuery);
+                    setSearchOpen(false);
+                  } else if (e.key === 'Tab') {
+                    // Tab key pressed - exit search focus
+                    e.preventDefault();
+                    setSearchOpen(false);
+                    setIsSearchFocused(false);
+                  }
+                }}
+                placeholder="Search features, trips, or people..."
+                className={`home-search-input w-full px-12 py-4 rounded-xl text-text placeholder-text-muted focus:outline-none transition-all duration-700 ease-out ${
+                  isSearchFocused ? 'px-16 py-5' : 'px-12 py-4'
+                }`}
+                style={{
+                  fontSize: isSearchFocused ? '16px' : '14px',
+                  width: isSearchFocused ? '450px !important' : '200px !important',
+                  maxWidth: '100%',
+                  transition: 'all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                  zIndex: 30
+                }}
+              />
 
-            {searchOpen && featureResults.length > 0 && (
-              <div className="home-search-results">
-                {featureResults.slice(0, 7).map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="home-search-result"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setSearchOpen(false);
-                      handleSearch(item.title);
-                      item.action();
+              {/* Enhanced Search Results with location indicators */}
+              <div className={`transition-all duration-700 ease-out ${
+                searchOpen && isSearchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3 pointer-events-none'
+              }`}
+                style={{ zIndex: 40 }}>
+                {searchOpen && allSearchResults.length > 0 && (
+                  <div className="home-search-results">
+                    {allSearchResults.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="transition-all duration-500"
+                        style={{
+                          animationDelay: `${index * 60}ms`,
+                          animation: searchOpen ? 'bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards' : 'bounceOut 0.3s ease-in forwards'
+                        }}
+                      >
+                        <button
+                          type="button"
+                          className="home-search-result"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            handleSearch(item.title);
+                            
+                            // Navigate based on type and location
+                            if (item.type === 'feature') {
+                              item.action();
+                            } else if (item.type === 'chat') {
+                              navigate('/messages');
+                            } else if (item.type === 'option') {
+                              if (item.location === 'Profile') navigate('/profile');
+                              else if (item.location === 'Settings') navigate('/settings');
+                              else if (item.location === 'Messages') navigate('/messages');
+                              else navigate('/home');
+                            }
+                          }}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex-1 text-left">
+                              <div className="text-text font-semibold text-sm">{item.title}</div>
+                              <div className="text-text-muted text-xs mt-1">{item.description}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {/* Type indicator */}
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                item.type === 'feature' ? 'bg-blue-500 text-white' :
+                                item.type === 'chat' ? 'bg-green-500 text-white' :
+                                item.type === 'option' ? 'bg-purple-500 text-white' :
+                                'bg-gray-500 text-white'
+                              }`}>
+                                {item.type === 'feature' ? 'Feature' :
+                                 item.type === 'chat' ? 'Chat' :
+                                 item.type === 'option' ? 'Option' : 'Item'}
+                              </span>
+                              {/* Location indicator */}
+                              <span className="text-text-muted text-xs">
+                                {item.location}
+                              </span>
+                            </div>
+                          </div>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Filter Button - Appears when search is not focused with bouncy animation */}
+            <div className={`transition-all duration-700 ease-out transform-origin-right ${
+              !isSearchFocused ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-8 scale-90 pointer-events-none'
+            }`}
+              style={{ zIndex: 35 }}>
+              <div className="relative">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl glass-container border border-white/10 transition-all duration-300"
+                  style={{ 
+                    color: 'var(--text-muted)',
+                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none',
+                    outline: 'none',
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    transform: 'none',
+                    height: '48px',
+                    minHeight: '48px'
+                  }}
+                >
+                  <Filter className="w-4 h-4" />
+                  <span className="text-sm">Filters</span>
+                </button>
+
+                {showFilters && (
+                  <div ref={filterRef} className="absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden glass-container border border-white/10 transition-all duration-300"
+                    style={{
+                      zIndex: 50,
+                      animation: 'bounceInDown 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards'
                     }}
                   >
-                    <div className="text-text font-semibold text-sm">{item.title}</div>
-                    <div className="text-text-muted text-xs mt-1">{item.description}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Filter Button - Appears when search is focused */}
-          {!isSearchFocused && (
-            <div className="relative">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl glass-container border border-white/10 transition-all duration-300"
-                style={{ 
-                  color: 'var(--text-muted)',
-                  WebkitTapHighlightColor: 'transparent',
-                  WebkitTouchCallout: 'none',
-                  WebkitUserSelect: 'none',
-                  userSelect: 'none',
-                  outline: 'none',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  transform: 'none',
-                  height: '48px',
-                  minHeight: '48px'
-                }}
-              >
-                <Filter className="w-4 h-4" />
-                <span className="text-sm">Filters</span>
-              </button>
-
-              {showFilters && (
-                <div ref={filterRef} className="absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden glass-container border border-white/10 z-50">
-                  <div className="p-4">
-                    <h3 className="text-text font-semibold mb-3">Quick Filters</h3>
-                    <div className="space-y-2">
-                      {categories.map(cat => {
-                        const IconComp = cat.icon;
-                        return (
-                          <button
-                            key={cat.id}
-                            onClick={() => {
-                              setSelectedCategory(cat.id);
-                              setShowFilters(false);
-                            }}
-                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition ${
-                              selectedCategory === cat.id
-                                ? 'bg-primary/20 text-primary'
-                                : 'hover:bg-white/10 text-text'
-                            }`}
-                          >
-                            <IconComp className="w-4 h-4" />
-                            <span className="text-sm">{cat.label}</span>
-                          </button>
-                        );
-                      })}
+                    <div className="p-4">
+                      <h3 className="text-text font-semibold mb-3">Quick Filters</h3>
+                      <div className="space-y-2">
+                        {categories.map((cat, index) => {
+                          const IconComp = cat.icon;
+                          return (
+                            <div
+                              key={cat.id}
+                              className="transition-all duration-500"
+                              style={{
+                                animationDelay: `${index * 100}ms`,
+                                animation: 'bounceInLeft 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards'
+                              }}
+                            >
+                              <button
+                                onClick={() => {
+                                  setSelectedCategory(cat.id);
+                                  setShowFilters(false);
+                                }}
+                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition ${
+                                  selectedCategory === cat.id
+                                    ? 'bg-primary/20 text-primary'
+                                    : 'hover:bg-white/10 text-text'
+                                }`}
+                              >
+                                <IconComp className="w-4 h-4" />
+                                <span className="text-sm">{cat.label}</span>
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
         
         {/* Recent Searches */}
-        {recentSearches.length > 0 && (
-          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-2">
-            <Clock className="w-4 h-4 text-text-muted flex-shrink-0" />
-            {recentSearches.map((search, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setSearchQuery(search);
-                  handleSearch(search);
-                }}
-                className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-xs text-text whitespace-nowrap hover:bg-white/20 transition"
-              >
-                {search}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className={`transition-all duration-700 ease-out ${
+          !isSearchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+        }`}
+          style={{ zIndex: 25 }}>
+          {recentSearches.length > 0 && (
+            <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-2">
+              <Clock className="w-4 h-4 text-text-muted flex-shrink-0" />
+              {recentSearches.map((search, index) => (
+                <div
+                  key={index}
+                  className="transition-all duration-300"
+                  style={{
+                    animationDelay: `${index * 30}ms`,
+                    animation: !isSearchFocused ? 'bounceIn 0.3s ease-out forwards' : 'bounceOut 0.2s ease-in forwards'
+                  }}
+                >
+                  <button
+                    onClick={() => {
+                      setSearchQuery(search);
+                      handleSearch(search);
+                    }}
+                    className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-xs text-text whitespace-nowrap hover:bg-white/20 transition"
+                  >
+                    {search}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="dashboard-grid">
