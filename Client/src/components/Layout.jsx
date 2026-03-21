@@ -4,7 +4,7 @@ import NotificationBell from './NotificationBell';
 
 export default function Layout({ children }) {
   return (
-    <div className="min-h-screen relative" style={{
+    <div className="min-h-screen relative" style={{ 
       background: 'var(--bg-primary)',
       backgroundImage: 'var(--texture-pattern)',
       color: 'var(--text-primary)'
