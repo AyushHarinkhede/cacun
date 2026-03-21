@@ -5,20 +5,25 @@ import CreateTrip from './pages/CreateTrip';
 import Messages from './pages/Messages';
 import Profile from './pages/Profile';
 import Layout from './components/Layout';
+import { ThemeProvider } from './contexts/ThemeContext';
+import SecurityProtection from './components/SecurityProtection';
 
 function App() {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/create" element={<CreateTrip />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <ThemeProvider>
+      <SecurityProtection />
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/create" element={<CreateTrip />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </ThemeProvider>
   );
 }
 

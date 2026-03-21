@@ -4,10 +4,12 @@ import CacunContainer from '../components/CacunContainer';
 import { 
   MessageCircle, Send, Search, ArrowLeft, MoreVertical, Phone, Video, 
   Paperclip, Mic, Smile, Check, CheckCheck, Ban, Trash2, Download,
-  Circle, UserCircle, X, Upload, Play, Pause
+  Circle, UserCircle, X, Upload, Play, Pause, Settings
 } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Messages() {
+  const { isDark } = useTheme();
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [message, setMessage] = useState('');
@@ -18,6 +20,13 @@ export default function Messages() {
   const [typingUsers, setTypingUsers] = useState(new Set());
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [notifications, setNotifications] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+  const [onlineStatus, setOnlineStatus] = useState(true);
+  const [readReceipts, setReadReceipts] = useState(true);
+  const [typingIndicators, setTypingIndicators] = useState(true);
   const [isMobileView, setIsMobileView] = useState(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -74,6 +83,90 @@ export default function Messages() {
         { id: 3, text: 'Thanks for the restaurant recommendations!', sender: 'other', time: 'Yesterday', read: true },
       ]
     },
+    {
+      id: 4,
+      name: 'Emma Wilson',
+      avatar: 'EW',
+      lastMessage: 'Can\'t wait for our adventure! 🌴',
+      time: '2d ago',
+      unread: 1,
+      online: false,
+      typing: false,
+      blocked: false,
+      messages: [
+        { id: 1, text: 'Hi! I saw your post about the hiking trip', sender: 'other', time: '2 days ago', read: true },
+        { id: 2, text: 'Hey Emma! Yes, I\'m organizing a group hike', sender: 'me', time: '2 days ago', read: true },
+        { id: 3, text: 'That sounds amazing! When are you planning?', sender: 'other', time: '2 days ago', read: true },
+        { id: 4, text: 'Next weekend, Saturday morning', sender: 'me', time: '2 days ago', read: true },
+        { id: 5, text: 'Can\'t wait for our adventure! 🌴', sender: 'other', time: '2 days ago', read: false },
+      ]
+    },
+    {
+      id: 5,
+      name: 'Alex Rodriguez',
+      avatar: 'AR',
+      lastMessage: 'The photos from your last trip are incredible!',
+      time: '3d ago',
+      unread: 0,
+      online: true,
+      typing: false,
+      blocked: false,
+      messages: [
+        { id: 1, text: 'Hey! I just saw your travel photos', sender: 'other', time: '3 days ago', read: true },
+        { id: 2, text: 'Thanks! I had an amazing time', sender: 'me', time: '3 days ago', read: true },
+        { id: 3, text: 'The photos from your last trip are incredible!', sender: 'other', time: '3 days ago', read: true },
+      ]
+    },
+    {
+      id: 6,
+      name: 'Lisa Park',
+      avatar: 'LP',
+      lastMessage: 'Let me know when you\'re free for coffee',
+      time: '4d ago',
+      unread: 0,
+      online: false,
+      typing: false,
+      blocked: false,
+      messages: [
+        { id: 1, text: 'Hi! I\'m new to the area', sender: 'other', time: '4 days ago', read: true },
+        { id: 2, text: 'Welcome! I\'d be happy to show you around', sender: 'me', time: '4 days ago', read: true },
+        { id: 3, text: 'That would be great! Thank you', sender: 'other', time: '4 days ago', read: true },
+        { id: 4, text: 'Let me know when you\'re free for coffee', sender: 'other', time: '4 days ago', read: true },
+      ]
+    },
+    {
+      id: 7,
+      name: 'David Kim',
+      avatar: 'DK',
+      lastMessage: 'The flight tickets are booked! ✈️',
+      time: '1w ago',
+      unread: 0,
+      online: false,
+      typing: false,
+      blocked: false,
+      messages: [
+        { id: 1, text: 'Should we book the flights now?', sender: 'other', time: '1 week ago', read: true },
+        { id: 2, text: 'Yes, prices are looking good', sender: 'me', time: '1 week ago', read: true },
+        { id: 3, text: 'The flight tickets are booked! ✈️', sender: 'other', time: '1 week ago', read: true },
+      ]
+    },
+    {
+      id: 8,
+      name: 'Sophie Martin',
+      avatar: 'SM',
+      lastMessage: 'Have you tried the new restaurant downtown?',
+      time: '2w ago',
+      unread: 0,
+      online: false,
+      typing: false,
+      blocked: false,
+      messages: [
+        { id: 1, text: 'Hey! Long time no see', sender: 'other', time: '2 weeks ago', read: true },
+        { id: 2, text: 'Sophie! How have you been?', sender: 'me', time: '2 weeks ago', read: true },
+        { id: 3, text: 'Great! Just moved back to the city', sender: 'other', time: '2 weeks ago', read: true },
+        { id: 4, text: 'Have you tried the new restaurant downtown?', sender: 'other', time: '2 weeks ago', read: true },
+      ]
+    }
   ];
 
   const emojis = [
@@ -133,9 +226,29 @@ export default function Messages() {
 
   const sendMessage = () => {
     if (message.trim() && currentConversation) {
-      // In a real app, this would send to backend
+      const newMessage = {
+        id: Date.now(),
+        text: message,
+        sender: 'me',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: false
+      };
+      
+      // Add message to conversation
+      currentConversation.messages.push(newMessage);
+      
+      // Force re-render by updating state
       setMessage('');
       setShowEmojiPicker(false);
+      
+      // Mark as read after a delay
+      setTimeout(() => {
+        newMessage.read = true;
+        // Force re-render again
+        setMessage(prev => prev);
+      }, 1000);
+      
+      scrollToBottom();
     }
   };
 
@@ -205,12 +318,15 @@ export default function Messages() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Search Header */}
+    <div className="h-screen flex flex-col overflow-hidden" style={{
+      background: 'var(--bg-primary)',
+      backgroundImage: 'var(--texture-pattern)'
+    }}>
+      {/* Search Header - Fixed */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-4 border-b border-primary/20"
+        className="p-4 border-b border-primary/20 flex-shrink-0"
       >
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
@@ -219,15 +335,20 @@ export default function Messages() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-card border border-primary/20 rounded-lg text-text placeholder-text-muted focus:outline-none focus:border-primary"
+            className="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none"
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-primary)'
+            }}
           />
         </div>
       </motion.div>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Conversation List */}
-        <div className={`${isMobileView && selectedConversation ? 'hidden' : 'flex'} flex-col w-full md:w-96 border-r border-primary/20`}>
-          <div className="flex-1 overflow-y-auto">
+        {/* Conversation List - Fixed */}
+        <div className={`${isMobileView && selectedConversation ? 'hidden' : 'flex'} flex-col w-full md:w-96 flex-shrink-0`} style={{ borderRight: '1px solid var(--border)' }}>
+          <div className="flex-1 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
             {filteredConversations.map((conversation, index) => (
               <motion.div
                 key={conversation.id}
@@ -238,9 +359,13 @@ export default function Messages() {
                   setSelectedConversation(conversation.id);
                   markAsRead();
                 }}
-                className={`p-4 border-b border-primary/10 cursor-pointer transition-colors ${
+                className={`p-4 border-b cursor-pointer transition-colors ${
                   selectedConversation === conversation.id ? 'bg-primary/10' : 'hover:bg-primary/5'
                 }`}
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--text-primary)'
+                }}
               >
                 <div className="flex items-center space-x-3">
                   <div className="relative">
@@ -248,7 +373,7 @@ export default function Messages() {
                       <span className="text-primary font-semibold">{conversation.avatar}</span>
                     </div>
                     {conversation.online && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-purple-500 rounded-full border-2 border-background"></div>
                     )}
                     {conversation.typing && (
                       <div className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-background animate-pulse"></div>
@@ -278,12 +403,12 @@ export default function Messages() {
 
         {/* Chat Area */}
         {currentConversation ? (
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-h-0">
             {/* Chat Header */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 border-b border-primary/20 bg-card"
+              className="p-4 border-b border-primary/20 bg-card flex-shrink-0"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -300,7 +425,7 @@ export default function Messages() {
                       <span className="text-primary font-semibold">{currentConversation.avatar}</span>
                     </div>
                     {currentConversation.online && (
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-card"></div>
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-purple-500 rounded-full border-2 border-card"></div>
                     )}
                   </div>
                   <div>
@@ -348,6 +473,13 @@ export default function Messages() {
                             <span className="text-sm text-text">Export Chat</span>
                           </button>
                           <button
+                            onClick={() => setShowSettings(true)}
+                            className="w-full text-left px-4 py-3 hover:bg-primary/10 transition-colors flex items-center space-x-2"
+                          >
+                            <Settings className="w-4 h-4 text-text" />
+                            <span className="text-sm text-text">Settings</span>
+                          </button>
+                          <button
                             onClick={() => setShowBlockDialog(true)}
                             className="w-full text-left px-4 py-3 hover:bg-primary/10 transition-colors flex items-center space-x-2 text-red-500"
                           >
@@ -363,7 +495,7 @@ export default function Messages() {
             </motion.div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
               {currentConversation.messages.map((msg) => (
                 <motion.div
                   key={msg.id}
@@ -392,7 +524,7 @@ export default function Messages() {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-primary/20 bg-card">
+            <div className="p-4 border-t border-primary/20 bg-card flex-shrink-0">
               <div className="flex items-center space-x-2">
                 <input
                   type="file"
@@ -551,6 +683,154 @@ export default function Messages() {
                   className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                 >
                   Clear
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Settings Dialog */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-card rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-text">Chat Settings</h3>
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="p-1 hover:bg-primary/10 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-text" />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Notifications */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-text">Notifications</h4>
+                    <p className="text-sm text-text-muted">Get notified about new messages</p>
+                  </div>
+                  <button
+                    onClick={() => setNotifications(!notifications)}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      notifications ? 'bg-primary' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      notifications ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Sound */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-text">Message Sounds</h4>
+                    <p className="text-sm text-text-muted">Play sound for new messages</p>
+                  </div>
+                  <button
+                    onClick={() => setSoundEnabled(!soundEnabled)}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      soundEnabled ? 'bg-primary' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      soundEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Online Status */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-text">Show Online Status</h4>
+                    <p className="text-sm text-text-muted">Let others see when you're online</p>
+                  </div>
+                  <button
+                    onClick={() => setOnlineStatus(!onlineStatus)}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      onlineStatus ? 'bg-primary' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      onlineStatus ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Read Receipts */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-text">Read Receipts</h4>
+                    <p className="text-sm text-text-muted">Show when you've read messages</p>
+                  </div>
+                  <button
+                    onClick={() => setReadReceipts(!readReceipts)}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      readReceipts ? 'bg-primary' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      readReceipts ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Typing Indicators */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-text">Typing Indicators</h4>
+                    <p className="text-sm text-text-muted">Show when others are typing</p>
+                  </div>
+                  <button
+                    onClick={() => setTypingIndicators(!typingIndicators)}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      typingIndicators ? 'bg-primary' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      typingIndicators ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Dark Mode */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-text">Dark Mode</h4>
+                    <p className="text-sm text-text-muted">Use dark theme for chat</p>
+                  </div>
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      darkMode ? 'bg-primary' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      darkMode ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-primary/20">
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  Done
                 </button>
               </div>
             </motion.div>

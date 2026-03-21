@@ -5,6 +5,7 @@ import {
   Star, MapPin, Calendar, Award, Users, Shield, LogOut, Edit, Eye, EyeOff, 
   Mail, Lock, User, Camera, Settings, X, Check, AlertCircle, Upload
 } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Simple in-memory auth store
 let authUser = JSON.parse(localStorage.getItem('cacun_user') || 'null');
@@ -24,6 +25,7 @@ function setUserProfile(profile) {
 }
 
 export default function Profile() {
+  const { isDark } = useTheme();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: '', password: '', name: '', rememberMe: false });
@@ -216,7 +218,10 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto space-y-6">
+      <div className="max-w-md mx-auto space-y-6" style={{
+        minHeight: '100vh',
+        padding: '2rem'
+      }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -281,14 +286,14 @@ export default function Profile() {
                 </div>
               )}
               {successMessage && (
-                <div className="text-green-400 text-sm text-center flex items-center justify-center gap-2">
+                <div className="text-purple-400 text-sm text-center flex items-center justify-center gap-2">
                   <Check className="w-4 h-4" />
                   {successMessage}
                 </div>
               )}
               <button
                 type="submit"
-                className="w-full bg-primary hover:opacity-90 text-white py-3 rounded-xl font-semibold transition"
+                className="login-button w-full px-4 py-2 rounded-lg font-semibold transition"
               >
                 {isLogin ? 'Login' : 'Sign Up'}
               </button>
@@ -381,7 +386,10 @@ export default function Profile() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{
+      minHeight: '100vh',
+      padding: '2rem'
+    }}>
       {/* Profile Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -423,7 +431,7 @@ export default function Profile() {
               </button>
               <button
                 onClick={() => setShowLogoutDialog(true)}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition flex items-center gap-2"
+                className="logout-button px-4 py-2 rounded-lg font-semibold transition flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -593,7 +601,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto mb-20"
+              className="glass-effect edit-profile-form bg-background rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto mx-auto"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-text">Edit Profile</h3>
@@ -767,7 +775,7 @@ export default function Profile() {
                 </div>
               )}
               {successMessage && (
-                <div className="mt-4 text-green-400 text-sm flex items-center gap-2">
+                <div className="mt-4 text-purple-400 text-sm flex items-center gap-2">
                   <Check className="w-4 h-4" />
                   {successMessage}
                 </div>
@@ -808,7 +816,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-md w-full mb-20"
+              className="glass-effect settings-panel bg-background rounded-xl p-6 max-w-md w-full mx-auto"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-text">Settings</h3>
@@ -958,7 +966,7 @@ export default function Profile() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background rounded-xl p-6 max-w-sm w-full mb-20"
+              className="glass-effect logout-modal bg-background rounded-xl p-6 max-w-sm w-full mx-auto"
             >
               <h3 className="text-lg font-semibold text-text mb-2">Confirm Logout</h3>
               <p className="text-text-muted mb-6">
@@ -967,13 +975,13 @@ export default function Profile() {
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowLogoutDialog(false)}
-                  className="flex-1 px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg font-semibold transition"
+                  className="confirm-logout-button flex-1 px-4 py-2 rounded-lg font-semibold transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition"
+                  className="logout-button flex-1 px-4 py-2 rounded-lg font-semibold transition"
                 >
                   Logout
                 </button>

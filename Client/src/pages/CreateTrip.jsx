@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Calendar, MapPin, DollarSign, AlertCircle, Check, Users, Clock, Tag } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function CreateTrip() {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const [formData, setFormData] = useState({
     destination: '',
     startDate: '',
@@ -151,7 +153,12 @@ export default function CreateTrip() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto" style={{
+      background: isDark ? 'var(--bg-primary)' : 'var(--bg-secondary)',
+      backgroundImage: 'var(--texture-pattern)',
+      minHeight: '100vh',
+      padding: '2rem'
+    }}>
       <div className="slide-in-up">
         <h1 className="text-3xl font-bold text-text mb-2">Create Your Trip</h1>
         <p className="text-text-muted mb-8">
@@ -385,7 +392,7 @@ export default function CreateTrip() {
 
           {/* Success Message */}
           {showSuccess && (
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-green-400 flex items-center gap-3">
+            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 text-purple-400 flex items-center gap-3">
               <Check className="w-6 h-6" />
               <div>
                 <h4 className="font-semibold">Trip Created Successfully!</h4>
