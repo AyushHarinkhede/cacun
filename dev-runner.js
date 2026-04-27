@@ -12,7 +12,7 @@ function runNpm(args) {
     stdio: 'inherit',
     windowsHide: true,
   });
-}
+} 
 
 const server = runNpm(['--prefix', 'server', 'run', 'dev']);
 const client = runNpm(['--prefix', 'client', 'run', 'dev']);
