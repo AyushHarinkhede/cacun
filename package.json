@@ -1,6 +1,6 @@
 {
   "name": "cacun",
-  "private": true,
+  "private": true, 
   "version": "1.0.0",
   "scripts": {
     "start:server": "npm --prefix server run start",
