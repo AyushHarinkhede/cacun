@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/navigation_dashboard"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="Portal" />
+        android:id="@+id/nav_tracks"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="Tracks" />
     <item
-        android:id="@+id/navigation_feed"
-        android:icon="@android:drawable/ic_menu_agenda"
-        android:title="Live Feed" />
+        android:id="@+id/nav_albums"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="Albums" />
     <item
-        android:id="@+id/navigation_alerts"
-        android:icon="@android:drawable/ic_dialog_info"
-        android:title="Alerts" />
+        android:id="@+id/nav_artists"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Artists" />
     <item
-        android:id="@+id/navigation_accounts"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="Manage" />
+        android:id="@+id/nav_playlists"
+        android:icon="@android:drawable/ic_menu_slideshow"
+        android:title="Playlists" />
 </menu>

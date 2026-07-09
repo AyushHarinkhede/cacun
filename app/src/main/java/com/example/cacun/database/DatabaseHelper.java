@@ -6,81 +6,63 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.cacun.models.SocialAccount;
-import com.example.cacun.models.SocialNotification;
-import com.example.cacun.models.SocialPost;
+import com.example.cacun.models.Track;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "cacun_social.db";
+    private static final String DATABASE_NAME = "cacun_music.db";
     private static final int DATABASE_VERSION = 1;
 
     // Table names
-    private static final String TABLE_ACCOUNTS = "accounts";
-    private static final String TABLE_POSTS = "posts";
-    private static final String TABLE_NOTIFICATIONS = "notifications";
+    private static final String TABLE_PLAYLISTS = "playlists";
+    private static final String TABLE_PLAYLIST_TRACKS = "playlist_tracks";
+    private static final String TABLE_LYRICS = "lyrics_cache";
 
     // Common columns
     private static final String KEY_ID = "id";
 
-    // ACCOUNTS Table - Columns
-    private static final String KEY_PLATFORM = "platform";
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_API_KEY = "api_key";
-    private static final String KEY_FOLLOWERS = "followers";
-    private static final String KEY_STREAK = "streak";
-    private static final String KEY_SCREEN_TIME = "screen_time";
-    private static final String KEY_IS_ONLINE = "is_online";
-    private static final String KEY_LAST_UPDATED = "last_updated";
+    // PLAYLISTS Columns
+    private static final String KEY_PLAYLIST_NAME = "name";
+    private static final String KEY_CREATED_AT = "created_at";
 
-    // POSTS Table - Columns
-    private static final String KEY_ACCOUNT_ID = "account_id";
-    private static final String KEY_CONTENT = "content";
-    private static final String KEY_LIKES = "likes";
-    private static final String KEY_COMMENTS = "comments";
-    private static final String KEY_SHARES = "shares";
-    private static final String KEY_TIMESTAMP = "timestamp";
-    private static final String KEY_MEDIA_URL = "media_url";
+    // PLAYLIST_TRACKS Columns
+    private static final String KEY_PLAYLIST_ID = "playlist_id";
+    private static final String KEY_MEDIA_STORE_ID = "media_store_id";
+    private static final String KEY_TRACK_TITLE = "title";
+    private static final String KEY_TRACK_ARTIST = "artist";
+    private static final String KEY_TRACK_PATH = "path";
+    private static final String KEY_TRACK_DURATION = "duration";
 
-    // NOTIFICATIONS Table - Columns
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_MESSAGE = "message";
-    private static final String KEY_IS_READ = "is_read";
+    // LYRICS Columns
+    private static final String KEY_LYRICS_TITLE = "title";
+    private static final String KEY_LYRICS_ARTIST = "artist";
+    private static final String KEY_LYRICS_TEXT = "lyrics_text";
 
-    // Table Create Statements
-    private static final String CREATE_TABLE_ACCOUNTS = "CREATE TABLE " + TABLE_ACCOUNTS + "("
+    // Create statements
+    private static final String CREATE_TABLE_PLAYLISTS = "CREATE TABLE " + TABLE_PLAYLISTS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_PLATFORM + " TEXT,"
-            + KEY_USERNAME + " TEXT,"
-            + KEY_API_KEY + " TEXT,"
-            + KEY_FOLLOWERS + " INTEGER DEFAULT 0,"
-            + KEY_STREAK + " INTEGER DEFAULT 0,"
-            + KEY_SCREEN_TIME + " INTEGER DEFAULT 0,"
-            + KEY_IS_ONLINE + " INTEGER DEFAULT 0,"
-            + KEY_LAST_UPDATED + " INTEGER" + ")";
+            + KEY_PLAYLIST_NAME + " TEXT UNIQUE,"
+            + KEY_CREATED_AT + " INTEGER" + ")";
 
-    private static final String CREATE_TABLE_POSTS = "CREATE TABLE " + TABLE_POSTS + "("
+    private static final String CREATE_TABLE_PLAYLIST_TRACKS = "CREATE TABLE " + TABLE_PLAYLIST_TRACKS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_ACCOUNT_ID + " INTEGER,"
-            + KEY_CONTENT + " TEXT,"
-            + KEY_LIKES + " INTEGER DEFAULT 0,"
-            + KEY_COMMENTS + " INTEGER DEFAULT 0,"
-            + KEY_SHARES + " INTEGER DEFAULT 0,"
-            + KEY_TIMESTAMP + " INTEGER,"
-            + KEY_MEDIA_URL + " TEXT,"
-            + "FOREIGN KEY(" + KEY_ACCOUNT_ID + ") REFERENCES " + TABLE_ACCOUNTS + "(" + KEY_ID + ") ON DELETE CASCADE" + ")";
+            + KEY_PLAYLIST_ID + " INTEGER,"
+            + KEY_MEDIA_STORE_ID + " INTEGER,"
+            + KEY_TRACK_TITLE + " TEXT,"
+            + KEY_TRACK_ARTIST + " TEXT,"
+            + KEY_TRACK_PATH + " TEXT,"
+            + KEY_TRACK_DURATION + " INTEGER,"
+            + "FOREIGN KEY(" + KEY_PLAYLIST_ID + ") REFERENCES " + TABLE_PLAYLISTS + "(" + KEY_ID + ") ON DELETE CASCADE" + ")";
 
-    private static final String CREATE_TABLE_NOTIFICATIONS = "CREATE TABLE " + TABLE_NOTIFICATIONS + "("
+    private static final String CREATE_TABLE_LYRICS = "CREATE TABLE " + TABLE_LYRICS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_ACCOUNT_ID + " INTEGER,"
-            + KEY_TITLE + " TEXT,"
-            + KEY_MESSAGE + " TEXT,"
-            + KEY_TIMESTAMP + " INTEGER,"
-            + KEY_IS_READ + " INTEGER DEFAULT 0,"
-            + "FOREIGN KEY(" + KEY_ACCOUNT_ID + ") REFERENCES " + TABLE_ACCOUNTS + "(" + KEY_ID + ") ON DELETE CASCADE" + ")";
+            + KEY_LYRICS_TITLE + " TEXT,"
+            + KEY_LYRICS_ARTIST + " TEXT,"
+            + KEY_LYRICS_TEXT + " TEXT,"
+            + "UNIQUE(" + KEY_LYRICS_TITLE + ", " + KEY_LYRICS_ARTIST + ")" + ")";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -88,16 +70,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_ACCOUNTS);
-        db.execSQL(CREATE_TABLE_POSTS);
-        db.execSQL(CREATE_TABLE_NOTIFICATIONS);
+        db.execSQL(CREATE_TABLE_PLAYLISTS);
+        db.execSQL(CREATE_TABLE_PLAYLIST_TRACKS);
+        db.execSQL(CREATE_TABLE_LYRICS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCOUNTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYLIST_TRACKS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYLISTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LYRICS);
         onCreate(db);
     }
 
@@ -107,223 +89,123 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.setForeignKeyConstraintsEnabled(true);
     }
 
-    // --- ACCOUNTS Methods ---
+    // --- PLAYLISTS Methods ---
 
-    public long addAccount(SocialAccount account) {
+    public long createPlaylist(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_PLATFORM, account.getPlatform());
-        values.put(KEY_USERNAME, account.getUsername());
-        values.put(KEY_API_KEY, account.getApiKey());
-        values.put(KEY_FOLLOWERS, account.getFollowers());
-        values.put(KEY_STREAK, account.getStreak());
-        values.put(KEY_SCREEN_TIME, account.getScreenTime());
-        values.put(KEY_IS_ONLINE, account.isOnline() ? 1 : 0);
-        values.put(KEY_LAST_UPDATED, System.currentTimeMillis());
-
-        return db.insert(TABLE_ACCOUNTS, null, values);
+        values.put(KEY_PLAYLIST_NAME, name);
+        values.put(KEY_CREATED_AT, System.currentTimeMillis());
+        return db.insert(TABLE_PLAYLISTS, null, values);
     }
 
-    public List<SocialAccount> getAllAccounts() {
-        List<SocialAccount> accounts = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_ACCOUNTS + " ORDER BY " + KEY_PLATFORM + " ASC";
+    public List<PlaylistInfo> getAllPlaylists() {
+        List<PlaylistInfo> playlists = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_PLAYLISTS + " ORDER BY " + KEY_PLAYLIST_NAME + " ASC";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
         if (c.moveToFirst()) {
             do {
-                SocialAccount acct = new SocialAccount();
-                acct.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
-                acct.setPlatform(c.getString(c.getColumnIndexOrThrow(KEY_PLATFORM)));
-                acct.setUsername(c.getString(c.getColumnIndexOrThrow(KEY_USERNAME)));
-                acct.setApiKey(c.getString(c.getColumnIndexOrThrow(KEY_API_KEY)));
-                acct.setFollowers(c.getInt(c.getColumnIndexOrThrow(KEY_FOLLOWERS)));
-                acct.setStreak(c.getInt(c.getColumnIndexOrThrow(KEY_STREAK)));
-                acct.setScreenTime(c.getInt(c.getColumnIndexOrThrow(KEY_SCREEN_TIME)));
-                acct.setOnline(c.getInt(c.getColumnIndexOrThrow(KEY_IS_ONLINE)) == 1);
-                acct.setLastUpdated(c.getLong(c.getColumnIndexOrThrow(KEY_LAST_UPDATED)));
-                accounts.add(acct);
+                PlaylistInfo p = new PlaylistInfo();
+                p.id = c.getInt(c.getColumnIndexOrThrow(KEY_ID));
+                p.name = c.getString(c.getColumnIndexOrThrow(KEY_PLAYLIST_NAME));
+                p.createdAt = c.getLong(c.getColumnIndexOrThrow(KEY_CREATED_AT));
+                playlists.add(p);
             } while (c.moveToNext());
         }
         c.close();
-        return accounts;
+        return playlists;
     }
 
-    public SocialAccount getAccount(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_ACCOUNTS + " WHERE " + KEY_ID + " = " + id;
-        Cursor c = db.rawQuery(selectQuery, null);
-        SocialAccount acct = null;
-
-        if (c.moveToFirst()) {
-            acct = new SocialAccount();
-            acct.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
-            acct.setPlatform(c.getString(c.getColumnIndexOrThrow(KEY_PLATFORM)));
-            acct.setUsername(c.getString(c.getColumnIndexOrThrow(KEY_USERNAME)));
-            acct.setApiKey(c.getString(c.getColumnIndexOrThrow(KEY_API_KEY)));
-            acct.setFollowers(c.getInt(c.getColumnIndexOrThrow(KEY_FOLLOWERS)));
-            acct.setStreak(c.getInt(c.getColumnIndexOrThrow(KEY_STREAK)));
-            acct.setScreenTime(c.getInt(c.getColumnIndexOrThrow(KEY_SCREEN_TIME)));
-            acct.setOnline(c.getInt(c.getColumnIndexOrThrow(KEY_IS_ONLINE)) == 1);
-            acct.setLastUpdated(c.getLong(c.getColumnIndexOrThrow(KEY_LAST_UPDATED)));
-        }
-        c.close();
-        return acct;
-    }
-
-    public void updateAccountMetrics(int id, int followers, int streak, int screenTime, boolean isOnline) {
+    public void deletePlaylist(int playlistId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_FOLLOWERS, followers);
-        values.put(KEY_STREAK, streak);
-        values.put(KEY_SCREEN_TIME, screenTime);
-        values.put(KEY_IS_ONLINE, isOnline ? 1 : 0);
-        values.put(KEY_LAST_UPDATED, System.currentTimeMillis());
-
-        db.update(TABLE_ACCOUNTS, values, KEY_ID + " = ?", new String[]{String.valueOf(id)});
+        db.delete(TABLE_PLAYLISTS, KEY_ID + " = ?", new String[]{String.valueOf(playlistId)});
     }
 
-    public void deleteAccount(int id) {
+    // --- PLAYLIST_TRACKS Methods ---
+
+    public long addTrackToPlaylist(int playlistId, Track track) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_ACCOUNTS, KEY_ID + " = ?", new String[]{String.valueOf(id)});
-    }
-
-    // --- POSTS Methods ---
-
-    public long addPost(SocialPost post) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_ACCOUNT_ID, post.getAccountId());
-        values.put(KEY_CONTENT, post.getContent());
-        values.put(KEY_LIKES, post.getLikes());
-        values.put(KEY_COMMENTS, post.getComments());
-        values.put(KEY_SHARES, post.getShares());
-        values.put(KEY_TIMESTAMP, post.getTimestamp());
-        values.put(KEY_MEDIA_URL, post.getMediaUrl());
-
-        return db.insert(TABLE_POSTS, null, values);
-    }
-
-    public void updatePostMetrics(int id, int likes, int comments, int shares) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_LIKES, likes);
-        values.put(KEY_COMMENTS, comments);
-        values.put(KEY_SHARES, shares);
-
-        db.update(TABLE_POSTS, values, KEY_ID + " = ?", new String[]{String.valueOf(id)});
-    }
-
-    public List<SocialPost> getAllFeedPosts() {
-        List<SocialPost> posts = new ArrayList<>();
-        String selectQuery = "SELECT p.*, a." + KEY_PLATFORM + ", a." + KEY_USERNAME + " FROM " + TABLE_POSTS + " p "
-                + "JOIN " + TABLE_ACCOUNTS + " a ON p." + KEY_ACCOUNT_ID + " = a." + KEY_ID + " "
-                + "ORDER BY p." + KEY_TIMESTAMP + " DESC";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c.moveToFirst()) {
-            do {
-                SocialPost post = new SocialPost();
-                post.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
-                post.setAccountId(c.getInt(c.getColumnIndexOrThrow(KEY_ACCOUNT_ID)));
-                post.setPlatform(c.getString(c.getColumnIndexOrThrow(KEY_PLATFORM)));
-                post.setUsername(c.getString(c.getColumnIndexOrThrow(KEY_USERNAME)));
-                post.setContent(c.getString(c.getColumnIndexOrThrow(KEY_CONTENT)));
-                post.setLikes(c.getInt(c.getColumnIndexOrThrow(KEY_LIKES)));
-                post.setComments(c.getInt(c.getColumnIndexOrThrow(KEY_COMMENTS)));
-                post.setShares(c.getInt(c.getColumnIndexOrThrow(KEY_SHARES)));
-                post.setTimestamp(c.getLong(c.getColumnIndexOrThrow(KEY_TIMESTAMP)));
-                post.setMediaUrl(c.getString(c.getColumnIndexOrThrow(KEY_MEDIA_URL)));
-                posts.add(post);
-            } while (c.moveToNext());
-        }
-        c.close();
-        return posts;
-    }
-
-    public List<SocialPost> getAccountPosts(int accountId) {
-        List<SocialPost> posts = new ArrayList<>();
-        String selectQuery = "SELECT p.*, a." + KEY_PLATFORM + ", a." + KEY_USERNAME + " FROM " + TABLE_POSTS + " p "
-                + "JOIN " + TABLE_ACCOUNTS + " a ON p." + KEY_ACCOUNT_ID + " = a." + KEY_ID + " "
-                + "WHERE p." + KEY_ACCOUNT_ID + " = " + accountId + " "
-                + "ORDER BY p." + KEY_TIMESTAMP + " DESC";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c.moveToFirst()) {
-            do {
-                SocialPost post = new SocialPost();
-                post.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
-                post.setAccountId(c.getInt(c.getColumnIndexOrThrow(KEY_ACCOUNT_ID)));
-                post.setPlatform(c.getString(c.getColumnIndexOrThrow(KEY_PLATFORM)));
-                post.setUsername(c.getString(c.getColumnIndexOrThrow(KEY_USERNAME)));
-                post.setContent(c.getString(c.getColumnIndexOrThrow(KEY_CONTENT)));
-                post.setLikes(c.getInt(c.getColumnIndexOrThrow(KEY_LIKES)));
-                post.setComments(c.getInt(c.getColumnIndexOrThrow(KEY_COMMENTS)));
-                post.setShares(c.getInt(c.getColumnIndexOrThrow(KEY_SHARES)));
-                post.setTimestamp(c.getLong(c.getColumnIndexOrThrow(KEY_TIMESTAMP)));
-                post.setMediaUrl(c.getString(c.getColumnIndexOrThrow(KEY_MEDIA_URL)));
-                posts.add(post);
-            } while (c.moveToNext());
-        }
-        c.close();
-        return posts;
-    }
-
-    // --- NOTIFICATIONS Methods ---
-
-    public long addNotification(SocialNotification notif) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_ACCOUNT_ID, notif.getAccountId());
-        values.put(KEY_TITLE, notif.getTitle());
-        values.put(KEY_MESSAGE, notif.getMessage());
-        values.put(KEY_TIMESTAMP, notif.getTimestamp());
-        values.put(KEY_IS_READ, notif.isRead() ? 1 : 0);
-
-        return db.insert(TABLE_NOTIFICATIONS, null, values);
-    }
-
-    public List<SocialNotification> getAllNotifications() {
-        List<SocialNotification> notifs = new ArrayList<>();
-        String selectQuery = "SELECT n.*, a." + KEY_PLATFORM + ", a." + KEY_USERNAME + " FROM " + TABLE_NOTIFICATIONS + " n "
-                + "JOIN " + TABLE_ACCOUNTS + " a ON n." + KEY_ACCOUNT_ID + " = a." + KEY_ID + " "
-                + "ORDER BY n." + KEY_TIMESTAMP + " DESC";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c.moveToFirst()) {
-            do {
-                SocialNotification notif = new SocialNotification();
-                notif.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
-                notif.setAccountId(c.getInt(c.getColumnIndexOrThrow(KEY_ACCOUNT_ID)));
-                notif.setPlatform(c.getString(c.getColumnIndexOrThrow(KEY_PLATFORM)));
-                notif.setUsername(c.getString(c.getColumnIndexOrThrow(KEY_USERNAME)));
-                notif.setTitle(c.getString(c.getColumnIndexOrThrow(KEY_TITLE)));
-                notif.setMessage(c.getString(c.getColumnIndexOrThrow(KEY_MESSAGE)));
-                notif.setTimestamp(c.getLong(c.getColumnIndexOrThrow(KEY_TIMESTAMP)));
-                notif.setRead(c.getInt(c.getColumnIndexOrThrow(KEY_IS_READ)) == 1);
-                notifs.add(notif);
-            } while (c.moveToNext());
-        }
-        c.close();
-        return notifs;
-    }
-
-    public int getUnreadNotificationsCount() {
-        String countQuery = "SELECT * FROM " + TABLE_NOTIFICATIONS + " WHERE " + KEY_IS_READ + " = 0";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
+        
+        // Check for duplicates
+        String checkQuery = "SELECT * FROM " + TABLE_PLAYLIST_TRACKS + " WHERE " 
+                + KEY_PLAYLIST_ID + " = " + playlistId + " AND " + KEY_MEDIA_STORE_ID + " = " + track.getId();
+        Cursor cursor = db.rawQuery(checkQuery, null);
         int count = cursor.getCount();
         cursor.close();
-        return count;
+        if (count > 0) return -1; // Already in playlist
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_PLAYLIST_ID, playlistId);
+        values.put(KEY_MEDIA_STORE_ID, track.getId());
+        values.put(KEY_TRACK_TITLE, track.getTitle());
+        values.put(KEY_TRACK_ARTIST, track.getArtist());
+        values.put(KEY_TRACK_PATH, track.getPath());
+        values.put(KEY_TRACK_DURATION, track.getDuration());
+
+        return db.insert(TABLE_PLAYLIST_TRACKS, null, values);
     }
 
-    public void markAllNotificationsAsRead() {
+    public void removeTrackFromPlaylist(int playlistId, long mediaStoreId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_PLAYLIST_TRACKS, 
+                KEY_PLAYLIST_ID + " = ? AND " + KEY_MEDIA_STORE_ID + " = ?", 
+                new String[]{String.valueOf(playlistId), String.valueOf(mediaStoreId)});
+    }
+
+    public List<Track> getPlaylistTracks(int playlistId) {
+        List<Track> tracks = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_PLAYLIST_TRACKS + " WHERE " + KEY_PLAYLIST_ID + " = " + playlistId;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c.moveToFirst()) {
+            do {
+                Track t = new Track();
+                t.setId(c.getLong(c.getColumnIndexOrThrow(KEY_MEDIA_STORE_ID)));
+                t.setTitle(c.getString(c.getColumnIndexOrThrow(KEY_TRACK_TITLE)));
+                t.setArtist(c.getString(c.getColumnIndexOrThrow(KEY_TRACK_ARTIST)));
+                t.setPath(c.getString(c.getColumnIndexOrThrow(KEY_TRACK_PATH)));
+                t.setDuration(c.getInt(c.getColumnIndexOrThrow(KEY_TRACK_DURATION)));
+                t.setAlbum("Playlist Track");
+                tracks.add(t);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return tracks;
+    }
+
+    // --- LYRICS Methods ---
+
+    public void cacheLyrics(String title, String artist, String lyricsText) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_IS_READ, 1);
-        db.update(TABLE_NOTIFICATIONS, values, null, null);
+        values.put(KEY_LYRICS_TITLE, title.toLowerCase().trim());
+        values.put(KEY_LYRICS_ARTIST, artist.toLowerCase().trim());
+        values.put(KEY_LYRICS_TEXT, lyricsText);
+
+        db.insertWithOnConflict(TABLE_LYRICS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public String getCachedLyrics(String title, String artist) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT " + KEY_LYRICS_TEXT + " FROM " + TABLE_LYRICS + " WHERE "
+                + KEY_LYRICS_TITLE + " = ? AND " + KEY_LYRICS_ARTIST + " = ?";
+        Cursor c = db.rawQuery(selectQuery, new String[]{title.toLowerCase().trim(), artist.toLowerCase().trim()});
+        String lyrics = null;
+
+        if (c.moveToFirst()) {
+            lyrics = c.getString(c.getColumnIndexOrThrow(KEY_LYRICS_TEXT));
+        }
+        c.close();
+        return lyrics;
+    }
+
+    // Simple Helper class for playlist metadata
+    public static class PlaylistInfo {
+        public int id;
+        public String name;
+        public long createdAt;
     }
 }

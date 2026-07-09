@@ -72,8 +72,101 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/divider_line"
+        app:layout_constraintBottom_toTopOf="@id/miniPlayerBar"
         app:layout_constraintTop_toBottomOf="@id/header_shadow" />
+
+    <!-- Mini Player Bar -->
+    <RelativeLayout
+        android:id="@+id/miniPlayerBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_glass_card_dark"
+        android:elevation="6dp"
+        android:paddingHorizontal="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/divider_line">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardMiniArt"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            app:cardCornerRadius="8dp">
+
+            <ImageView
+                android:id="@+id/ivMiniArt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cacun" />
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/cardMiniArt"
+            android:layout_toStartOf="@id/layoutMiniControls"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvMiniTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:text="Song Title"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvMiniArtist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:text="Artist Name"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutMiniControls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnMiniPlayPause"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Play/Pause"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="@color/text_primary" />
+
+            <ImageView
+                android:id="@+id/btnMiniNext"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Next"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_media_next"
+                app:tint="@color/text_primary" />
+        </LinearLayout>
+    </RelativeLayout>
 
     <View
         android:id="@+id/divider_line"

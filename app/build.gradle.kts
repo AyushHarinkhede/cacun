@@ -46,6 +46,7 @@ dependencies {
   implementation(libs.material)
   implementation(libs.androidx.constraintlayout)
   implementation(libs.androidx.swiperefreshlayout)
+  implementation("androidx.media:media:1.7.0")
   implementation(libs.gson)
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.kotlinx.coroutines.android)
