@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Core Themes -->
+    <color name="primary">#7C3AED</color>
+    <color name="primary_dark">#6D28D9</color>
+    <color name="primary_light">#A78BFA</color>
+    <color name="bg_dark">#1A1A2E</color>
+    <color name="bg_dark_secondary">#16213E</color>
+    <color name="bg_card">#0F3460</color>
+    <color name="bg_accent">#1E3A5F</color>
+    <color name="accent">#E67E5F</color>
+    <color name="text_primary">#F3F0FF</color>
+    <color name="text_secondary">#E9D5FF</color>
+    <color name="text_muted">#C4B5FD</color>
+    
+    <!-- System Standard Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#888888</color>
+    <color name="divider">#4C1D95</color>
+    <color name="green_status">#4CAF50</color>
+    <color name="red_status">#F44336</color>
+    
+    <!-- Social Network Brand Colors -->
+    <color name="color_instagram">#E1306C</color>
+    <color name="color_facebook">#1877F2</color>
+    <color name="color_x">#1DA1F2</color>
+    <color name="color_snapchat">#FFFC00</color>
+    <color name="color_reddit">#FF4500</color>
+    <color name="color_linkedin">#0A66C2</color>
+    <color name="color_github">#6E5494</color>
+    <color name="color_youtube">#FF0000</color>
+    <color name="color_gmail">#EA4335</color>
+    <color name="color_pinterest">#BD081C</color>
+    <color name="color_signal">#3A76F0</color>
+    <color name="color_duolingo">#58CC02</color>
+</resources>
