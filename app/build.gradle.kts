@@ -1,5 +1,6 @@
 plugins {
   alias(libs.plugins.android.application)
+  alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -25,7 +26,7 @@ android {
     }
     buildFeatures {
       viewBinding = true
-      compose = false
+      compose = true
       aidl = false
       buildConfig = false
       shaders = false
@@ -46,13 +47,29 @@ dependencies {
   implementation(libs.androidx.constraintlayout)
   implementation(libs.androidx.swiperefreshlayout)
   implementation(libs.gson)
+  implementation(libs.kotlinx.coroutines.core)
+  implementation(libs.kotlinx.coroutines.android)
+
+  // Compose
+  implementation(platform(libs.androidx.compose.bom))
+  implementation(libs.androidx.compose.ui)
+  implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.ui.tooling.preview)
+  implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
+  implementation(libs.androidx.lifecycle.runtime.compose)
 
   // Local tests: jUnit, Android runner
   testImplementation(libs.junit)
+  testImplementation(libs.kotlinx.coroutines.test)
 
   // Instrumented tests
   androidTestImplementation(libs.androidx.test.core)
   androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.androidx.test.espresso.core)
+  androidTestImplementation(platform(libs.androidx.compose.bom))
+  androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+  debugImplementation(libs.androidx.compose.ui.tooling)
+  debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
