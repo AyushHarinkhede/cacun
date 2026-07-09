@@ -9,6 +9,10 @@
         android:icon="@android:drawable/ic_menu_agenda"
         android:title="Live Feed" />
     <item
+        android:id="@+id/navigation_alerts"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:title="Alerts" />
+    <item
         android:id="@+id/navigation_accounts"
         android:icon="@android:drawable/ic_menu_add"
         android:title="Manage" />

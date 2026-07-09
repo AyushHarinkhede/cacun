@@ -325,7 +325,21 @@ public class SocialApiManager {
                 // Screen time accumulates if online
                 int newScreenTime = acct.getScreenTime();
                 if (acct.isOnline()) {
+                    int prevScreenTime = newScreenTime;
                     newScreenTime += random.nextInt(3) + 1; // +1 to 3 mins
+                    
+                    // Wellbeing warning trigger: screen time crosses 100 minutes boundary
+                    if (prevScreenTime <= 100 && newScreenTime > 100) {
+                        SocialNotification wellbeingNotif = new SocialNotification();
+                        wellbeingNotif.setAccountId(acct.getId());
+                        wellbeingNotif.setPlatform(acct.getPlatform());
+                        wellbeingNotif.setUsername(acct.getUsername());
+                        wellbeingNotif.setTitle("Wellbeing Warning! 🕒");
+                        wellbeingNotif.setMessage("High usage: You have spent over 100 minutes on " + acct.getPlatform() + " today. Consider taking a screen break!");
+                        wellbeingNotif.setTimestamp(System.currentTimeMillis());
+                        wellbeingNotif.setRead(false);
+                        dbHelper.addNotification(wellbeingNotif);
+                    }
                 }
 
                 // Randomly toggle online status

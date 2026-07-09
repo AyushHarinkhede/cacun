@@ -16,6 +16,7 @@ import com.example.cacun.api.SocialApiManager;
 import com.example.cacun.ui.dashboard.DashboardFragment;
 import com.example.cacun.ui.feed.FeedFragment;
 import com.example.cacun.ui.manage.ManageFragment;
+import com.example.cacun.ui.alerts.AlertsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DashboardFragment dashboardFragment;
     private FeedFragment feedFragment;
+    private AlertsFragment alertsFragment;
     private ManageFragment manageFragment;
 
     private SocialApiManager apiManager;
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup bottom navigation
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
-        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        bottomNavigation.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.navigation_feed) {
                     switchToFragment(getFeedFragment());
+                    return true;
+                } else if (itemId == R.id.navigation_alerts) {
+                    switchToFragment(getAlertsFragment());
                     return true;
                 } else if (itemId == R.id.navigation_accounts) {
                     switchToFragment(getManageFragment());
@@ -100,6 +105,13 @@ public class MainActivity extends AppCompatActivity {
         return feedFragment;
     }
 
+    private AlertsFragment getAlertsFragment() {
+        if (alertsFragment == null) {
+            alertsFragment = new AlertsFragment();
+        }
+        return alertsFragment;
+    }
+
     private ManageFragment getManageFragment() {
         if (manageFragment == null) {
             manageFragment = new ManageFragment();
@@ -133,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
                                         ((DashboardFragment) activeFragment).refreshData();
                                     } else if (activeFragment instanceof FeedFragment) {
                                         ((FeedFragment) activeFragment).refreshData();
+                                    } else if (activeFragment instanceof AlertsFragment) {
+                                        ((AlertsFragment) activeFragment).refreshData();
                                     } else if (activeFragment instanceof ManageFragment) {
                                         ((ManageFragment) activeFragment).refreshData();
                                     }
