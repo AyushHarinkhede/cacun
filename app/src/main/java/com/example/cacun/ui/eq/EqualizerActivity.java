@@ -30,6 +30,7 @@ public class EqualizerActivity extends AppCompatActivity {
     private SeekBar[] seekBars = new SeekBar[5];
     private SeekBar seekBarBass;
     private SeekBar seekBarVirtualizer;
+    private SwitchCompat switch8D;
 
     private MusicPlaybackService playbackService;
     private boolean isBound = false;
@@ -65,6 +66,7 @@ public class EqualizerActivity extends AppCompatActivity {
         seekBars[4] = findViewById(R.id.seekBarBand4);
         seekBarBass = findViewById(R.id.seekBarBassBoost);
         seekBarVirtualizer = findViewById(R.id.seekBarVirtualizer);
+        switch8D = findViewById(R.id.switch8DAudio);
 
         findViewById(R.id.btnEqBack).setOnClickListener(v -> finish());
 
@@ -84,6 +86,12 @@ public class EqualizerActivity extends AppCompatActivity {
         switchEq.setOnCheckedChangeListener((buttonView, isChecked) -> {
             playbackService.setEqEnabled(isChecked);
             setControlsEnabled(isChecked);
+        });
+
+        // 8D Audio Switch
+        switch8D.setChecked(playbackService.is8DActive());
+        switch8D.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            playbackService.set8DActive(isChecked);
         });
 
         // Try setting up effects in service if not already active
@@ -228,6 +236,32 @@ public class EqualizerActivity extends AppCompatActivity {
         }
         seekBarBass.setEnabled(enabled);
         seekBarVirtualizer.setEnabled(enabled);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            android.view.WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.preferredRefreshRate = 120f;
+            getWindow().setAttributes(layoutParams);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            android.view.WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.preferredRefreshRate = 0f;
+            getWindow().setAttributes(layoutParams);
+        }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     @Override

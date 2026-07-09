@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -159,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements MusicPlaybackServ
         if (targetFragment == null) return;
         activeFragment = targetFragment;
         fragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.fragment_container, targetFragment)
                 .commitAllowingStateLoss();
     }
@@ -338,6 +340,26 @@ public class MainActivity extends AppCompatActivity implements MusicPlaybackServ
     @Override
     public void onPlaybackProgress(int currentMs, int durationMs) {
         // Mini player doesn't draw progress bar, ignore progress updates
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            android.view.WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.preferredRefreshRate = 120f;
+            getWindow().setAttributes(layoutParams);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            android.view.WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.preferredRefreshRate = 0f;
+            getWindow().setAttributes(layoutParams);
+        }
     }
 
     @Override

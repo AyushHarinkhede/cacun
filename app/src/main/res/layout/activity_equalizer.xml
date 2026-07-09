@@ -302,10 +302,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="20dp"
                     android:max="1000"
                     android:progress="0"
                     android:progressTint="@color/md_you_pastel_indigo"
                     android:thumbTint="@color/white" />
+
+                <!-- 8D Spatial Audio Switch -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="8D Spatial Sound View"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"/>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switch8DAudio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:thumbTint="@color/white"
+                        app:trackTint="@color/md_you_pastel_cyan" />
+                </RelativeLayout>
             </LinearLayout>
 
         </LinearLayout>

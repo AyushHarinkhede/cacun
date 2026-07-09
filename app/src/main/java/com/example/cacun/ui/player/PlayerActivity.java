@@ -7,11 +7,13 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.Surface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cacun.R;
@@ -229,6 +231,7 @@ public class PlayerActivity extends AppCompatActivity implements MusicPlaybackSe
         } else {
             ivPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play);
         }
+        updateAlbumArtAnimation(isPlaying);
     }
 
     @Override
@@ -243,9 +246,68 @@ public class PlayerActivity extends AppCompatActivity implements MusicPlaybackSe
         return String.format(Locale.getDefault(), "%d:%02d", minutes, seconds);
     }
 
+    private boolean isAnimating = false;
+
+    private void updateAlbumArtAnimation(boolean isPlaying) {
+        if (isPlaying) {
+            ivAlbumArt.animate().scaleX(1.05f).scaleY(1.05f).setDuration(400).start();
+            if (!isAnimating) {
+                isAnimating = true;
+                startAlbumArtRotation();
+            }
+        } else {
+            ivAlbumArt.animate().scaleX(1.0f).scaleY(1.0f).setDuration(400).start();
+            isAnimating = false;
+            ivAlbumArt.animate().cancel();
+        }
+    }
+
+    private void startAlbumArtRotation() {
+        if (!isAnimating) return;
+        ivAlbumArt.animate()
+                .rotationBy(360f)
+                .setDuration(25000) // 25 seconds per full rotation
+                .setInterpolator(new android.view.animation.LinearInterpolator())
+                .withEndAction(this::startAlbumArtRotation)
+                .start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            android.view.WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.preferredRefreshRate = 120f;
+            getWindow().setAttributes(layoutParams);
+        }
+        if (isBound && playbackService != null) {
+            updateAlbumArtAnimation(playbackService.isPlaying());
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            android.view.WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.preferredRefreshRate = 0f;
+            getWindow().setAttributes(layoutParams);
+        }
+        isAnimating = false;
+        ivAlbumArt.animate().cancel();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isAnimating = false;
+        ivAlbumArt.animate().cancel();
         if (isBound) {
             if (playbackService != null) {
                 playbackService.unregisterListener(this);

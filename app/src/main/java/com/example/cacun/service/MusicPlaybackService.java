@@ -114,8 +114,7 @@ public class MusicPlaybackService extends Service implements
         // Register noisy receiver (headphones unplugged)
         registerReceiver(noisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
-        // Start progress reporting loop
-        startProgressUpdater();
+        // Progress reporting loop will be started on active playback
     }
 
     private void initMediaPlayer() {
@@ -271,6 +270,13 @@ public class MusicPlaybackService extends Service implements
                 mediaPlayer.start();
                 notifyPlaybackState(true);
                 startForegroundNotification();
+                
+                // Start updates
+                startProgressUpdater();
+                if (is8DActive) {
+                    panHandler.removeCallbacks(panRunnable);
+                    panHandler.post(panRunnable);
+                }
             } else if (currentTrackIndex != -1) {
                 playTrack(currentTrackIndex);
             } else if (!playlist.isEmpty()) {
@@ -284,6 +290,10 @@ public class MusicPlaybackService extends Service implements
             mediaPlayer.pause();
             notifyPlaybackState(false);
             startForegroundNotification(); // Update notification with Play action
+            
+            // Stop updates to allow system to enter low refresh rate idle state
+            stopProgressUpdater();
+            panHandler.removeCallbacks(panRunnable);
         }
     }
 
@@ -400,17 +410,51 @@ public class MusicPlaybackService extends Service implements
                 for (PlaybackEventListener l : listeners) {
                     l.onPlaybackProgress(pos, dur);
                 }
+                progressHandler.postDelayed(this, 1000);
             }
-            progressHandler.postDelayed(this, 1000);
         }
     };
 
     private void startProgressUpdater() {
+        progressHandler.removeCallbacks(progressRunnable);
         progressHandler.post(progressRunnable);
     }
 
     private void stopProgressUpdater() {
         progressHandler.removeCallbacks(progressRunnable);
+    }
+
+    // --- 8D Spatial Audio Effect Engine ---
+    private boolean is8DActive = false;
+    private double panAngle = 0.0;
+    private final Handler panHandler = new Handler(Looper.getMainLooper());
+    private final Runnable panRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isPlaying() && is8DActive && mediaPlayer != null) {
+                panAngle += 0.08; // Panning speed step
+                float leftVol = (float) ((Math.sin(panAngle) + 1.0) / 2.0);
+                float rightVol = (float) (1.0f - leftVol);
+                mediaPlayer.setVolume(leftVol, rightVol);
+            }
+            if (is8DActive) {
+                panHandler.postDelayed(this, 100);
+            }
+        }
+    };
+
+    public boolean is8DActive() { return is8DActive; }
+    public void set8DActive(boolean active) {
+        this.is8DActive = active;
+        if (active) {
+            panHandler.removeCallbacks(panRunnable);
+            panHandler.post(panRunnable);
+        } else {
+            panHandler.removeCallbacks(panRunnable);
+            if (mediaPlayer != null) {
+                mediaPlayer.setVolume(1.0f, 1.0f); // Reset volume balance
+            }
+        }
     }
 
     // --- Audio Focus Management ---
