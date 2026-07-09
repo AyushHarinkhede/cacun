@@ -318,9 +318,8 @@ export default function Messages() {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{
-      background: 'var(--bg-primary)',
-      backgroundImage: 'var(--texture-pattern)'
+    <div className="flex flex-col overflow-hidden border border-primary/20 rounded-3xl bg-card/25 backdrop-blur-xl shadow-2xl" style={{
+      height: 'calc(100vh - 12rem)',
     }}>
       {/* Search Header - Fixed */}
       <motion.div
