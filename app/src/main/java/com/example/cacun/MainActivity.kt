@@ -2,6 +2,7 @@ package com.example.cacun
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
@@ -21,18 +22,19 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.widget.Toast
-import android.app.ActivityManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -41,6 +43,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -130,11 +134,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             intent?.let {
                 val level = it.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
                 val scale = it.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-                val oldPct = batteryPct
+                val oldCharging = isChargingState
                 batteryPct = if (level != -1 && scale != -1) (level * 100 / scale) else 0
 
                 val status = it.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-                val oldCharging = isChargingState
                 isChargingState = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                         status == BatteryManager.BATTERY_STATUS_FULL
 
@@ -192,7 +195,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         if (currentMa > 100f) {
             val capacityMh = 5000f // Default capacity
             val mahNeeded = capacityMh * (remainingPct / 100f)
-            // margin for saturation charge phase (CV phase)
             val hours = (mahNeeded / currentMa) * 1.25f
             val minutes = (hours * 60).toInt()
 
@@ -245,7 +247,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
 
         setContent {
-            GlassSystemMonitorTheme {
+            MaterialYouSystemMonitorTheme {
                 MainDashboardScreen()
             }
         }
@@ -337,7 +339,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     // 3. Screen Brightness Override (Local window override, no system permission required)
     private fun adjustWindowBrightness(percentage: Float) {
         val windowVal = when {
-            percentage < 0.05f -> 0.05f // Prevent complete black out
+            percentage < 0.05f -> 0.05f
             percentage > 1.0f -> 1.0f
             else -> percentage
         }
@@ -361,8 +363,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         vibrator?.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = when (type) {
-                    1 -> VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE) // Click
-                    2 -> VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE) // Heavy thump
+                    1 -> VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE)
+                    2 -> VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE)
                     else -> {
                         val timings = longArrayOf(0, 100, 100, 100, 100, 100, 300, 300, 100, 300, 100, 300, 300, 100, 100, 100, 100, 100)
                         val amplitudes = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255)
@@ -485,7 +487,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
-    // Checking usage permissions
     private fun isUsageAccessGranted(): Boolean {
         val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
         val mode = appOps.checkOpNoThrow(
@@ -536,11 +537,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     val totalMins = (totalTimeMs % (1000 * 60 * 60)) / (1000 * 60)
                     screenTimeTodayStr = "${totalHrs}h ${totalMins}m"
 
-                    // Load installed apps to analyze
                     val apps = JavaHardwareScanner.getInstalledApps(context)
                     appStatsList.clear()
-                    // Sort by security or system status for demo listing
-                    appStatsList.addAll(apps.take(15))
+                    appStatsList.addAll(apps.sortedBy { it.isSystem }.take(15))
                 } catch (e: Exception) {
                     screenTimeTodayStr = "ERR: NO STATS"
                 }
@@ -554,7 +553,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         LaunchedEffect(Unit) {
             val bootSequence = listOf(
                 "Initializing Cacun OS Kernel Loader...",
-                "Mounting secure core hardware detectors... OK",
+                "Mounting dynamic Material You colour tokens... OK",
                 "Establishing telemetry socket connections... OK",
                 "Scanning accelerometer, gyroscope, light arrays...",
                 "Checking network operators & modem layers...",
@@ -570,7 +569,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             isBooting = false
         }
 
-        // Full Screen color checking view
+        // Color test screen
         if (isTestingColors) {
             Box(
                 modifier = Modifier
@@ -580,7 +579,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         if (activeColorIndex < testColors.size - 1) {
                             activeColorIndex++
                         } else {
-                            // Reset
                             isTestingColors = false
                             activeColorIndex = 0
                             addLog("[DSP] Pixel color check complete.")
@@ -732,8 +730,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 !isChargingState -> "DISCONNECTED"
                 batteryPowerW <= 0f -> "DISCONNECTED"
                 else -> {
-                    // brick rating estimate function
-                    val rawPower = batteryPowerW / 0.85f // assuming ~85% transfer efficiency
+                    val rawPower = batteryPowerW / 0.85f
                     when {
                         rawPower <= 6f -> "5W Standard Brick"
                         rawPower <= 11f -> "10W Fast Brick"
@@ -757,7 +754,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 else -> "Heavy Copper Cable (5A/6A Rating)"
             }
 
-            // Lifespan calculations (Current year is 2026!)
+            // Lifespan calculations
             val releaseYear = when (sdkVersion) {
                 35 -> 2024
                 34 -> 2023
@@ -777,69 +774,38 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             }
             val updatesRemaining = if ((supportDuration - deviceAge) > 0) (supportDuration - deviceAge) else 0
 
-            // Estimated lifespan in years
             val healthFactor = if (batteryHealthStr == "GOOD") 1.0f else 0.7f
             val ageTax = deviceAge * 0.85f
             val remainingLifeVal = (healthFactor * 5.5f) - ageTax
             val estimatedLifespanYears = if (remainingLifeVal > 0.5f) String.format(Locale.US, "%.1f", remainingLifeVal) else "0.5 (Wear Warning)"
 
-            // Infinite breathing indicator animation
-            val infiniteTransition = rememberInfiniteTransition(label = "indicatorGlow")
-            val glowAlpha by infiniteTransition.animateFloat(
-                initialValue = 0.2f,
-                targetValue = 0.9f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1200, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse
-                ),
-                label = "indicatorAlpha"
+            // Entrance Slide animations triggered when loaded
+            var isDashboardVisible by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                delay(100)
+                isDashboardVisible = true
+            }
+
+            val entranceOffsetY by animateDpAsState(
+                targetValue = if (isDashboardVisible) 0.dp else 40.dp,
+                animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
+                label = "offset"
+            )
+            val entranceAlpha by animateFloatAsState(
+                targetValue = if (isDashboardVisible) 1.0f else 0f,
+                animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
+                label = "alpha"
             )
 
             val scrollState = rememberScrollState()
 
-            // Main Background Grid
+            // Dynamic grid colors and background
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF08090C))
-                    .drawBehind {
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                colors = listOf(Color(0x1FBD00FF), Color.Transparent),
-                                center = Offset(0f, 0f),
-                                radius = size.width * 1.3f
-                            ),
-                            radius = size.width * 1.3f,
-                            center = Offset(0f, 0f)
-                        )
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                colors = listOf(Color(0x1F00E5FF), Color.Transparent),
-                                center = Offset(size.width, size.height * 0.7f),
-                                radius = size.width
-                            ),
-                            radius = size.width,
-                            center = Offset(size.width, size.height * 0.7f)
-                        )
-
-                        val gridSpace = 30.dp.toPx()
-                        for (x in 0..size.width.toInt() step gridSpace.toInt()) {
-                            drawLine(
-                                color = Color(0x0600FFCC),
-                                start = Offset(x.toFloat(), 0f),
-                                end = Offset(x.toFloat(), size.height),
-                                strokeWidth = 1f
-                            )
-                        }
-                        for (y in 0..size.height.toInt() step gridSpace.toInt()) {
-                            drawLine(
-                                color = Color(0x0600FFCC),
-                                start = Offset(0f, y.toFloat()),
-                                end = Offset(size.width, y.toFloat()),
-                                strokeWidth = 1f
-                            )
-                        }
-                    }
+                    .background(MaterialTheme.colorScheme.background)
+                    .alpha(entranceAlpha)
+                    .offset(y = entranceOffsetY)
             ) {
                 BoxWithConstraints(
                     modifier = Modifier
@@ -873,15 +839,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 Column {
                                     Text(
                                         text = "HARDWARE HUD",
-                                        color = Color(0xFF00FFCC),
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontSize = 13.sp,
                                         fontFamily = FontFamily.Monospace,
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = 1.sp
                                     )
                                     Text(
-                                        text = "CORE TERMINAL v2.5",
-                                        color = Color(0x66FFFFFF),
+                                        text = "MATERIAL YOU CORE v2.5",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                         fontSize = 8.sp,
                                         fontFamily = FontFamily.Monospace
                                     )
@@ -893,20 +859,20 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(4.dp))
-                                    .background(Color(0x1F00FFCC))
-                                    .border(1.dp, Color(0xFF00FFCC), RoundedCornerShape(4.dp))
+                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
                                 Box(
                                     modifier = Modifier
                                         .size(6.dp)
                                         .clip(RoundedCornerShape(3.dp))
-                                        .background(Color(0xFF00FFCC).copy(alpha = glowAlpha))
+                                        .background(MaterialTheme.colorScheme.primary)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "SECURE",
-                                    color = Color(0xFF00FFCC),
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontSize = 9.sp,
                                     fontFamily = FontFamily.Monospace,
                                     fontWeight = FontWeight.Bold
@@ -971,7 +937,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                         )
                                         ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
                                             launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
-                                            // Refresh state helper
                                             Handler(Looper.getMainLooper()).postDelayed({
                                                 usagePermissionActive = isUsageAccessGranted()
                                             }, 2000)
@@ -1027,15 +992,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 }
                             }
 
-                            // SECTION 8: DEVELOPER CREDENTIALS & LICENSES FOOTER
+                            // DEVELOPER CREDENTIALS & LICENSES FOOTER
                             Spacer(modifier = Modifier.height(24.dp))
                             
-                            // Terms and Privacy Card
-                            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                            MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
                                 Column(modifier = Modifier.padding(12.dp)) {
                                     Text(
                                         text = "[ LEGAL PRIVACY CHARTER ]",
-                                        color = Color(0xFF00E5FF),
+                                        color = MaterialTheme.colorScheme.secondary,
                                         fontSize = 9.sp,
                                         fontFamily = FontFamily.Monospace,
                                         fontWeight = FontWeight.Bold
@@ -1043,7 +1007,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
                                         text = "By accessing Cacun HUD hardware logs, you authorize localized sandbox reading of sensors, battery broadcast configurations, and storage directories. No metadata is shared offboard. Your telephony security keys (IMEI) remain local and are protected by Android security exception sandboxes.",
-                                        color = Color(0x66FFFFFF),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                                         fontSize = 8.5.sp,
                                         fontFamily = FontFamily.Monospace,
                                         lineHeight = 11.sp
@@ -1053,7 +1017,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // Cacun Landscape Logo Watermark
                             Image(
                                 painter = painterResource(id = R.drawable.cacun),
                                 contentDescription = "Cacun Watermark",
@@ -1079,28 +1042,28 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 
                                 Text(
                                     text = "$day | $date | $time",
-                                    color = Color(0xFF00FFCC),
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontSize = 10.sp,
                                     fontFamily = FontFamily.Monospace,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     text = "USER PROFILE: ROOT ADMINISTRATOR",
-                                    color = Color(0x66FFFFFF),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                     fontSize = 9.sp,
                                     fontFamily = FontFamily.Monospace
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "DEVELOPER: AYUSH HARINKHEDE",
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 10.sp,
                                     fontFamily = FontFamily.Monospace,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     text = "CONTACT: ayushharinkhere2005@gmail.com",
-                                    color = Color(0xFF00E5FF),
+                                    color = MaterialTheme.colorScheme.secondary,
                                     fontSize = 9.sp,
                                     fontFamily = FontFamily.Monospace,
                                     modifier = Modifier.clickable {
@@ -1122,15 +1085,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
-    // --- Sub components to maintain responsive structure ---
+    // --- Sub components ---
 
     @Composable
     fun PerformanceSpeedController() {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = "> TELEMETRY DRAIN CONTROLLER",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
@@ -1138,7 +1101,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "Eco Mode throttles the hardware listeners, minimizing CPU cycles and battery resource consumption.",
-                    color = Color(0xCCFFFFFF),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 10.sp,
                     fontFamily = FontFamily.Monospace,
                     modifier = Modifier.padding(bottom = 10.dp)
@@ -1157,8 +1120,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 addLog("[PWR] Telemetry rate adjusted to: ${mode.label}")
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isSelected) Color(0xFF00FFCC) else Color(0x16FFFFFF),
-                                contentColor = if (isSelected) Color.Black else Color.White
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer
                             ),
                             shape = RoundedCornerShape(4.dp),
                             modifier = Modifier
@@ -1181,7 +1144,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     @Composable
     fun LiveOscilloscopePlot(lightValue: Float, refreshRate: Float) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -1190,14 +1153,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 ) {
                     Text(
                         text = "> SENSOR VECTOR PLOTTER & LIGHT READS",
-                        color = Color(0xFF00E5FF),
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 11.sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = "REFRESH RATE: ${refreshRate.toInt()} Hz",
-                        color = Color(0xFF00FFCC),
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 9.sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
@@ -1211,7 +1174,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         .fillMaxWidth()
                         .height(95.dp)
                         .background(Color(0xFF06070B))
-                        .border(1.dp, Color(0x1A00FFCC))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                 ) {
                     val width = size.width
                     val height = size.height
@@ -1273,11 +1236,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     @Composable
     fun BatteryInfusionModule(batteryPowerW: Float, brickRating: String, cableRating: String) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = "> CHARGER ENGINE & BATTERY CALCULATOR",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
@@ -1297,21 +1260,21 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         CircularProgressIndicator(
                             progress = { batteryPct / 100f },
                             modifier = Modifier.fillMaxSize(),
-                            color = if (batteryPct > 20) Color(0xFF00FFCC) else Color(0xFFFF3B30),
+                            color = if (batteryPct > 20) MaterialTheme.colorScheme.primary else Color(0xFFFF3B30),
                             strokeWidth = 5.dp,
-                            trackColor = Color(0x16FFFFFF)
+                            trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
                         )
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
                                 text = "$batteryPct%",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 15.sp,
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = if (isChargingState) "CHARGE" else "DRAIN",
-                                color = if (isChargingState) Color(0xFF00FFCC) else Color(0x66FFFFFF),
+                                color = if (isChargingState) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 8.sp,
                                 fontFamily = FontFamily.Monospace
                             )
@@ -1321,41 +1284,41 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
-                        DataRow("BATTERY DESIGN CAP", "5000 mAh", Color.White)
-                        DataRow("HEALTH CORE STATUS", batteryHealthStr, if(batteryHealthStr == "GOOD") Color(0xFF00FFCC) else Color(0xFFFFB300))
-                        DataRow("INLET WATTAGE", "${String.format(Locale.US, "%.2f", batteryPowerW)} W", Color(0xFF00FFCC))
-                        DataRow("ESTIMATED BRICK", brickRating, Color(0xFF00E5FF))
-                        DataRow("CABLE RATING FLOW", cableRating, Color.White)
+                        CodeDataRow("BATTERY DESIGN CAP", "5000 mAh")
+                        CodeDataRow("HEALTH CORE STATUS", batteryHealthStr, if(batteryHealthStr == "GOOD") Color(0xFF00FFCC) else Color(0xFFFFB300))
+                        CodeDataRow("INLET WATTAGE", "${String.format(Locale.US, "%.2f", batteryPowerW)} W")
+                        CodeDataRow("ESTIMATED BRICK", brickRating, Color(0xFF00E5FF))
+                        CodeDataRow("CABLE RATING FLOW", cableRating)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Time Logs Section
                 Text(
                     text = "[ CHARGER INTENSITY TIME-LOG ]",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.secondary,
                     fontSize = 9.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                DataRow("PLUG IN TIME", chargeStartTime, Color.White)
-                DataRow("EXPECTED FULL BY", expectedFullTime, if (isChargingState) Color(0xFF00FFCC) else Color.White)
-                DataRow("LAST DISCONNECT TIME", lastPlugTime, Color.White)
+                CodeDataRow("PLUG IN TIME", chargeStartTime)
+                CodeDataRow("EXPECTED FULL BY", expectedFullTime, if (isChargingState) Color(0xFF00FFCC) else Color.White)
+                CodeDataRow("LAST DISCONNECT TIME", lastPlugTime)
             }
         }
     }
 
     @Composable
     fun InteractiveHardwareControls(context: Context) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = "> CONTROL CENTRE & VOLUME MATRIX",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
@@ -1380,16 +1343,16 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             onClick = { launchSystemIntent(btn.second, btn.third) },
                             modifier = Modifier.weight(1f).height(32.dp),
                             shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x16FFFFFF)),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                             contentPadding = PaddingValues(horizontal = 2.dp)
                         ) {
-                            Text(btn.first, fontSize = 8.5.sp, fontFamily = FontFamily.Monospace, color = Color(0xFF00FFCC))
+                            Text(btn.first, fontSize = 8.5.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSecondaryContainer)
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Flashlight Toggle
@@ -1399,23 +1362,23 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("REAR OPTICAL TORCH", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
-                        Text("Toggle physical camera LED flash", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                        Text("REAR OPTICAL TORCH", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        Text("Toggle physical camera LED flash", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
                     }
                     Switch(
                         checked = isFlashlightOn,
                         onCheckedChange = { toggleFlashlight(it) },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.Black,
-                            checkedTrackColor = Color(0xFF00FFCC),
-                            uncheckedThumbColor = Color.White,
-                            uncheckedTrackColor = Color(0x33FFFFFF)
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // Brightness Slider
@@ -1424,26 +1387,26 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("LOCAL SCREEN BRIGHTNESS OVERRIDE", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
-                        Text("${(screenBrightnessPercent * 100).toInt()}%", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                        Text("LOCAL SCREEN BRIGHTNESS OVERRIDE", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        Text("${(screenBrightnessPercent * 100).toInt()}%", color = MaterialTheme.colorScheme.primary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                     }
                     Slider(
                         value = screenBrightnessPercent,
                         onValueChange = { adjustWindowBrightness(it) },
                         colors = SliderDefaults.colors(
-                            thumbColor = Color(0xFF00FFCC),
-                            activeTrackColor = Color(0xFF00FFCC),
-                            inactiveTrackColor = Color(0x16FFFFFF)
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     )
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // System Volumes Matrix
-                Text("SYSTEM VOLUME MATRIX CONTROLS", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                Text("SYSTEM VOLUME MATRIX CONTROLS", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 VolumeSliderRow("MEDIA VOLUME", volumeMediaPercent, AudioManager.STREAM_MUSIC)
@@ -1452,12 +1415,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 VolumeSliderRow("NOTIF VOLUME", volumeNotificationPercent, AudioManager.STREAM_NOTIFICATION)
 
                 Spacer(modifier = Modifier.height(6.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // Haptic Generator
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text("HAPTIC MOTOR TRIGGER TEST", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                    Text("HAPTIC MOTOR TRIGGER TEST", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -1467,25 +1430,25 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             onClick = { triggerVibration(1) },
                             modifier = Modifier.weight(1f).height(32.dp),
                             shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x16FFFFFF))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                         ) {
-                            Text("CLICK", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color.White)
+                            Text("CLICK", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSecondaryContainer)
                         }
                         Button(
                             onClick = { triggerVibration(2) },
                             modifier = Modifier.weight(1f).height(32.dp),
                             shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x16FFFFFF))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                         ) {
-                            Text("THUMP", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color.White)
+                            Text("THUMP", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSecondaryContainer)
                         }
                         Button(
                             onClick = { triggerVibration(3) },
                             modifier = Modifier.weight(1f).height(32.dp),
                             shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x1FBD00FF))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                         ) {
-                            Text("SOS WAVE", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color.White)
+                            Text("SOS WAVE", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
                     }
                 }
@@ -1500,17 +1463,17 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(label, color = Color(0x80FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                Text("${(value * 100).toInt()}%", color = Color(0xFF00FFCC), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                Text("${(value * 100).toInt()}%", color = MaterialTheme.colorScheme.primary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
             }
             Slider(
                 value = value,
                 onValueChange = { adjustVolume(it, streamType) },
                 modifier = Modifier.height(28.dp),
                 colors = SliderDefaults.colors(
-                    thumbColor = Color(0xFF00FFCC),
-                    activeTrackColor = Color(0xFF00FFCC),
-                    inactiveTrackColor = Color(0x16FFFFFF)
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer
                 )
             )
         }
@@ -1518,7 +1481,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     @Composable
     fun SystemDiagnosticConsole() {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -1527,14 +1490,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 ) {
                     Text(
                         text = "> KERNEL DIAGNOSTICS CONSOLE LOGS",
-                        color = Color(0xFF00E5FF),
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 11.sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = "[WIPE]",
-                        color = Color(0xFFFFB300),
+                        color = MaterialTheme.colorScheme.secondary,
                         fontSize = 10.sp,
                         fontFamily = FontFamily.Monospace,
                         modifier = Modifier
@@ -1550,7 +1513,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         .fillMaxWidth()
                         .height(130.dp)
                         .background(Color(0xFF040608))
-                        .border(1.dp, Color(0x20FFFFFF))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                         .padding(8.dp)
                 ) {
                     val logScrollState = rememberScrollState()
@@ -1565,7 +1528,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     ) {
                         consoleLogs.forEach { log ->
                             val isErr = log.contains("[ERR]") || log.contains("[WRN]")
-                            val color = if (isErr) Color(0xFFFFB300) else Color(0xFF00FFCC)
+                            val color = if (isErr) Color(0xFFFF3B30) else Color(0xFF00FFCC)
                             Text(
                                 text = log,
                                 color = if (log.contains("[SYS]")) Color(0xB3FFFFFF) else color,
@@ -1589,11 +1552,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         appsList: List<JavaHardwareScanner.AppDetail>,
         onTriggerScan: () -> Unit
     ) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = "> SHIELD ANTI-VIRUS FILE INTEGRITY",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
@@ -1606,27 +1569,27 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("SCANNING DIRECTORIES...", color = Color.White, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-                            Text("${(progress * 100).toInt()}%", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                            Text("SCANNING DIRECTORIES...", color = MaterialTheme.colorScheme.onSurface, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                            Text("${(progress * 100).toInt()}%", color = MaterialTheme.colorScheme.primary, fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         LinearProgressIndicator(
                             progress = { progress },
                             modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                            color = Color(0xFF00FFCC),
-                            trackColor = Color(0x16FFFFFF)
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "FILE: $filePath",
-                            color = Color(0x66FFFFFF),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                             fontSize = 8.5.sp,
                             fontFamily = FontFamily.Monospace,
                             maxLines = 1
                         )
                         Text(
                             text = "Verified: $count apps scanned.",
-                            color = Color(0xFF00FFCC),
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 9.sp,
                             fontFamily = FontFamily.Monospace
                         )
@@ -1638,15 +1601,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Local Shield Scanner", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
-                            Text("Run integrity scan on installed binaries.", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                            Text("Local Shield Scanner", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                            Text("Run integrity scan on installed binaries.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
                         }
                         Button(
                             onClick = onTriggerScan,
                             shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x1F00FFCC))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                         ) {
-                            Text("RUN SHIELD", fontSize = 10.sp, fontFamily = FontFamily.Monospace, color = Color(0xFF00FFCC))
+                            Text("RUN SHIELD", fontSize = 10.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
                     }
                 }
@@ -1661,11 +1624,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         appsList: List<JavaHardwareScanner.AppDetail>,
         onOpenSettings: () -> Unit
     ) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = "> SCREEN TIME & APP ANALYTICS",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
@@ -1676,7 +1639,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Usage statistics settings are restricted. Authorize app usage query to fetch screen time.",
-                            color = Color(0xCCFFFFFF),
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 10.sp,
                             fontFamily = FontFamily.Monospace
                         )
@@ -1685,9 +1648,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             onClick = onOpenSettings,
                             modifier = Modifier.fillMaxWidth().height(36.dp),
                             shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x1AFFFFFF))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                         ) {
-                            Text("AUTHORIZE SCREEN DIAGNOSTICS", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color.White)
+                            Text("AUTHORIZE SCREEN DIAGNOSTICS", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSecondaryContainer)
                         }
                     }
                 } else {
@@ -1697,29 +1660,29 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column {
-                                Text("SCREEN TIME TODAY", color = Color(0x80FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                                Text(screenTimeToday, color = Color(0xFF00FFCC), fontSize = 20.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                                Text("SCREEN TIME TODAY", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                                Text(screenTimeToday, color = MaterialTheme.colorScheme.primary, fontSize = 20.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                             }
                             Column(horizontalAlignment = Alignment.End) {
-                                Text("DAILY AVG", color = Color(0x80FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                                Text("5h 12m", color = Color.White, fontSize = 20.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                                Text("DAILY AVG", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                                Text("5h 12m", color = MaterialTheme.colorScheme.onSurface, fontSize = 20.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                             }
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        HorizontalDivider(color = Color(0x16FFFFFF))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
                             text = "[ PHYSIOLOGICAL AFFECTS ]",
-                            color = Color(0xFF00E5FF),
+                            color = MaterialTheme.colorScheme.secondary,
                             fontSize = 9.sp,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "Warning: Exceeding 4.5 hours of daily visual screen exposure suppresses melatonin synthesis and leads to progressive digital eye strain.",
-                            color = Color(0x99FFFFFF),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 9.sp,
                             fontFamily = FontFamily.Monospace,
                             lineHeight = 12.sp,
@@ -1729,7 +1692,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = "[ INSTALLED APPS DIRECTORY ]",
-                            color = Color(0xFF00E5FF),
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 9.sp,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.SemiBold,
@@ -1745,7 +1708,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Column(modifier = Modifier.weight(1.5f)) {
-                                        Text(app.name, color = Color.White, fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                                        Text(app.name, color = MaterialTheme.colorScheme.onSurface, fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                                         Text(app.installSource, color = if(app.installSource == "PLAY STORE") Color(0xFF00FFCC) else Color(0xFFFFB300), fontSize = 8.sp, fontFamily = FontFamily.Monospace)
                                     }
                                     
@@ -1782,11 +1745,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         usedRamPercent: Int, usedRamGb: Float, totalRamGb: Float,
         usedStoragePercent: Int, usedStorageGb: Float, totalStorageGb: Float
     ) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = "> STORAGE BLOCK STRUCTURE ALLOC",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
@@ -1797,7 +1760,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     label = "RAM SYSTEM CACHE",
                     percent = usedRamPercent,
                     detailsStr = "${String.format(Locale.US, "%.2f", usedRamGb)} GB / ${String.format(Locale.US, "%.2f", totalRamGb)} GB",
-                    barColor = Color(0xFF00FFCC)
+                    barColor = MaterialTheme.colorScheme.primary
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -1806,7 +1769,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     label = "INTERNAL EMMC BLOCK",
                     percent = usedStoragePercent,
                     detailsStr = "${String.format(Locale.US, "%.1f", usedStorageGb)} GB / ${String.format(Locale.US, "%.1f", totalStorageGb)} GB",
-                    barColor = Color(0xFFBD00FF)
+                    barColor = MaterialTheme.colorScheme.secondary
                 )
             }
         }
@@ -1821,26 +1784,28 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         deviceAge: Int, lifespanYears: String, updatesRemaining: Int,
         onLaunchColorTest: () -> Unit
     ) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = "> INTEGRATED HARDWARE IC DIRECTORY",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                DataRow("MANUFACTURER", manufacturer, Color.White)
-                DataRow("PRODUCT MODEL", model, Color.White)
-                DataRow("INTEGRITY STATUS", if(isRooted) "ROOTED / UNLOCKED" else "VERIFIED / SECURE", if(isRooted) Color(0xFFFFB300) else Color(0xFF00FFCC))
-                DataRow("5G MODEM PROFILE", modemModel, Color.White)
-                DataRow("CARRIER OPERATOR", simOperator, Color(0xFF00FFCC))
-                DataRow("NFC ANTENNA LINK", nfcStatus, if (nfcStatus == "ACTIVE") Color(0xFF00FFCC) else Color(0xFFFFB300))
+                CodeDataRow("MANUFACTURER", manufacturer)
+                CodeDataRow("PRODUCT MODEL", model)
+                CodeDataRow("CPU ARCH CORES", "${Runtime.getRuntime().availableProcessors()} Cores (${Build.CPU_ABI.uppercase()})")
+                CodeDataRow("SYSTEM THREADS", "${Thread.activeCount()} Threads Active", Color(0xFFFFB300))
+                CodeDataRow("INTEGRITY STATUS", if(isRooted) "ROOTED / UNLOCKED" else "VERIFIED / SECURE", if(isRooted) Color(0xFFFFB300) else Color(0xFF00FFCC))
+                CodeDataRow("5G MODEM PROFILE", modemModel)
+                CodeDataRow("CARRIER OPERATOR", simOperator, Color(0xFF00FFCC))
+                CodeDataRow("NFC ANTENNA LINK", nfcStatus, if (nfcStatus == "ACTIVE") Color(0xFF00FFCC) else Color(0xFFFFB300))
 
                 Spacer(modifier = Modifier.height(6.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(6.dp))
 
                 // Custom Android Version Layout
@@ -1849,44 +1814,44 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("OS VERSION ENGINE", color = Color(0x80FFFFFF), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    Text("OS VERSION ENGINE", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Color(0xFFBD00FF).copy(alpha = 0.2f))
-                            .border(1.dp, Color(0xFFBD00FF), RoundedCornerShape(4.dp))
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .border(1.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(4.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = "ANDROID $androidVersion (API $sdkVersion)",
-                            color = Color(0xFFD8B4FE),
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                             fontSize = 9.sp,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
-                DataRow("SECURITY PATCH", securityPatch, Color.White)
+                CodeDataRow("SECURITY PATCH", securityPatch)
 
                 Spacer(modifier = Modifier.height(6.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(6.dp))
 
                 // Device Age and Lifespan
                 Text(
                     text = "[ HARDWARE LIFE CYCLE ]",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.secondary,
                     fontSize = 9.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                DataRow("PHYSICAL AGE", "$deviceAge Years since launch", Color.White)
-                DataRow("EXPECTED LIFESPAN", "$lifespanYears Years remaining", Color(0xFF00FFCC))
-                DataRow("OTA UPDATES LEFT", "$updatesRemaining updates remaining", Color.White)
+                CodeDataRow("PHYSICAL AGE", "$deviceAge Years since launch")
+                CodeDataRow("EXPECTED LIFESPAN", "$lifespanYears Years remaining", Color(0xFF00FFCC))
+                CodeDataRow("OTA UPDATES LEFT", "$updatesRemaining updates remaining")
 
                 Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Display check triggers
@@ -1896,41 +1861,41 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("DISPLAY MATRIX", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
-                        Text("${widthPx}x${heightPx} @ ${refreshRate.toInt()}Hz", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                        Text("DISPLAY MATRIX", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        Text("${widthPx}x${heightPx} @ ${refreshRate.toInt()}Hz", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
                     }
                     Button(
                         onClick = onLaunchColorTest,
                         shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0x1F00E5FF)),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
-                        Text("COLOR CHECK", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color(0xFF00E5FF))
+                        Text("COLOR CHECK", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = "[SECURE IDENTITY CODES]",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.secondary,
                     fontSize = 9.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                DataRow("IMEI TELEPHONY", imei, if (imei.startsWith("SECURE")) Color(0xFFFFB300) else Color.White)
-                DataRow("ANDROID DEVICE ID", androidId, Color.White)
+                CodeDataRow("IMEI TELEPHONY", imei, if (imei.startsWith("SECURE")) Color(0xFFFFB300) else Color.White)
+                CodeDataRow("ANDROID DEVICE ID", androidId)
 
                 Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = "[INTEGRATED LENS ARRAY]",
-                    color = Color(0xFF00E5FF),
+                    color = MaterialTheme.colorScheme.secondary,
                     fontSize = 9.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold
@@ -1939,7 +1904,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 cameraSpecs.forEach { spec ->
                     Text(
                         text = " - $spec",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 10.sp,
                         fontFamily = FontFamily.Monospace,
                         modifier = Modifier.padding(bottom = 2.dp)
@@ -1949,105 +1914,71 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
-    @Composable
-    fun NetworkDiagnosticsScanner(networkType: String, linkSpeed: Int) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = "> NETWORK INTERFACE TELEMETRY",
-                    color = Color(0xFF00E5FF),
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                DataRow("INTERFACE TYPE", networkType, if (networkType.startsWith("DISCONNECT")) Color(0xFFFFB300) else Color(0xFF00FFCC))
-                DataRow("DOWNSTREAM CAPABILITY", if (linkSpeed > 0) "$linkSpeed Mbps" else "0 Mbps (STANDBY)", Color.White)
-            }
-        }
-    }
+    // --- Dynamic Card Helper (Material You with Sound and Bounce tap animation) ---
 
     @Composable
-    fun GyroscopeDiagnosticsCard() {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = "> GYROSCOPE COORDINATE VECTORS",
-                    color = Color(0xFF00E5FF),
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                        Text("X-AXIS (PITCH)", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                        Text(
-                            text = String.format(Locale.US, "%+.3f rad/s", gyroX),
-                            color = Color(0xFF00FFCC),
-                            fontSize = 11.sp,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                        Text("Y-AXIS (ROLL)", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                        Text(
-                            text = String.format(Locale.US, "%+.3f rad/s", gyroY),
-                            color = Color(0xFFBD00FF),
-                            fontSize = 11.sp,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                        Text("Z-AXIS (YAW)", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                        Text(
-                            text = String.format(Locale.US, "%+.3f rad/s", gyroZ),
-                            color = Color(0xFFFFB300),
-                            fontSize = 11.sp,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    // --- Glassmorphic Design UI helpers ---
-
-    @Composable
-    fun GlassCard(
+    fun MaterialYouCard(
         modifier: Modifier = Modifier,
+        onClick: (() -> Unit)? = null,
         content: @Composable () -> Unit
     ) {
-        Box(
+        val context = LocalContext.current
+        var isPressed by remember { mutableStateOf(false) }
+        val scale by animateFloatAsState(
+            targetValue = if (isPressed) 0.95f else 1f,
+            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+            label = "scale"
+        )
+        
+        Card(
             modifier = modifier
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color(0x0CFFFFFF))
-                .border(
-                    width = 1.dp,
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0x33FFFFFF),
-                            Color(0x05FFFFFF)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .pointerInput(onClick) {
+                    if (onClick != null) {
+                        detectTapGestures(
+                            onPress = {
+                                isPressed = true
+                                try {
+                                    val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                                    am.playSoundEffect(AudioManager.FX_KEY_CLICK, 1.0f)
+                                } catch (e: Exception) {}
+                                tryAwaitRelease()
+                                isPressed = false
+                            },
+                            onTap = {
+                                onClick()
+                            }
                         )
-                    ),
-                    shape = RoundedCornerShape(10.dp)
-                )
+                    }
+                },
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+            ),
+            border = CardDefaults.outlinedCardBorder()
         ) {
-            content()
+            Box(modifier = Modifier.fillMaxWidth()) {
+                // Subtle logo watermark at background
+                Image(
+                    painter = painterResource(id = R.drawable.cacun),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .height(24.dp)
+                        .aspectRatio(2.8f)
+                        .alpha(0.04f)
+                )
+                
+                content()
+            }
         }
     }
 
     @Composable
-    fun DataRow(label: String, value: String, valueColor: Color) {
+    fun CodeDataRow(label: String, value: String, valueColor: Color = Color(0xFF00FFCC)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -2056,14 +1987,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         ) {
             Text(
                 text = label,
-                color = Color(0x80FFFFFF),
-                fontSize = 10.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 10.5.sp,
                 fontFamily = FontFamily.Monospace
             )
             Text(
                 text = value,
                 color = valueColor,
-                fontSize = 10.sp,
+                fontSize = 10.5.sp,
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.Bold
             )
@@ -2084,7 +2015,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             ) {
                 Text(
                     text = label,
-                    color = Color(0xCCFFFFFF),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 10.sp,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold
@@ -2103,7 +2034,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     .fillMaxWidth()
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(Color(0x1AFFFFFF))
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -2115,7 +2046,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = detailsStr,
-                color = Color(0x66FFFFFF),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 fontSize = 9.sp,
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier.fillMaxWidth(),
@@ -2139,20 +2070,25 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     @Composable
-    fun GlassSystemMonitorTheme(content: @Composable () -> Unit) {
-        // Initialize constants once inside composition
+    fun MaterialYouSystemMonitorTheme(content: @Composable () -> Unit) {
         val context = LocalContext.current
         LaunchedEffect(Unit) {
             initConstants(context)
         }
 
-        MaterialTheme(
-            colorScheme = darkColorScheme(
+        val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        val colorScheme = when {
+            dynamicColor -> dynamicDarkColorScheme(context)
+            else -> darkColorScheme(
                 primary = Color(0xFF00FFCC),
                 secondary = Color(0xFF00E5FF),
                 background = Color(0xFF090A0E),
                 surface = Color(0x0CFFFFFF)
-            ),
+            )
+        }
+
+        MaterialTheme(
+            colorScheme = colorScheme,
             content = content
         )
     }
