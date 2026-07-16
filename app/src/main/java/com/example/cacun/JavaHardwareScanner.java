@@ -458,4 +458,140 @@ public class JavaHardwareScanner {
         }
         return "";
     }
+
+    // --- Detailed Storage Category Queries ---
+    public static long getMediaStoreSize(Context context, android.net.Uri uri) {
+        long totalSize = 0;
+        try {
+            String[] projection = { android.provider.MediaStore.MediaColumns.SIZE };
+            try (android.database.Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
+                if (cursor != null) {
+                    int sizeIndex = cursor.getColumnIndexOrThrow(android.provider.MediaStore.MediaColumns.SIZE);
+                    while (cursor.moveToNext()) {
+                        totalSize += cursor.getLong(sizeIndex);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return totalSize;
+    }
+
+    public static long getImagesSize(Context context) {
+        return getMediaStoreSize(context, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    }
+
+    public static long getVideosSize(Context context) {
+        return getMediaStoreSize(context, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+    }
+
+    public static long getAudioSize(Context context) {
+        return getMediaStoreSize(context, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+    }
+
+    public static long getDownloadsSize(Context context) {
+        long size = 0;
+        try {
+            File downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+            size = getFolderSize(downloadsDir);
+        } catch (Exception e) {
+            // Ignore
+        }
+        return size;
+    }
+
+    public static long getDocumentsSize(Context context) {
+        long size = 0;
+        try {
+            File docsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOCUMENTS);
+            size = getFolderSize(docsDir);
+        } catch (Exception e) {
+            // Ignore
+        }
+        return size;
+    }
+
+    public static long getApksSize(Context context) {
+        long size = 0;
+        try {
+            File downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+            size = getApkFilesSize(downloadsDir);
+        } catch (Exception e) {
+            // Ignore
+        }
+        return size;
+    }
+
+    private static long getFolderSize(File directory) {
+        long length = 0;
+        if (directory == null || !directory.exists()) return 0;
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    length += file.length();
+                } else {
+                    length += getFolderSize(file);
+                }
+            }
+        }
+        return length;
+    }
+
+    private static long getApkFilesSize(File directory) {
+        long length = 0;
+        if (directory == null || !directory.exists()) return 0;
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().toLowerCase().endsWith(".apk")) {
+                    length += file.length();
+                } else if (file.isDirectory()) {
+                    length += getApkFilesSize(file);
+                }
+            }
+        }
+        return length;
+    }
+
+    // --- Dynamic IO Benchmark Speed Test ---
+    public static float[] runStorageSpeedTest(Context context) {
+        float[] speeds = { 0f, 0f }; // { Write MB/s, Read MB/s }
+        try {
+            File tempFile = new File(context.getCacheDir(), "cacun_io_benchmark.tmp");
+            byte[] data = new byte[4 * 1024 * 1024]; // 4MB test block
+            new java.util.Random().nextBytes(data);
+
+            // Write benchmark
+            long startWrite = System.nanoTime();
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile)) {
+                fos.write(data);
+                fos.flush();
+                fos.getFD().sync();
+            }
+            long endWrite = System.nanoTime();
+            float writeTimeSecs = (endWrite - startWrite) / 1000000000f;
+            if (writeTimeSecs > 0f) {
+                speeds[0] = (4f / writeTimeSecs); // 4MB / writeTime = MB/s
+            }
+
+            // Read benchmark
+            byte[] buffer = new byte[4 * 1024 * 1024];
+            long startRead = System.nanoTime();
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(tempFile)) {
+                int readBytes = fis.read(buffer);
+            }
+            long endRead = System.nanoTime();
+            float readTimeSecs = (endRead - startRead) / 1000000000f;
+            if (readTimeSecs > 0f) {
+                speeds[1] = (4f / readTimeSecs); // 4MB / readTime = MB/s
+            }
+
+            tempFile.delete();
+        } catch (Exception e) {
+            // Ignore
+        }
+        return speeds;
+    }
 }

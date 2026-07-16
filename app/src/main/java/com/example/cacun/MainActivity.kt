@@ -1095,7 +1095,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                                 usagePermissionActive = isUsageAccessGranted()
                                             }, 2000)
                                         })
-                                        VolatileStorageSectors(usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
+                                        VolatileStorageSectors(context, usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
                                         HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, patchLevel, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs, isRooted, modemDetails, simOperator, deviceAge, estimatedLifespanYears, updatesRemaining, onLaunchColorTest = {
                                             isTestingColors = true
                                         })
@@ -1181,7 +1181,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                             usagePermissionActive = isUsageAccessGranted()
                                         }, 2500)
                                     })
-                                    VolatileStorageSectors(usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
+                                    VolatileStorageSectors(context, usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
                                     HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, patchLevel, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs, isRooted, modemDetails, simOperator, deviceAge, estimatedLifespanYears, updatesRemaining, onLaunchColorTest = {
                                         isTestingColors = true
                                     })
@@ -2095,18 +2095,71 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     @Composable
     fun VolatileStorageSectors(
+        context: Context,
         usedRamPercent: Int, usedRamGb: Float, totalRamGb: Float,
         usedStoragePercent: Int, usedStorageGb: Float, totalStorageGb: Float
     ) {
+        var isExpanded by remember { mutableStateOf(false) }
+        
+        var imageSize by remember { mutableLongStateOf(0L) }
+        var videoSize by remember { mutableLongStateOf(0L) }
+        var audioSize by remember { mutableLongStateOf(0L) }
+        var downloadSize by remember { mutableLongStateOf(0L) }
+        var documentSize by remember { mutableLongStateOf(0L) }
+        var apkSize by remember { mutableLongStateOf(0L) }
+        var isScanningDetails by remember { mutableStateOf(false) }
+
+        var writeSpeed by remember { mutableFloatStateOf(0f) }
+        var readSpeed by remember { mutableFloatStateOf(0f) }
+        var isBenchmarking by remember { mutableStateOf(false) }
+
+        LaunchedEffect(isExpanded) {
+            if (isExpanded) {
+                isScanningDetails = true
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    imageSize = JavaHardwareScanner.getImagesSize(context)
+                    videoSize = JavaHardwareScanner.getVideosSize(context)
+                    audioSize = JavaHardwareScanner.getAudioSize(context)
+                    downloadSize = JavaHardwareScanner.getDownloadsSize(context)
+                    documentSize = JavaHardwareScanner.getDocumentsSize(context)
+                    apkSize = JavaHardwareScanner.getApksSize(context)
+                }
+                isScanningDetails = false
+            }
+        }
+
+        LaunchedEffect(isBenchmarking) {
+            if (isBenchmarking) {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    val speeds = JavaHardwareScanner.runStorageSpeedTest(context)
+                    writeSpeed = speeds[0]
+                    readSpeed = speeds[1]
+                }
+                isBenchmarking = false
+            }
+        }
+
         MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = "> STORAGE BLOCK STRUCTURE ALLOC",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "> STORAGE BLOCK STRUCTURE ALLOC",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    IconButton(
+                        onClick = { isExpanded = !isExpanded },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        ChevronIcon(isExpanded, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
                 Spacer(modifier = Modifier.height(12.dp))
 
                 ProgressDataRow(
@@ -2124,7 +2177,250 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     detailsStr = "${String.format(Locale.US, "%.1f", usedStorageGb)} GB / ${String.format(Locale.US, "%.1f", totalStorageGb)} GB",
                     barColor = MaterialTheme.colorScheme.secondary
                 )
+
+                if (isExpanded) {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    if (isScanningDetails) {
+                        Text(
+                            text = "INDEXING DIRECTORIES, PLEASE WAIT...",
+                            color = MaterialTheme.colorScheme.secondary,
+                            fontSize = 10.sp,
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    } else {
+                        val totalCapacityBytes = (totalStorageGb * 1024f * 1024f * 1024f).toLong()
+                        val totalUsedBytes = (usedStorageGb * 1024f * 1024f * 1024f).toLong()
+                        val freeBytes = Math.max(0L, totalCapacityBytes - totalUsedBytes)
+                        
+                        val cataloguedBytes = imageSize + videoSize + audioSize + downloadSize + documentSize + apkSize
+                        val otherBytes = Math.max(0L, totalUsedBytes - cataloguedBytes)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CylinderStorageGraph(
+                                imageSize = imageSize,
+                                videoSize = videoSize,
+                                audioSize = audioSize,
+                                downloadSize = downloadSize,
+                                documentSize = documentSize,
+                                apkSize = apkSize,
+                                otherSize = otherBytes,
+                                freeSize = freeBytes,
+                                totalSize = totalCapacityBytes
+                            )
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                StorageCategoryRow("PHOTOS", imageSize, Color(0xFFFF5722), totalCapacityBytes)
+                                StorageCategoryRow("VIDEOS", videoSize, Color(0xFF2196F3), totalCapacityBytes)
+                                StorageCategoryRow("AUDIO", audioSize, Color(0xFFE91E63), totalCapacityBytes)
+                                StorageCategoryRow("DOWNLOADS", downloadSize, Color(0xFF00E5FF), totalCapacityBytes)
+                                StorageCategoryRow("DOCUMENTS", documentSize, Color(0xFFBD00FF), totalCapacityBytes)
+                                StorageCategoryRow("APK FILES", apkSize, Color(0xFFFFB300), totalCapacityBytes)
+                                StorageCategoryRow("APPS & SYSTEM", otherBytes, Color(0xFF4A4D55), totalCapacityBytes)
+                                StorageCategoryRow("FREE SPACE", freeBytes, Color(0xFF00FFCC), totalCapacityBytes)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Storage Speed Benchmarking Widget
+                        Text(
+                            text = "[ STORAGE DRIVE PERFORMANCE BENCHMARK ]",
+                            color = MaterialTheme.colorScheme.secondary,
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = if (writeSpeed > 0) "WRITE RATE: ${String.format(Locale.US, "%.2f", writeSpeed)} MB/s" else "WRITE RATE: -- MB/s",
+                                    color = if (writeSpeed > 0) Color(0xFF00FFCC) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                                Text(
+                                    text = if (readSpeed > 0) "READ RATE:  ${String.format(Locale.US, "%.2f", readSpeed)} MB/s" else "READ RATE:  -- MB/s",
+                                    color = if (readSpeed > 0) Color(0xFFBD00FF) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
+
+                            Button(
+                                onClick = { isBenchmarking = true },
+                                enabled = !isBenchmarking,
+                                modifier = Modifier.height(30.dp),
+                                shape = RoundedCornerShape(4.dp),
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                            ) {
+                                Text(
+                                    text = if (isBenchmarking) "BENCHMARKING..." else "RUN BENCHMARK",
+                                    fontSize = 8.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
+                        }
+                    }
+                }
             }
+        }
+    }
+
+    @Composable
+    fun ChevronIcon(expanded: Boolean, color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(14.dp)) {
+            val w = size.width
+            val h = size.height
+            val path = Path()
+            if (expanded) {
+                path.moveTo(w * 0.2f, h * 0.65f)
+                path.lineTo(w * 0.5f, h * 0.35f)
+                path.lineTo(w * 0.8f, h * 0.65f)
+            } else {
+                path.moveTo(w * 0.2f, h * 0.35f)
+                path.lineTo(w * 0.5f, h * 0.65f)
+                path.lineTo(w * 0.8f, h * 0.35f)
+            }
+            drawPath(path, color = color, style = Stroke(width = 2.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+        }
+    }
+
+    @Composable
+    fun CylinderStorageGraph(
+        imageSize: Long, videoSize: Long, audioSize: Long,
+        downloadSize: Long, documentSize: Long, apkSize: Long,
+        otherSize: Long, freeSize: Long, totalSize: Long,
+        modifier: Modifier = Modifier
+    ) {
+        Canvas(modifier = modifier.width(50.dp).height(160.dp)) {
+            val w = size.width
+            val h = size.height
+            val rx = w / 2f
+            val ry = 6.dp.toPx()
+
+            val totalH = h - 2 * ry
+            if (totalSize > 0) {
+                val sizes = listOf(freeSize, otherSize, apkSize, documentSize, downloadSize, audioSize, videoSize, imageSize)
+                val colors = listOf(
+                    Color(0xFF00FFCC), // Free
+                    Color(0xFF4A4D55), // Apps & System
+                    Color(0xFFFFB300), // APKs
+                    Color(0xFFBD00FF), // Documents
+                    Color(0xFF00E5FF), // Downloads
+                    Color(0xFFE91E63), // Audio
+                    Color(0xFF2196F3), // Videos
+                    Color(0xFFFF5722)  // Images
+                )
+
+                var currentY = h - ry
+
+                for (idx in sizes.indices) {
+                    val sizeBytes = sizes[idx]
+                    val color = colors[idx]
+                    if (sizeBytes <= 0) continue
+
+                    val segmentH = (sizeBytes.toFloat() / totalSize.toFloat()) * totalH
+                    val nextY = currentY - segmentH
+
+                    val path = Path().apply {
+                        moveTo(0f, nextY)
+                        lineTo(w, nextY)
+                        lineTo(w, currentY)
+                        lineTo(0f, currentY)
+                        close()
+                    }
+                    drawPath(path, color)
+
+                    drawOval(
+                        color = color,
+                        topLeft = Offset(0f, currentY - ry),
+                        size = androidx.compose.ui.geometry.Size(w, 2 * ry)
+                    )
+
+                    drawOval(
+                        color = color,
+                        topLeft = Offset(0f, nextY - ry),
+                        size = androidx.compose.ui.geometry.Size(w, 2 * ry)
+                    )
+
+                    drawOval(
+                        color = Color.Black.copy(alpha = 0.15f),
+                        topLeft = Offset(0f, nextY - ry),
+                        size = androidx.compose.ui.geometry.Size(w, 2 * ry),
+                        style = Stroke(width = 1.2.dp.toPx())
+                    )
+
+                    currentY = nextY
+                }
+
+                drawRoundRect(
+                    color = Color.White.copy(alpha = 0.2f),
+                    topLeft = Offset(0f, ry),
+                    size = androidx.compose.ui.geometry.Size(w, h - 2 * ry),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(rx, ry),
+                    style = Stroke(width = 1.5.dp.toPx())
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun StorageCategoryRow(label: String, bytes: Long, color: Color, totalBytes: Long) {
+        val percent = if (totalBytes > 0) (bytes * 100f / totalBytes) else 0f
+        val units = arrayOf("B", "KB", "MB", "GB", "TB")
+        val digitGroups = if (bytes > 0) (Math.log10(bytes.toDouble()) / Math.log10(1024.0)).toInt() else 0
+        val sizeStr = if (bytes > 0) {
+            String.format(Locale.US, "%.1f %s", bytes / Math.pow(1024.0, digitGroups.toDouble()), units[digitGroups])
+        } else "0 B"
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Canvas(modifier = Modifier.size(8.dp)) {
+                    drawRect(color)
+                }
+                Text(
+                    text = label,
+                    fontSize = 8.5.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Text(
+                text = "$sizeStr (${String.format(Locale.US, "%.1f", percent)}%)",
+                fontSize = 8.5.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontFamily = FontFamily.Monospace
+            )
         }
     }
 
