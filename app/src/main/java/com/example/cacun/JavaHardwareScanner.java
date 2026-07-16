@@ -10,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -35,6 +36,15 @@ import java.util.List;
  * Optimized for minimal CPU cycle consumption and battery conservation.
  */
 public class JavaHardwareScanner {
+
+    // Helper structure to hold app security details
+    public static class AppDetail {
+        public String name;
+        public String packageName;
+        public String installSource;
+        public int securityScore;
+        public boolean isSystem;
+    }
 
     // --- RAM Telemetry ---
     public static ActivityManager.MemoryInfo getMemoryInfo(Context context) {
@@ -212,7 +222,6 @@ public class JavaHardwareScanner {
                     Network activeNetwork = cm.getActiveNetwork();
                     NetworkCapabilities caps = cm.getNetworkCapabilities(activeNetwork);
                     if (caps != null) {
-                        // link downstream speed in Kbps, convert to Mbps
                         return caps.getLinkDownstreamBandwidthKbps() / 1000;
                     }
                 }
@@ -234,5 +243,118 @@ public class JavaHardwareScanner {
             }
         }
         return list;
+    }
+
+    // --- Root Detection (Warranty and Integrity) ---
+    public static boolean checkRootAccess() {
+        String[] paths = {
+            "/system/app/Superuser.apk",
+            "/sbin/su",
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/data/local/xbin/su",
+            "/data/local/bin/su",
+            "/system/sd/xbin/su",
+            "/system/bin/failsafe/su",
+            "/data/local/su"
+        };
+        for (String path : paths) {
+            if (new File(path).exists()) {
+                return true;
+            }
+        }
+        // Build tags check
+        String buildTags = Build.TAGS;
+        return buildTags != null && buildTags.contains("test-keys");
+    }
+
+    // --- SIM Card Details ---
+    @SuppressLint("MissingPermission")
+    public static String getSimOperatorName(Context context) {
+        try {
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (tm != null) {
+                String simOperator = tm.getSimOperatorName();
+                if (simOperator != null && !simOperator.isEmpty()) {
+                    return simOperator.toUpperCase();
+                }
+                String networkOperator = tm.getNetworkOperatorName();
+                if (networkOperator != null && !networkOperator.isEmpty()) {
+                    return networkOperator.toUpperCase();
+                }
+            }
+        } catch (Exception e) {
+            return "SIM ERROR / LOCKED";
+        }
+        return "NO SIM CARD";
+    }
+
+    // --- Installed Apps Fetcher ---
+    public static List<AppDetail> getInstalledApps(Context context) {
+        List<AppDetail> list = new ArrayList<>();
+        try {
+            android.content.pm.PackageManager pm = context.getPackageManager();
+            List<android.content.pm.ApplicationInfo> apps = pm.getInstalledApplications(android.content.pm.PackageManager.GET_META_DATA);
+            for (android.content.pm.ApplicationInfo app : apps) {
+                // Filter out standard launchers/system packages to show user-relevant apps
+                AppDetail detail = new AppDetail();
+                detail.name = app.loadLabel(pm).toString();
+                detail.packageName = app.packageName;
+                detail.isSystem = (app.flags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0;
+
+                String installer = null;
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        installer = pm.getInstallSourceInfo(app.packageName).getInstallingPackageName();
+                    } else {
+                        installer = pm.getInstallerPackageName(app.packageName);
+                    }
+                } catch (Exception e) {
+                    // Ignore
+                }
+
+                if (installer == null || installer.isEmpty()) {
+                    detail.installSource = "APK / SIDE-LOAD";
+                    detail.securityScore = detail.isSystem ? 100 : 72;
+                } else if (installer.contains("vending") || installer.contains("play")) {
+                    detail.installSource = "PLAY STORE";
+                    detail.securityScore = 98;
+                } else if (installer.contains("amazon")) {
+                    detail.installSource = "AMAZON APPSTORE";
+                    detail.securityScore = 95;
+                } else {
+                    detail.installSource = "PACKAGE INSTALLER";
+                    detail.securityScore = 88;
+                }
+                list.add(detail);
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return list;
+    }
+
+    // --- Audio Volume Matrix ---
+    public static int getStreamVolume(Context context, int streamType) {
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (am != null) {
+            return am.getStreamVolume(streamType);
+        }
+        return 0;
+    }
+
+    public static int getStreamMaxVolume(Context context, int streamType) {
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (am != null) {
+            return am.getStreamMaxVolume(streamType);
+        }
+        return 15;
+    }
+
+    public static void setStreamVolume(Context context, int streamType, int index) {
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (am != null) {
+            am.setStreamVolume(streamType, index, 0);
+        }
     }
 }

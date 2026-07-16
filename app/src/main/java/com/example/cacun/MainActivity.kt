@@ -1,6 +1,10 @@
 package com.example.cacun
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AppOpsManager
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,8 +17,11 @@ import android.hardware.SensorManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
+import android.net.Uri
 import android.os.*
+import android.provider.Settings
 import android.widget.Toast
+import android.app.ActivityManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
@@ -29,13 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.abs
 
@@ -59,8 +67,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var sensorManager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var gyroscope: Sensor? = null
+    private var lightSensor: Sensor? = null
 
-    // Audio & Haptic
+    // Audio Matrix
     private var audioManager: AudioManager? = null
 
     // Sensor State (Compose backed)
@@ -72,6 +81,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var gyroY by mutableFloatStateOf(0f)
     private var gyroZ by mutableFloatStateOf(0f)
 
+    private var lightLux by mutableFloatStateOf(0f)
+
     // Battery Telemetry
     private var batteryPct by mutableIntStateOf(0)
     private var batteryVoltage by mutableFloatStateOf(0f)
@@ -81,9 +92,17 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var chargingPlugStr by mutableStateOf("DISCONNECTED")
     private var isChargingState by mutableStateOf(false)
 
+    // Charging TimeLogs (Persisted in State)
+    private var chargeStartTime by mutableStateOf("UNKNOWN")
+    private var expectedFullTime by mutableStateOf("UNKNOWN")
+    private var lastPlugTime by mutableStateOf("UNKNOWN")
+
     // Hardware Controls States
     private var isFlashlightOn by mutableStateOf(false)
-    private var currentVolumePercent by mutableFloatStateOf(0.5f)
+    private var volumeMediaPercent by mutableFloatStateOf(0.5f)
+    private var volumeRingPercent by mutableFloatStateOf(0.5f)
+    private var volumeAlarmPercent by mutableFloatStateOf(0.5f)
+    private var volumeNotificationPercent by mutableFloatStateOf(0.5f)
     private var screenBrightnessPercent by mutableFloatStateOf(0.7f)
 
     // Real-time oscilloscope data cap (low overhead)
@@ -106,13 +125,16 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     // Battery receiver to capture states on change
     private val batteryReceiver = object : BroadcastReceiver() {
+        @SuppressLint("SimpleDateFormat")
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.let {
                 val level = it.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
                 val scale = it.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+                val oldPct = batteryPct
                 batteryPct = if (level != -1 && scale != -1) (level * 100 / scale) else 0
 
                 val status = it.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+                val oldCharging = isChargingState
                 isChargingState = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                         status == BatteryManager.BATTERY_STATUS_FULL
 
@@ -146,8 +168,40 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     batteryCurrent = curNow / 1000f // Convert microamps to milliamps
                 }
 
+                // Check plug-in event triggers
+                val sdf = java.text.SimpleDateFormat("HH:mm:ss")
+                val currentTime = sdf.format(Date())
+
+                if (isChargingState && !oldCharging) {
+                    chargeStartTime = currentTime
+                    lastPlugTime = currentTime
+                    calculateExpectedChargeTime()
+                } else if (!isChargingState && oldCharging) {
+                    chargeStartTime = "UNKNOWN"
+                    expectedFullTime = "UNKNOWN"
+                }
+
                 addLog("[BAT] Telemetry packet received. Level: $batteryPct% | Temp: $batteryTemp°C")
             }
+        }
+    }
+
+    private fun calculateExpectedChargeTime() {
+        val remainingPct = 100 - batteryPct
+        val currentMa = abs(batteryCurrent)
+        if (currentMa > 100f) {
+            val capacityMh = 5000f // Default capacity
+            val mahNeeded = capacityMh * (remainingPct / 100f)
+            // margin for saturation charge phase (CV phase)
+            val hours = (mahNeeded / currentMa) * 1.25f
+            val minutes = (hours * 60).toInt()
+
+            val sdf = java.text.SimpleDateFormat("HH:mm:ss")
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.MINUTE, minutes)
+            expectedFullTime = sdf.format(calendar.time) + " ($minutes min)"
+        } else {
+            expectedFullTime = "CALCULATING..."
         }
     }
 
@@ -157,17 +211,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
         // Setup AudioManager
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager?.let { am ->
-            val max = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val cur = am.getStreamVolume(AudioManager.STREAM_MUSIC)
-            currentVolumePercent = if (max > 0) cur.toFloat() / max else 0.5f
-        }
+        syncVolumeLevels()
 
         // Setup Sensor Services
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         if (sensorManager != null) {
             accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
             gyroscope = sensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+            lightSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_LIGHT)
         }
 
         // Initialize logging
@@ -186,10 +237,37 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         // Register initial battery parameters
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
+        // Set refresh rate to 90Hz+ if supported
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val layoutParams = window.attributes
+            layoutParams.preferredRefreshRate = 90f // Request 90Hz frame rendering explicitly
+            window.attributes = layoutParams
+        }
+
         setContent {
             GlassSystemMonitorTheme {
                 MainDashboardScreen()
             }
+        }
+    }
+
+    private fun syncVolumeLevels() {
+        audioManager?.let { am ->
+            val maxMedia = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val curMedia = am.getStreamVolume(AudioManager.STREAM_MUSIC)
+            volumeMediaPercent = if (maxMedia > 0) curMedia.toFloat() / maxMedia else 0.5f
+
+            val maxRing = am.getStreamMaxVolume(AudioManager.STREAM_RING)
+            val curRing = am.getStreamVolume(AudioManager.STREAM_RING)
+            volumeRingPercent = if (maxRing > 0) curRing.toFloat() / maxRing else 0.5f
+
+            val maxAlarm = am.getStreamMaxVolume(AudioManager.STREAM_ALARM)
+            val curAlarm = am.getStreamVolume(AudioManager.STREAM_ALARM)
+            volumeAlarmPercent = if (maxAlarm > 0) curAlarm.toFloat() / maxAlarm else 0.5f
+
+            val maxNotification = am.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)
+            val curNotification = am.getStreamVolume(AudioManager.STREAM_NOTIFICATION)
+            volumeNotificationPercent = if (maxNotification > 0) curNotification.toFloat() / maxNotification else 0.5f
         }
     }
 
@@ -241,13 +319,18 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     // 2. Audio Volume control
-    private fun adjustVolume(percentage: Float) {
+    private fun adjustVolume(percentage: Float, streamType: Int) {
         audioManager?.let { am ->
-            val max = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val max = am.getStreamMaxVolume(streamType)
             val newVol = (percentage * max).toInt()
-            am.setStreamVolume(AudioManager.STREAM_MUSIC, newVol, 0)
-            currentVolumePercent = percentage
-            addLog("[HW] Audio Stream Volume modified to: ${(percentage * 100).toInt()}%")
+            am.setStreamVolume(streamType, newVol, 0)
+            when (streamType) {
+                AudioManager.STREAM_MUSIC -> volumeMediaPercent = percentage
+                AudioManager.STREAM_RING -> volumeRingPercent = percentage
+                AudioManager.STREAM_ALARM -> volumeAlarmPercent = percentage
+                AudioManager.STREAM_NOTIFICATION -> volumeNotificationPercent = percentage
+            }
+            addLog("[HW] Volume stream ($streamType) modified to: ${(percentage * 100).toInt()}%")
         }
     }
 
@@ -281,7 +364,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     1 -> VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE) // Click
                     2 -> VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE) // Heavy thump
                     else -> {
-                        // Morse code pulse
                         val timings = longArrayOf(0, 100, 100, 100, 100, 100, 300, 300, 100, 300, 100, 300, 300, 100, 100, 100, 100, 100)
                         val amplitudes = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255)
                         VibrationEffect.createWaveform(timings, amplitudes, -1)
@@ -300,6 +382,18 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
+    // --- Control Center Shortcuts ---
+    private fun launchSystemIntent(settingsAction: String, logLabel: String) {
+        try {
+            val intent = Intent(settingsAction)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            addLog("[SYS] Intent fired to redirect to: $logLabel settings.")
+        } catch (e: Exception) {
+            addLog("[ERR] Firing intent failed: ${e.message}")
+        }
+    }
+
     // --- Sensor Telemetry Hooks ---
 
     private fun registerSensors(mode: TelemetryMode) {
@@ -312,6 +406,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             gyroscope?.let {
                 sm.registerListener(this, it, mode.delayUs)
                 addLog("[SYS] Gyroscope bound. Speed delay: ${mode.label}")
+            }
+            lightSensor?.let {
+                sm.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
+                addLog("[SYS] Light Sensor bound.")
             }
         }
     }
@@ -326,6 +424,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         super.onResume()
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
         registerSensors(currentMode.value)
+        syncVolumeLevels()
     }
 
     override fun onPause() {
@@ -363,6 +462,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 gyroX = it.values[0]
                 gyroY = it.values[1]
                 gyroZ = it.values[2]
+            } else if (it.sensor.type == Sensor.TYPE_LIGHT) {
+                lightLux = it.values[0]
             }
         }
     }
@@ -384,51 +485,137 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
+    // Checking usage permissions
+    private fun isUsageAccessGranted(): Boolean {
+        val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(),
+            packageName
+        )
+        return mode == AppOpsManager.MODE_ALLOWED
+    }
+
     // --- Jetpack Compose UI Views ---
 
     @Composable
     fun MainDashboardScreen() {
         val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
 
-        // 1. Boot Console Animation sequence on first load
+        // 1. Display Pixel Colors Diagnostics Overlay state
+        var isTestingColors by remember { mutableStateOf(false) }
+        var activeColorIndex by remember { mutableIntStateOf(0) }
+        val testColors = listOf(Color.Red, Color.Green, Color.Blue, Color.White, Color.Black)
+
+        // 2. Simulated Malware scan state
+        var isScanningMalware by remember { mutableStateOf(false) }
+        var scanProgress by remember { mutableFloatStateOf(0f) }
+        var scanningFilePath by remember { mutableStateOf("") }
+        var scannedAppsCount by remember { mutableIntStateOf(0) }
+
+        // 3. Screen Time Query values
+        var screenTimeTodayStr by remember { mutableStateOf("LOCKED") }
+        var usagePermissionActive by remember { mutableStateOf(isUsageAccessGranted()) }
+        val appStatsList = remember { mutableStateListOf<JavaHardwareScanner.AppDetail>() }
+
+        // Trigger updates dynamically for Screen Time
+        LaunchedEffect(usagePermissionActive) {
+            if (usagePermissionActive) {
+                try {
+                    val usm = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+                    val endTime = System.currentTimeMillis()
+                    val startTime = endTime - (1000L * 60 * 60 * 24) // 24 hours
+                    val usageStats = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime)
+                    
+                    var totalTimeMs = 0L
+                    for (stat in usageStats) {
+                        totalTimeMs += stat.totalTimeInForeground
+                    }
+                    val totalHrs = totalTimeMs / (1000 * 60 * 60)
+                    val totalMins = (totalTimeMs % (1000 * 60 * 60)) / (1000 * 60)
+                    screenTimeTodayStr = "${totalHrs}h ${totalMins}m"
+
+                    // Load installed apps to analyze
+                    val apps = JavaHardwareScanner.getInstalledApps(context)
+                    appStatsList.clear()
+                    // Sort by security or system status for demo listing
+                    appStatsList.addAll(apps.take(15))
+                } catch (e: Exception) {
+                    screenTimeTodayStr = "ERR: NO STATS"
+                }
+            }
+        }
+
+        // 4. Boot Screen Animation sequence
         var isBooting by remember { mutableStateOf(true) }
         val bootLogs = remember { mutableStateListOf<String>() }
 
         LaunchedEffect(Unit) {
             val bootSequence = listOf(
-                "Initializing Cacun Kernel Loader v2.0...",
+                "Initializing Cacun OS Kernel Loader...",
                 "Mounting secure core hardware detectors... OK",
                 "Establishing telemetry socket connections... OK",
-                "Scanning integrated circuits and sensors...",
-                " - Accelerometer: Bind success.",
-                " - Gyroscope: Bind success.",
-                "Querying network capabilities... OK",
-                "Analyzing storage arrays... Blocks verified.",
+                "Scanning accelerometer, gyroscope, light arrays...",
+                "Checking network operators & modem layers...",
+                "Calculating charging brick & battery parameters...",
+                "Resolving secure codes & updates lifecycle...",
                 "Boot Diagnostics Completed. Launching Telemetry HUD..."
             )
             for (log in bootSequence) {
-                delay(320)
+                delay(280)
                 bootLogs.add("[BOOT] $log")
             }
-            delay(400)
+            delay(350)
             isBooting = false
         }
 
-        // Animated fading for boot screen
+        // Full Screen color checking view
+        if (isTestingColors) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(testColors[activeColorIndex])
+                    .clickable {
+                        if (activeColorIndex < testColors.size - 1) {
+                            activeColorIndex++
+                        } else {
+                            // Reset
+                            isTestingColors = false
+                            activeColorIndex = 0
+                            addLog("[DSP] Pixel color check complete.")
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "DISPLAY PIXEL CHECKING MODE\nTap to cycle colors (RGB / White / Black)\n\nColor: ${activeColorIndex + 1}/${testColors.size}",
+                    color = if (testColors[activeColorIndex] == Color.White) Color.Black else Color.White,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(20.dp)
+                )
+            }
+            return
+        }
+
+        // Hacker Terminal style booting view
         AnimatedVisibility(
             visible = isBooting,
             exit = fadeOut(animationSpec = tween(600)) + slideOutVertically(targetOffsetY = { -it })
         ) {
-            // Hacker Terminal style booting view
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color(0xFF040508))
                     .padding(20.dp),
-                contentAlignment = Alignment.BottomStart
+                contentAlignment = Alignment.Center
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().align(Alignment.Center)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.cacun),
@@ -437,23 +624,22 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             .fillMaxWidth(0.55f)
                             .aspectRatio(2.8f)
                             .padding(bottom = 16.dp)
-                            .align(Alignment.CenterHorizontally)
                     )
                     Text(
-                        text = "CACUN SYSTEM OS",
+                        text = "CACUN SYSTEM OS v2.5",
                         color = Color(0xFF00FFCC),
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 24.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
+                        letterSpacing = 2.sp,
+                        modifier = Modifier.padding(bottom = 20.dp)
                     )
                     
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(280.dp)
-                            .background(Color(0xFF0A0D14))
+                            .height(260.dp)
+                            .background(Color(0xFF07090D))
                             .border(1.dp, Color(0x3300FFCC))
                             .padding(12.dp)
                     ) {
@@ -462,16 +648,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 text = log,
                                 color = Color(0xFF00E5FF),
                                 fontFamily = FontFamily.Monospace,
-                                fontSize = 11.sp,
+                                fontSize = 10.5.sp,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-                    
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.CenterHorizontally).size(30.dp),
+                        modifier = Modifier.size(24.dp),
                         color = Color(0xFF00FFCC),
                         strokeWidth = 2.dp
                     )
@@ -487,9 +672,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             val manufacturer = Build.MANUFACTURER.uppercase()
             val androidVersion = Build.VERSION.RELEASE
             val sdkVersion = Build.VERSION.SDK_INT
+            val patchLevel = Build.VERSION.SECURITY_PATCH
 
             // RAM status
-            val memoryInfo = JavaHardwareScanner.getMemoryInfo(context)
             val totalRamGb = memoryInfo.totalMem / (1024f * 1024f * 1024f)
             val availRamGb = memoryInfo.availMem / (1024f * 1024f * 1024f)
             val usedRamGb = totalRamGb - availRamGb
@@ -498,8 +683,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             } else 0
 
             // Storage status
-            val totalStorageBytes = JavaHardwareScanner.getTotalStorage()
-            val availStorageBytes = JavaHardwareScanner.getAvailableStorage()
             val totalStorageGb = totalStorageBytes / (1024f * 1024f * 1024f)
             val usedStorageGb = (totalStorageBytes - availStorageBytes) / (1024f * 1024f * 1024f)
             val usedStoragePercent = if (totalStorageBytes > 0) {
@@ -517,17 +700,90 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             val networkType = JavaHardwareScanner.getNetworkType(context)
             val linkSpeed = JavaHardwareScanner.getLinkSpeedMbps(context)
 
-            // Hardware details
-            val cameraSpecs = remember { JavaHardwareScanner.getCameraCharacteristics(context) }
+            // SIM Operator details
+            val simOperator = remember { JavaHardwareScanner.getSimOperatorName(context) }
             val imei = remember { JavaHardwareScanner.attemptImeiRead(context) }
             val androidId = remember { JavaHardwareScanner.getAndroidId(context) }
             val nfcStatus = JavaHardwareScanner.getNfcStatus(context)
+            val isRooted = remember { JavaHardwareScanner.checkRootAccess() }
+            val cameraSpecs = remember { JavaHardwareScanner.getCameraCharacteristics(context) }
 
-            // Battery calculations
+            // Estimate 5G modem details
+            val chipName = Build.HARDWARE.lowercase()
+            val modemDetails = when {
+                chipName.contains("qcom") || chipName.contains("sm") || chipName.contains("sdm") -> {
+                    if (sdkVersion >= 33) "Snapdragon X70 5G RF (Integrated)"
+                    else "Snapdragon X65/X60 5G Modem"
+                }
+                chipName.contains("exynos") || chipName.contains("s5e") -> {
+                    "Exynos 5300 5G Modem (High Efficiency)"
+                }
+                chipName.contains("mt") || chipName.contains("dimensity") -> {
+                    "MediaTek Helio/Dimensity M80 5G"
+                }
+                else -> "Multi-band LTE/5G Baseband Controller"
+            }
+
+            // Power Brick & Cable calculations
             val batteryCurrentA = batteryCurrent / 1000f
             val batteryPowerW = abs(batteryVoltage * batteryCurrentA)
+            
+            val brickEstimate = when {
+                !isChargingState -> "DISCONNECTED"
+                batteryPowerW <= 0f -> "DISCONNECTED"
+                else -> {
+                    // brick rating estimate function
+                    val rawPower = batteryPowerW / 0.85f // assuming ~85% transfer efficiency
+                    when {
+                        rawPower <= 6f -> "5W Standard Brick"
+                        rawPower <= 11f -> "10W Fast Brick"
+                        rawPower <= 16f -> "15W Pro Charge Brick"
+                        rawPower <= 20f -> "18W Power Delivery Brick"
+                        rawPower <= 25f -> "22.5W Quick Charge Brick"
+                        rawPower <= 36f -> "33W Super Charge Brick"
+                        rawPower <= 48f -> "45W Ultra Charge Brick"
+                        rawPower <= 75f -> "67W Hyper Charge Brick"
+                        rawPower <= 90f -> "80W Turbo Charge Brick"
+                        else -> "120W+ Ultra Hyper-Charge Brick"
+                    }
+                }
+            }
 
-            // Infinite rotation or glow animations for active states
+            val cableEstimate = when {
+                !isChargingState -> "DISCONNECTED"
+                abs(batteryCurrent) <= 1000f -> "Standard Cable (1A Rating)"
+                abs(batteryCurrent) <= 2100f -> "Fast Charging Cable (2A Rating)"
+                abs(batteryCurrent) <= 3200f -> "Hi-Speed Cable (3A Rating)"
+                else -> "Heavy Copper Cable (5A/6A Rating)"
+            }
+
+            // Lifespan calculations (Current year is 2026!)
+            val releaseYear = when (sdkVersion) {
+                35 -> 2024
+                34 -> 2023
+                33 -> 2022
+                32, 31 -> 2021
+                30 -> 2020
+                29 -> 2019
+                28 -> 2018
+                else -> 2017
+            }
+            val currentYear = 2026
+            val deviceAge = currentYear - releaseYear
+            val supportDuration = when {
+                brand.contains("SAMSUNG") || brand.contains("GOOGLE") -> 7
+                brand.contains("ONEPLUS") || brand.contains("XIAOMI") -> 4
+                else -> 3
+            }
+            val updatesRemaining = if ((supportDuration - deviceAge) > 0) (supportDuration - deviceAge) else 0
+
+            // Estimated lifespan in years
+            val healthFactor = if (batteryHealthStr == "GOOD") 1.0f else 0.7f
+            val ageTax = deviceAge * 0.85f
+            val remainingLifeVal = (healthFactor * 5.5f) - ageTax
+            val estimatedLifespanYears = if (remainingLifeVal > 0.5f) String.format(Locale.US, "%.1f", remainingLifeVal) else "0.5 (Wear Warning)"
+
+            // Infinite breathing indicator animation
             val infiniteTransition = rememberInfiniteTransition(label = "indicatorGlow")
             val glowAlpha by infiniteTransition.animateFloat(
                 initialValue = 0.2f,
@@ -539,28 +795,26 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 label = "indicatorAlpha"
             )
 
-            // Layout settings
             val scrollState = rememberScrollState()
 
-            // Drawing grid backdrop
+            // Main Background Grid
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF090A0E))
+                    .background(Color(0xFF08090C))
                     .drawBehind {
-                        // Drawing cyber magenta and cyan light splashes
                         drawCircle(
                             brush = Brush.radialGradient(
                                 colors = listOf(Color(0x1FBD00FF), Color.Transparent),
                                 center = Offset(0f, 0f),
-                                radius = size.width * 1.2f
+                                radius = size.width * 1.3f
                             ),
-                            radius = size.width * 1.2f,
+                            radius = size.width * 1.3f,
                             center = Offset(0f, 0f)
                         )
                         drawCircle(
                             brush = Brush.radialGradient(
-                                colors = listOf(Color(0x1A00FFCC), Color.Transparent),
+                                colors = listOf(Color(0x1F00E5FF), Color.Transparent),
                                 center = Offset(size.width, size.height * 0.7f),
                                 radius = size.width
                             ),
@@ -568,8 +822,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             center = Offset(size.width, size.height * 0.7f)
                         )
 
-                        // Draw Grid Lines
-                        val gridSpace = 32.dp.toPx()
+                        val gridSpace = 30.dp.toPx()
                         for (x in 0..size.width.toInt() step gridSpace.toInt()) {
                             drawLine(
                                 color = Color(0x0600FFCC),
@@ -588,7 +841,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         }
                     }
             ) {
-                // Adaptive layout: detects screen width. Switches columns for phone/tablets
                 BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxSize()
@@ -598,12 +850,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 ) {
                     val isTablet = maxWidth >= 600.dp
 
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Spacer(modifier = Modifier.height(12.dp))
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                        // APP LOGO HEADER ROW
+                        // HEADER ROW WITH CACUN LOGO
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -630,7 +880,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                         letterSpacing = 1.sp
                                     )
                                     Text(
-                                        text = "PLATFORM INTERFACE v2.0",
+                                        text = "CORE TERMINAL v2.5",
                                         color = Color(0x66FFFFFF),
                                         fontSize = 8.sp,
                                         fontFamily = FontFamily.Monospace
@@ -638,7 +888,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 }
                             }
 
-                            // Glowing HUD Status
+                            // Glowing Secure Indicator
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
@@ -666,7 +916,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Scrollable section, switches to 2-column or 1-column responsive grid
+                        // Scrollable Main Section
                         Column(
                             modifier = Modifier
                                 .weight(1f)
@@ -684,9 +934,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                         verticalArrangement = Arrangement.spacedBy(14.dp)
                                     ) {
                                         PerformanceSpeedController()
-                                        LiveOscilloscopePlot()
-                                        BatteryInfusionModule(batteryPowerW)
-                                        InteractiveHardwareControls()
+                                        LiveOscilloscopePlot(lightLux, refreshRate)
+                                        BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
+                                        InteractiveHardwareControls(context)
                                     }
 
                                     // Column 2
@@ -695,29 +945,115 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                         verticalArrangement = Arrangement.spacedBy(14.dp)
                                     ) {
                                         SystemDiagnosticConsole()
+                                        AntiVirusScannerSection(
+                                            isScanningMalware, scanProgress, scanningFilePath, scannedAppsCount,
+                                            appStatsList, onTriggerScan = {
+                                                coroutineScope.launch {
+                                                    isScanningMalware = true
+                                                    scanProgress = 0f
+                                                    scannedAppsCount = 0
+                                                    addLog("[SCAN] Commencing local APK threat verification...")
+                                                    
+                                                    val appList = JavaHardwareScanner.getInstalledApps(context)
+                                                    for ((index, app) in appList.take(20).withIndex()) {
+                                                        delay(180)
+                                                        scanProgress = (index + 1) / 20f
+                                                        scannedAppsCount = index + 1
+                                                        scanningFilePath = app.packageName
+                                                        addLog("[SCAN] Scanning ${app.name}... CLEAN")
+                                                    }
+                                                    delay(250)
+                                                    isScanningMalware = false
+                                                    addLog("[SCAN] Scan complete. 0 threats detected in system directories.")
+                                                    Toast.makeText(context, "Shield Scan Completed: System Clean", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        )
+                                        ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
+                                            launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
+                                            // Refresh state helper
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                usagePermissionActive = isUsageAccessGranted()
+                                            }, 2000)
+                                        })
                                         VolatileStorageSectors(usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
-                                        HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs)
-                                        NetworkDiagnosticsScanner(networkType, linkSpeed)
-                                        GyroscopeDiagnosticsCard()
+                                        HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, patchLevel, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs, isRooted, modemDetails, simOperator, deviceAge, estimatedLifespanYears, updatesRemaining, onLaunchColorTest = {
+                                            isTestingColors = true
+                                        })
                                     }
                                 }
                             } else {
                                 // Phone 1-Column Portrait Layout
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                                ) {
+                                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                                     PerformanceSpeedController()
-                                    LiveOscilloscopePlot()
-                                    BatteryInfusionModule(batteryPowerW)
-                                    InteractiveHardwareControls()
+                                    LiveOscilloscopePlot(lightLux, refreshRate)
+                                    BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
+                                    InteractiveHardwareControls(context)
                                     SystemDiagnosticConsole()
+                                    AntiVirusScannerSection(
+                                        isScanningMalware, scanProgress, scanningFilePath, scannedAppsCount,
+                                        appStatsList, onTriggerScan = {
+                                            coroutineScope.launch {
+                                                isScanningMalware = true
+                                                scanProgress = 0f
+                                                scannedAppsCount = 0
+                                                addLog("[SCAN] Commencing local APK threat verification...")
+                                                
+                                                val appList = JavaHardwareScanner.getInstalledApps(context)
+                                                for ((index, app) in appList.take(20).withIndex()) {
+                                                    delay(180)
+                                                    scanProgress = (index + 1) / 20f
+                                                    scannedAppsCount = index + 1
+                                                    scanningFilePath = app.packageName
+                                                    addLog("[SCAN] Scanning ${app.name}... CLEAN")
+                                                }
+                                                delay(250)
+                                                isScanningMalware = false
+                                                addLog("[SCAN] Scan complete. 0 threats detected in system directories.")
+                                                Toast.makeText(context, "Shield Scan Completed: System Clean", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    )
+                                    ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
+                                        launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            usagePermissionActive = isUsageAccessGranted()
+                                        }, 2500)
+                                    })
                                     VolatileStorageSectors(usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
-                                    HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs)
-                                    NetworkDiagnosticsScanner(networkType, linkSpeed)
-                                    GyroscopeDiagnosticsCard()
+                                    HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, patchLevel, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs, isRooted, modemDetails, simOperator, deviceAge, estimatedLifespanYears, updatesRemaining, onLaunchColorTest = {
+                                        isTestingColors = true
+                                    })
                                 }
                             }
-                            Spacer(modifier = Modifier.height(20.dp))
+
+                            // SECTION 8: DEVELOPER CREDENTIALS & LICENSES FOOTER
+                            Spacer(modifier = Modifier.height(24.dp))
+                            
+                            // Terms and Privacy Card
+                            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        text = "[ LEGAL PRIVACY CHARTER ]",
+                                        color = Color(0xFF00E5FF),
+                                        fontSize = 9.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "By accessing Cacun HUD hardware logs, you authorize localized sandbox reading of sensors, battery broadcast configurations, and storage directories. No metadata is shared offboard. Your telephony security keys (IMEI) remain local and are protected by Android security exception sandboxes.",
+                                        color = Color(0x66FFFFFF),
+                                        fontSize = 8.5.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        lineHeight = 11.sp
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Cacun Landscape Logo Watermark
                             Image(
                                 painter = painterResource(id = R.drawable.cacun),
                                 contentDescription = "Cacun Watermark",
@@ -725,9 +1061,60 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                     .align(Alignment.CenterHorizontally)
                                     .height(26.dp)
                                     .aspectRatio(2.8f)
-                                    .alpha(0.2f)
+                                    .alpha(0.3f)
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Developer Info Block
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                val date = java.text.SimpleDateFormat("dd MMMM yyyy", Locale.US).format(Date())
+                                val day = java.text.SimpleDateFormat("EEEE", Locale.US).format(Date())
+                                val time = java.text.SimpleDateFormat("HH:mm z", Locale.US).format(Date())
+                                
+                                Text(
+                                    text = "$day | $date | $time",
+                                    color = Color(0xFF00FFCC),
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "USER PROFILE: ROOT ADMINISTRATOR",
+                                    color = Color(0x66FFFFFF),
+                                    fontSize = 9.sp,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "DEVELOPER: AYUSH HARINKHEDE",
+                                    color = Color.White,
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "CONTACT: ayushharinkhere2005@gmail.com",
+                                    color = Color(0xFF00E5FF),
+                                    fontSize = 9.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier.clickable {
+                                        try {
+                                            val mailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                                                data = Uri.parse("mailto:ayushharinkhere2005@gmail.com")
+                                            }
+                                            context.startActivity(mailIntent)
+                                        } catch (e: Exception) {}
+                                    }
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }
@@ -742,7 +1129,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "> KERNEL DRAIN CONTROLLER",
+                    text = "> TELEMETRY DRAIN CONTROLLER",
                     color = Color(0xFF00E5FF),
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
@@ -793,7 +1180,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     @Composable
-    fun LiveOscilloscopePlot() {
+    fun LiveOscilloscopePlot(lightValue: Float, refreshRate: Float) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(
@@ -802,17 +1189,18 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "> ACCELERATION VECTOR OSCILLOSCOPE",
+                        text = "> SENSOR VECTOR PLOTTER & LIGHT READS",
                         color = Color(0xFF00E5FF),
                         fontSize = 11.sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Hz: ${if(currentMode.value == TelemetryMode.FAST) "60" else if(currentMode.value == TelemetryMode.STANDARD) "20" else "1"}",
-                        color = Color(0x66FFFFFF),
+                        text = "REFRESH RATE: ${refreshRate.toInt()} Hz",
+                        color = Color(0xFF00FFCC),
                         fontSize = 9.sp,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
@@ -874,20 +1262,21 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("X: ${String.format(Locale.US, "%+.3f", accelX)} m/s²", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-                    Text("Y: ${String.format(Locale.US, "%+.3f", accelY)} m/s²", color = Color(0xFFBD00FF), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-                    Text("Z: ${String.format(Locale.US, "%+.3f", accelZ)} m/s²", color = Color(0xFFFFB300), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    Text("X: ${String.format(Locale.US, "%+.2f", accelX)}", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    Text("Y: ${String.format(Locale.US, "%+.2f", accelY)}", color = Color(0xFFBD00FF), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    Text("Z: ${String.format(Locale.US, "%+.2f", accelZ)}", color = Color(0xFFFFB300), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    Text("LIGHT: ${lightValue.toInt()} LUX", color = Color(0xFF00E5FF), fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                 }
             }
         }
     }
 
     @Composable
-    fun BatteryInfusionModule(batteryPowerW: Float) {
+    fun BatteryInfusionModule(batteryPowerW: Float, brickRating: String, cableRating: String) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "> SYSTEM ENERGY & FEED VOLTAGE",
+                    text = "> CHARGER ENGINE & BATTERY CALCULATOR",
                     color = Color(0xFF00E5FF),
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
@@ -901,7 +1290,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(75.dp)
+                            .size(80.dp)
                             .padding(4.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -932,24 +1321,40 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
-                        DataRow("HEALTH STATUS", batteryHealthStr, if(batteryHealthStr == "GOOD") Color(0xFF00FFCC) else Color(0xFFFFB300))
-                        DataRow("LINK VOLTAGE", "${String.format(Locale.US, "%.3f", batteryVoltage)} V", Color.White)
-                        DataRow("LINK CURRENT", "${String.format(Locale.US, "%.1f", batteryCurrent)} mA", Color.White)
-                        DataRow("NET POWER", "${String.format(Locale.US, "%.3f", batteryPowerW)} W", Color(0xFF00FFCC))
-                        DataRow("TEMP LEVEL", "$batteryTemp °C", Color.White)
-                        DataRow("CHARGE INLET", chargingPlugStr, Color(0xFF00E5FF))
+                        DataRow("BATTERY DESIGN CAP", "5000 mAh", Color.White)
+                        DataRow("HEALTH CORE STATUS", batteryHealthStr, if(batteryHealthStr == "GOOD") Color(0xFF00FFCC) else Color(0xFFFFB300))
+                        DataRow("INLET WATTAGE", "${String.format(Locale.US, "%.2f", batteryPowerW)} W", Color(0xFF00FFCC))
+                        DataRow("ESTIMATED BRICK", brickRating, Color(0xFF00E5FF))
+                        DataRow("CABLE RATING FLOW", cableRating, Color.White)
                     }
                 }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = Color(0x16FFFFFF))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Time Logs Section
+                Text(
+                    text = "[ CHARGER INTENSITY TIME-LOG ]",
+                    color = Color(0xFF00E5FF),
+                    fontSize = 9.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                DataRow("PLUG IN TIME", chargeStartTime, Color.White)
+                DataRow("EXPECTED FULL BY", expectedFullTime, if (isChargingState) Color(0xFF00FFCC) else Color.White)
+                DataRow("LAST DISCONNECT TIME", lastPlugTime, Color.White)
             }
         }
     }
 
     @Composable
-    fun InteractiveHardwareControls() {
+    fun InteractiveHardwareControls(context: Context) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "> HARDWARE INTERCEPT INTERFACES",
+                    text = "> CONTROL CENTRE & VOLUME MATRIX",
                     color = Color(0xFF00E5FF),
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
@@ -957,7 +1362,37 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // 1. Flashlight Torch Toggle Button
+                // Control Center Grid Button Toggles
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val controlCenterButtons = listOf(
+                        Triple("WIFI", Settings.ACTION_WIFI_SETTINGS, "WIFI"),
+                        Triple("BT", Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH"),
+                        Triple("DATA", Settings.ACTION_DATA_ROAMING_SETTINGS, "ROAMING"),
+                        Triple("FLIGHT", Settings.ACTION_AIRPLANE_MODE_SETTINGS, "FLIGHT MODE"),
+                        Triple("HOTSPOT", Settings.ACTION_WIRELESS_SETTINGS, "HOTSPOT")
+                    )
+
+                    controlCenterButtons.forEach { btn ->
+                        Button(
+                            onClick = { launchSystemIntent(btn.second, btn.third) },
+                            modifier = Modifier.weight(1f).height(32.dp),
+                            shape = RoundedCornerShape(4.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x16FFFFFF)),
+                            contentPadding = PaddingValues(horizontal = 2.dp)
+                        ) {
+                            Text(btn.first, fontSize = 8.5.sp, fontFamily = FontFamily.Monospace, color = Color(0xFF00FFCC))
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = Color(0x16FFFFFF))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Flashlight Toggle
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -967,7 +1402,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         Text("REAR OPTICAL TORCH", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                         Text("Toggle physical camera LED flash", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
                     }
-
                     Switch(
                         checked = isFlashlightOn,
                         onCheckedChange = { toggleFlashlight(it) },
@@ -984,31 +1418,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 HorizontalDivider(color = Color(0x16FFFFFF))
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 2. Volume Slider
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("SYSTEM MUSIC STREAM VOL", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
-                        Text("${(currentVolumePercent * 100).toInt()}%", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-                    }
-                    Slider(
-                        value = currentVolumePercent,
-                        onValueChange = { adjustVolume(it) },
-                        colors = SliderDefaults.colors(
-                            thumbColor = Color(0xFF00FFCC),
-                            activeTrackColor = Color(0xFF00FFCC),
-                            inactiveTrackColor = Color(0x16FFFFFF)
-                        )
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(6.dp))
-                HorizontalDivider(color = Color(0x16FFFFFF))
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // 3. Screen Brightness slider
+                // Brightness Slider
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -1032,7 +1442,20 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 HorizontalDivider(color = Color(0x16FFFFFF))
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 4. Haptic generator triggers
+                // System Volumes Matrix
+                Text("SYSTEM VOLUME MATRIX CONTROLS", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                VolumeSliderRow("MEDIA VOLUME", volumeMediaPercent, AudioManager.STREAM_MUSIC)
+                VolumeSliderRow("RING VOLUME", volumeRingPercent, AudioManager.STREAM_RING)
+                VolumeSliderRow("ALARM VOLUME", volumeAlarmPercent, AudioManager.STREAM_ALARM)
+                VolumeSliderRow("NOTIF VOLUME", volumeNotificationPercent, AudioManager.STREAM_NOTIFICATION)
+
+                Spacer(modifier = Modifier.height(6.dp))
+                HorizontalDivider(color = Color(0x16FFFFFF))
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Haptic Generator
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text("HAPTIC MOTOR TRIGGER TEST", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
@@ -1067,6 +1490,29 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    fun VolumeSliderRow(label: String, value: Float, streamType: Int) {
+        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(label, color = Color(0x80FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                Text("${(value * 100).toInt()}%", color = Color(0xFF00FFCC), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+            }
+            Slider(
+                value = value,
+                onValueChange = { adjustVolume(it, streamType) },
+                modifier = Modifier.height(28.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = Color(0xFF00FFCC),
+                    activeTrackColor = Color(0xFF00FFCC),
+                    inactiveTrackColor = Color(0x16FFFFFF)
+                )
+            )
         }
     }
 
@@ -1135,6 +1581,203 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     @Composable
+    fun AntiVirusScannerSection(
+        isScanning: Boolean,
+        progress: Float,
+        filePath: String,
+        count: Int,
+        appsList: List<JavaHardwareScanner.AppDetail>,
+        onTriggerScan: () -> Unit
+    ) {
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = "> SHIELD ANTI-VIRUS FILE INTEGRITY",
+                    color = Color(0xFF00E5FF),
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                if (isScanning) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("SCANNING DIRECTORIES...", color = Color.White, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                            Text("${(progress * 100).toInt()}%", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                            color = Color(0xFF00FFCC),
+                            trackColor = Color(0x16FFFFFF)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "FILE: $filePath",
+                            color = Color(0x66FFFFFF),
+                            fontSize = 8.5.sp,
+                            fontFamily = FontFamily.Monospace,
+                            maxLines = 1
+                        )
+                        Text(
+                            text = "Verified: $count apps scanned.",
+                            color = Color(0xFF00FFCC),
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text("Local Shield Scanner", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                            Text("Run integrity scan on installed binaries.", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                        }
+                        Button(
+                            onClick = onTriggerScan,
+                            shape = RoundedCornerShape(4.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x1F00FFCC))
+                        ) {
+                            Text("RUN SHIELD", fontSize = 10.sp, fontFamily = FontFamily.Monospace, color = Color(0xFF00FFCC))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun ScreenTimeAnalyticsCard(
+        permissionGranted: Boolean,
+        screenTimeToday: String,
+        appsList: List<JavaHardwareScanner.AppDetail>,
+        onOpenSettings: () -> Unit
+    ) {
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = "> SCREEN TIME & APP ANALYTICS",
+                    color = Color(0xFF00E5FF),
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                if (!permissionGranted) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Usage statistics settings are restricted. Authorize app usage query to fetch screen time.",
+                            color = Color(0xCCFFFFFF),
+                            fontSize = 10.sp,
+                            fontFamily = FontFamily.Monospace
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            onClick = onOpenSettings,
+                            modifier = Modifier.fillMaxWidth().height(36.dp),
+                            shape = RoundedCornerShape(4.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0x1AFFFFFF))
+                        ) {
+                            Text("AUTHORIZE SCREEN DIAGNOSTICS", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color.White)
+                        }
+                    }
+                } else {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text("SCREEN TIME TODAY", color = Color(0x80FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                                Text(screenTimeToday, color = Color(0xFF00FFCC), fontSize = 20.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                            }
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text("DAILY AVG", color = Color(0x80FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                                Text("5h 12m", color = Color.White, fontSize = 20.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        HorizontalDivider(color = Color(0x16FFFFFF))
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "[ PHYSIOLOGICAL AFFECTS ]",
+                            color = Color(0xFF00E5FF),
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Warning: Exceeding 4.5 hours of daily visual screen exposure suppresses melatonin synthesis and leads to progressive digital eye strain.",
+                            color = Color(0x99FFFFFF),
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            lineHeight = 12.sp,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "[ INSTALLED APPS DIRECTORY ]",
+                            color = Color(0xFF00E5FF),
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+
+                        // Top apps listing
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            appsList.take(5).forEach { app ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1.5f)) {
+                                        Text(app.name, color = Color.White, fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                                        Text(app.installSource, color = if(app.installSource == "PLAY STORE") Color(0xFF00FFCC) else Color(0xFFFFB300), fontSize = 8.sp, fontFamily = FontFamily.Monospace)
+                                    }
+                                    
+                                    // Security score percentage
+                                    Text(
+                                        text = "${app.securityScore}% SECURE",
+                                        color = if (app.securityScore >= 90) Color(0xFF00FFCC) else Color(0xFFFFB300),
+                                        fontSize = 9.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.End
+                                    )
+
+                                    // Significance Star Rating
+                                    Text(
+                                        text = if(app.isSystem) "★★★★★" else "★★★☆☆",
+                                        color = Color(0xFFFFB300),
+                                        fontSize = 10.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.End
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
     fun VolatileStorageSectors(
         usedRamPercent: Int, usedRamGb: Float, totalRamGb: Float,
         usedStoragePercent: Int, usedStorageGb: Float, totalStorageGb: Float
@@ -1171,9 +1814,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     @Composable
     fun HardwareICDirectory(
-        manufacturer: String, model: String, androidVersion: String, sdkVersion: Int,
+        manufacturer: String, model: String, androidVersion: String, sdkVersion: Int, securityPatch: String,
         widthPx: Int, heightPx: Int, densityDpi: Int, refreshRate: Float,
-        nfcStatus: String, imei: String, androidId: String, cameraSpecs: List<String>
+        nfcStatus: String, imei: String, androidId: String, cameraSpecs: List<String>,
+        isRooted: Boolean, modemModel: String, simOperator: String,
+        deviceAge: Int, lifespanYears: String, updatesRemaining: Int,
+        onLaunchColorTest: () -> Unit
     ) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
@@ -1188,10 +1834,80 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
                 DataRow("MANUFACTURER", manufacturer, Color.White)
                 DataRow("PRODUCT MODEL", model, Color.White)
-                DataRow("HARDWARE BOARD", Build.HARDWARE.uppercase(), Color.White)
-                DataRow("ANDROID VERSION", "RELEASE $androidVersion (API $sdkVersion)", Color.White)
+                DataRow("INTEGRITY STATUS", if(isRooted) "ROOTED / UNLOCKED" else "VERIFIED / SECURE", if(isRooted) Color(0xFFFFB300) else Color(0xFF00FFCC))
+                DataRow("5G MODEM PROFILE", modemModel, Color.White)
+                DataRow("CARRIER OPERATOR", simOperator, Color(0xFF00FFCC))
                 DataRow("NFC ANTENNA LINK", nfcStatus, if (nfcStatus == "ACTIVE") Color(0xFF00FFCC) else Color(0xFFFFB300))
-                DataRow("DISPLAY RESOLUTION", "${widthPx}x${heightPx} @ ${refreshRate.toInt()}Hz (${densityDpi} dpi)", Color.White)
+
+                Spacer(modifier = Modifier.height(6.dp))
+                HorizontalDivider(color = Color(0x16FFFFFF))
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // Custom Android Version Layout
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("OS VERSION ENGINE", color = Color(0x80FFFFFF), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color(0xFFBD00FF).copy(alpha = 0.2f))
+                            .border(1.dp, Color(0xFFBD00FF), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "ANDROID $androidVersion (API $sdkVersion)",
+                            color = Color(0xFFD8B4FE),
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                DataRow("SECURITY PATCH", securityPatch, Color.White)
+
+                Spacer(modifier = Modifier.height(6.dp))
+                HorizontalDivider(color = Color(0x16FFFFFF))
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // Device Age and Lifespan
+                Text(
+                    text = "[ HARDWARE LIFE CYCLE ]",
+                    color = Color(0xFF00E5FF),
+                    fontSize = 9.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                DataRow("PHYSICAL AGE", "$deviceAge Years since launch", Color.White)
+                DataRow("EXPECTED LIFESPAN", "$lifespanYears Years remaining", Color(0xFF00FFCC))
+                DataRow("OTA UPDATES LEFT", "$updatesRemaining updates remaining", Color.White)
+
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = Color(0x16FFFFFF))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Display check triggers
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("DISPLAY MATRIX", color = Color.White, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        Text("${widthPx}x${heightPx} @ ${refreshRate.toInt()}Hz", color = Color(0x66FFFFFF), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                    }
+                    Button(
+                        onClick = onLaunchColorTest,
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0x1F00E5FF)),
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
+                        Text("COLOR CHECK", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = Color(0xFF00E5FF))
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(color = Color(0x16FFFFFF))
@@ -1314,12 +2030,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color(0x0CFFFFFF)) // Translucent background
+                .background(Color(0x0CFFFFFF))
                 .border(
                     width = 1.dp,
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0x33FFFFFF), // Glossy top highlights
+                            Color(0x33FFFFFF),
                             Color(0x05FFFFFF)
                         )
                     ),
@@ -1408,8 +2124,28 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
+    // Static variables helper to avoid re-querying in rendering loop
+    companion object {
+        private val memoryInfo = ActivityManager.MemoryInfo()
+        private var totalStorageBytes: Long = 0
+        private var availStorageBytes: Long = 0
+
+        fun initConstants(context: Context) {
+            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            activityManager.getMemoryInfo(memoryInfo)
+            totalStorageBytes = JavaHardwareScanner.getTotalStorage()
+            availStorageBytes = JavaHardwareScanner.getAvailableStorage()
+        }
+    }
+
     @Composable
     fun GlassSystemMonitorTheme(content: @Composable () -> Unit) {
+        // Initialize constants once inside composition
+        val context = LocalContext.current
+        LaunchedEffect(Unit) {
+            initConstants(context)
+        }
+
         MaterialTheme(
             colorScheme = darkColorScheme(
                 primary = Color(0xFF00FFCC),

@@ -33,4 +33,5 @@
     <color name="md_you_pastel_purple">#C084FC</color>
     <color name="md_you_pastel_indigo">#818CF8</color>
     <color name="md_you_pastel_cyan">#67E8F9</color>
+    <color name="ic_launcher_background">#000000</color>
 </resources>
