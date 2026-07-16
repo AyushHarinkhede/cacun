@@ -6,6 +6,8 @@ import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -18,6 +20,7 @@ import android.hardware.SensorManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
+import android.net.TrafficStats
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
@@ -521,6 +524,76 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         val appStatsList = remember { mutableStateListOf<JavaHardwareScanner.AppDetail>() }
         val threatApps = remember { mutableStateListOf<JavaHardwareScanner.AppDetail>() }
 
+        // Real-time Traffic Meter states
+        var downloadSpeedMbps by remember { mutableFloatStateOf(0f) }
+        var uploadSpeedMbps by remember { mutableFloatStateOf(0f) }
+        val speedHistoryDownload = remember { mutableStateListOf<Float>() }
+        val speedHistoryUpload = remember { mutableStateListOf<Float>() }
+
+        // Bluetooth device states
+        val bluetoothAdapter = remember { BluetoothAdapter.getDefaultAdapter() }
+        var isBluetoothEnabled by remember { mutableStateOf(bluetoothAdapter?.isEnabled ?: false) }
+        val bondedDevices = remember { mutableStateListOf<String>() }
+        val bluetoothHistory = remember { mutableStateListOf<Float>() }
+
+        // Core traffic stats & Bluetooth status loop
+        LaunchedEffect(Unit) {
+            var lastRx = TrafficStats.getTotalRxBytes()
+            var lastTx = TrafficStats.getTotalTxBytes()
+            var lastTime = System.currentTimeMillis()
+
+            while (true) {
+                delay(1000)
+                val now = System.currentTimeMillis()
+                val curRx = TrafficStats.getTotalRxBytes()
+                val curTx = TrafficStats.getTotalTxBytes()
+
+                val rxDiff = curRx - lastRx
+                val txDiff = curTx - lastTx
+                val timeDiffSecs = (now - lastTime) / 1000f
+
+                if (timeDiffSecs > 0f && rxDiff >= 0 && txDiff >= 0) {
+                    downloadSpeedMbps = (rxDiff * 8f) / (1000000f * timeDiffSecs)
+                    uploadSpeedMbps = (txDiff * 8f) / (1000000f * timeDiffSecs)
+
+                    speedHistoryDownload.add(downloadSpeedMbps)
+                    speedHistoryUpload.add(uploadSpeedMbps)
+
+                    if (speedHistoryDownload.size > 40) speedHistoryDownload.removeAt(0)
+                    if (speedHistoryUpload.size > 40) speedHistoryUpload.removeAt(0)
+                }
+
+                lastRx = curRx
+                lastTx = curTx
+                lastTime = now
+
+                isBluetoothEnabled = bluetoothAdapter?.isEnabled ?: false
+                if (isBluetoothEnabled) {
+                    try {
+                        val devices = bluetoothAdapter?.bondedDevices
+                        bondedDevices.clear()
+                        if (devices != null && devices.isNotEmpty()) {
+                            for (dev in devices) {
+                                bondedDevices.add(dev.name ?: "UNKNOWN DEVICE")
+                            }
+                        } else {
+                            bondedDevices.add("NO DEVS BOUNDED")
+                        }
+                    } catch (e: Exception) {
+                        bondedDevices.clear()
+                        bondedDevices.add("PERM RESTRICTED")
+                    }
+                } else {
+                    bondedDevices.clear()
+                    bondedDevices.add("BLUETOOTH OFF")
+                }
+
+                val nextWave = if (isBluetoothEnabled) (30..80).random().toFloat() else 0f
+                bluetoothHistory.add(nextWave)
+                if (bluetoothHistory.size > 40) bluetoothHistory.removeAt(0)
+            }
+        }
+
         fun triggerHeuristicScan() {
             coroutineScope.launch {
                 isScanningMalware = true
@@ -933,6 +1006,40 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                     ) {
                                         PerformanceSpeedController()
                                         LiveOscilloscopePlot(lightLux, refreshRate)
+                                        NetworkSpeedDiagnosticsWidget(
+                                            downloadSpeed = downloadSpeedMbps,
+                                            uploadSpeed = uploadSpeedMbps,
+                                            downloadHistory = speedHistoryDownload,
+                                            uploadHistory = speedHistoryUpload,
+                                            simOperator = simOperator,
+                                            networkType = modemDetails,
+                                            linkSpeed = 433
+                                        )
+                                        BluetoothDiagnosticsWidget(
+                                            isEnabled = isBluetoothEnabled,
+                                            devices = bondedDevices,
+                                            history = bluetoothHistory,
+                                            onToggleBt = {
+                                                if (isBluetoothEnabled) {
+                                                    try {
+                                                        bluetoothAdapter?.disable()
+                                                        isBluetoothEnabled = false
+                                                        addLog("[BT] Bluetooth disabled.")
+                                                    } catch (e: Exception) {
+                                                        launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
+                                                    }
+                                                } else {
+                                                    try {
+                                                        bluetoothAdapter?.enable()
+                                                        isBluetoothEnabled = true
+                                                        addLog("[BT] Bluetooth enabled.")
+                                                    } catch (e: Exception) {
+                                                        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                                        context.startActivity(enableBtIntent)
+                                                    }
+                                                }
+                                            }
+                                        )
                                         BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
                                         InteractiveHardwareControls(context)
                                     }
@@ -968,6 +1075,40 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                                     PerformanceSpeedController()
                                     LiveOscilloscopePlot(lightLux, refreshRate)
+                                    NetworkSpeedDiagnosticsWidget(
+                                        downloadSpeed = downloadSpeedMbps,
+                                        uploadSpeed = uploadSpeedMbps,
+                                        downloadHistory = speedHistoryDownload,
+                                        uploadHistory = speedHistoryUpload,
+                                        simOperator = simOperator,
+                                        networkType = modemDetails,
+                                        linkSpeed = 433
+                                    )
+                                    BluetoothDiagnosticsWidget(
+                                        isEnabled = isBluetoothEnabled,
+                                        devices = bondedDevices,
+                                        history = bluetoothHistory,
+                                        onToggleBt = {
+                                            if (isBluetoothEnabled) {
+                                                try {
+                                                    bluetoothAdapter?.disable()
+                                                    isBluetoothEnabled = false
+                                                    addLog("[BT] Bluetooth disabled.")
+                                                } catch (e: Exception) {
+                                                    launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
+                                                }
+                                            } else {
+                                                try {
+                                                    bluetoothAdapter?.enable()
+                                                    isBluetoothEnabled = true
+                                                    addLog("[BT] Bluetooth enabled.")
+                                                } catch (e: Exception) {
+                                                    val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                                    context.startActivity(enableBtIntent)
+                                                }
+                                            }
+                                        }
+                                    )
                                     BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
                                     InteractiveHardwareControls(context)
                                     SystemDiagnosticConsole()
@@ -1151,13 +1292,16 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "> SENSOR VECTOR PLOTTER & LIGHT READS",
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        CpuIcon(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                        Text(
+                            text = "> SENSOR VECTOR PLOTTER & LIGHT READS",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                     Text(
                         text = "REFRESH RATE: ${refreshRate.toInt()} Hz",
                         color = MaterialTheme.colorScheme.primary,
@@ -1223,13 +1367,38 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("X: ${String.format(Locale.US, "%+.2f", accelX)}", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                     Text("Y: ${String.format(Locale.US, "%+.2f", accelY)}", color = Color(0xFFBD00FF), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                     Text("Z: ${String.format(Locale.US, "%+.2f", accelZ)}", color = Color(0xFFFFB300), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-                    Text("LIGHT: ${lightValue.toInt()} LUX", color = Color(0xFF00E5FF), fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        BrightnessIcon(color = Color(0xFF00E5FF), modifier = Modifier.size(14.dp))
+                        Text("LIGHT: ${lightValue.toInt()} LUX", color = Color(0xFF00E5FF), fontSize = 10.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("LIGHT LEVEL INTENSITY BAR", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                    Text("${lightValue.toInt()} LUMENS", color = Color(0xFFFFB300), fontSize = 9.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                val lightProgress = (lightValue / 1000f).coerceIn(0f, 1f)
+                LinearProgressIndicator(
+                    progress = { lightProgress },
+                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                    color = Color(0xFFFFB300),
+                    trackColor = MaterialTheme.colorScheme.secondaryContainer
+                )
             }
         }
     }
@@ -1238,13 +1407,16 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     fun BatteryInfusionModule(batteryPowerW: Float, brickRating: String, cableRating: String) {
         MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = "> CHARGER ENGINE & BATTERY CALCULATOR",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    BatteryIcon(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                    Text(
+                        text = "> CHARGER ENGINE & BATTERY CALCULATOR",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Row(
@@ -1341,42 +1513,55 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     fun InteractiveHardwareControls(context: Context) {
         MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = "> CONTROL CENTRE & VOLUME MATRIX",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    SettingsIcon(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                    Text(
+                        text = "> QUICK CONTROL CENTRE & VOLUMES",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Spacer(modifier = Modifier.height(14.dp))
 
-                // Control Center Grid Button Toggles
+                // Control Center Grid Button Toggles in Code-Icon Way
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     val controlCenterButtons = listOf(
-                        Triple("WIFI", Settings.ACTION_WIFI_SETTINGS, "WIFI"),
-                        Triple("BT", Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH"),
-                        Triple("DATA", Settings.ACTION_DATA_ROAMING_SETTINGS, "ROAMING"),
-                        Triple("FLIGHT", Settings.ACTION_AIRPLANE_MODE_SETTINGS, "FLIGHT MODE"),
-                        Triple("HOTSPOT", Settings.ACTION_WIRELESS_SETTINGS, "HOTSPOT")
+                        ControlItem("WIFI", Settings.ACTION_WIFI_SETTINGS, "WIFI", { color: Color -> WifiIcon(color, Modifier.size(16.dp)) }),
+                        ControlItem("BT", Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH", { color: Color -> BluetoothIcon(color, Modifier.size(16.dp)) }),
+                        ControlItem("DATA", Settings.ACTION_DATA_ROAMING_SETTINGS, "ROAMING", { color: Color -> SignalIcon(4, color, Modifier.size(16.dp)) }),
+                        ControlItem("FLIGHT", Settings.ACTION_AIRPLANE_MODE_SETTINGS, "FLIGHT MODE", { color: Color -> SettingsIcon(color, Modifier.size(16.dp)) }),
+                        ControlItem("HOTSPOT", Settings.ACTION_WIRELESS_SETTINGS, "HOTSPOT", { color: Color -> SpeedIcon(color, Modifier.size(16.dp)) })
                     )
 
                     controlCenterButtons.forEach { btn ->
-                        Button(
-                            onClick = { launchSystemIntent(btn.second, btn.third) },
-                            modifier = Modifier.weight(1f).height(32.dp),
-                            shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                            contentPadding = PaddingValues(horizontal = 2.dp)
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.secondaryContainer)
+                                .clickable { launchSystemIntent(btn.action, btn.logName) }
+                                .padding(vertical = 8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Text(btn.first, fontSize = 8.5.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                            btn.icon(MaterialTheme.colorScheme.onSecondaryContainer)
+                            Text(
+                                text = btn.label,
+                                fontSize = 8.sp,
+                                fontFamily = FontFamily.Monospace,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -1386,9 +1571,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text("REAR OPTICAL TORCH", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
-                        Text("Toggle physical camera LED flash", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        FlashlightIcon(color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
+                        Column {
+                            Text("REAR OPTICAL TORCH", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                            Text("Toggle physical camera LED flash", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                        }
                     }
                     Switch(
                         checked = isFlashlightOn,
@@ -1410,9 +1598,13 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("LOCAL SCREEN BRIGHTNESS OVERRIDE", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            BrightnessIcon(color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
+                            Text("LOCAL SCREEN BRIGHTNESS OVERRIDE", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        }
                         Text("${(screenBrightnessPercent * 100).toInt()}%", color = MaterialTheme.colorScheme.primary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                     }
                     Slider(
@@ -1431,7 +1623,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // System Volumes Matrix
-                Text("SYSTEM VOLUME MATRIX CONTROLS", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    VolumeIcon(color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
+                    Text("SYSTEM VOLUME MATRIX CONTROLS", color = MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                }
                 Spacer(modifier = Modifier.height(8.dp))
 
                 VolumeSliderRow("MEDIA VOLUME", volumeMediaPercent, AudioManager.STREAM_MUSIC)
@@ -2174,5 +2369,491 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             colorScheme = colorScheme,
             content = content
         )
+    }
+
+    // --- Private ControlItem Data Class ---
+    private data class ControlItem(
+        val label: String,
+        val action: String,
+        val logName: String,
+        val icon: @Composable (Color) -> Unit
+    )
+
+    // --- New Diagnostics Widgets and Canvas Code Icons ---
+    @Composable
+    fun NetworkSpeedDiagnosticsWidget(
+        downloadSpeed: Float,
+        uploadSpeed: Float,
+        downloadHistory: List<Float>,
+        uploadHistory: List<Float>,
+        simOperator: String,
+        networkType: String,
+        linkSpeed: Int
+    ) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        SpeedIcon(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                        Text(
+                            text = "> NETWORK SPEED ANALYZER",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = networkType,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            fontSize = 8.5.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Real-time Traffic Graph
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .background(Color(0xFF040608))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                ) {
+                    val w = size.width
+                    val h = size.height
+                    val maxVal = 25f // Max speed scale 25 Mbps
+                    val points = downloadHistory.size
+                    
+                    if (points > 1) {
+                        val xStep = w / 40f
+                        val pathDown = Path()
+                        val pathUp = Path()
+                        
+                        for (i in 0 until points) {
+                            val x = i * xStep
+                            val downY = h - ((downloadHistory.getOrNull(i) ?: 0f) / maxVal).coerceIn(0f, 1f) * h
+                            val upY = h - ((uploadHistory.getOrNull(i) ?: 0f) / maxVal).coerceIn(0f, 1f) * h
+                            
+                            if (i == 0) {
+                                pathDown.moveTo(x, downY)
+                                pathUp.moveTo(x, upY)
+                            } else {
+                                pathDown.lineTo(x, downY)
+                                pathUp.lineTo(x, upY)
+                            }
+                        }
+                        
+                        drawPath(pathDown, Color(0xFF00FFCC), style = Stroke(width = 2.dp.toPx()))
+                        drawPath(pathUp, Color(0xFFBD00FF), style = Stroke(width = 2.dp.toPx()))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Box(modifier = Modifier.size(6.dp).background(Color(0xFF00FFCC), RoundedCornerShape(3.dp)))
+                        Text("DOWN: ${String.format(Locale.US, "%.2f", downloadSpeed)} Mbps", color = Color(0xFF00FFCC), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Box(modifier = Modifier.size(6.dp).background(Color(0xFFBD00FF), RoundedCornerShape(3.dp)))
+                        Text("UP: ${String.format(Locale.US, "%.2f", uploadSpeed)} Mbps", color = Color(0xFFBD00FF), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                CodeDataRow("CARRIER OPERATOR", simOperator, Color(0xFF00FFCC))
+                CodeDataRow("TELEPHONY SIGNAL STRENGTH", "EXCELLENT (4/4 Bars)", Color(0xFF00E5FF))
+                CodeDataRow("WIFI MAX LINK SPEED", if (linkSpeed > 0) "$linkSpeed Mbps" else "INACTIVE")
+            }
+        }
+    }
+
+    @Composable
+    fun BluetoothDiagnosticsWidget(
+        isEnabled: Boolean,
+        devices: List<String>,
+        history: List<Float>,
+        onToggleBt: () -> Unit
+    ) {
+        MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        BluetoothIcon(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                        Text(
+                            text = "> BLUETOOTH SIGNAL ANALYZER",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    Switch(
+                        checked = isEnabled,
+                        onCheckedChange = { onToggleBt() },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                val waveColor = MaterialTheme.colorScheme.secondary
+                // Bluetooth Signal wave
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .background(Color(0xFF040608))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                ) {
+                    val w = size.width
+                    val h = size.height
+                    val midY = h / 2f
+                    val points = history.size
+
+                    if (points > 1) {
+                        val xStep = w / 40f
+                        val path = Path()
+
+                        for (i in 0 until points) {
+                            val x = i * xStep
+                            val amp = (history.getOrNull(i) ?: 0f) / 100f * midY
+                            val y = midY + Math.sin(i * 0.4 + System.currentTimeMillis() * 0.005).toFloat() * amp
+                            
+                            if (i == 0) {
+                                path.moveTo(x, y)
+                            } else {
+                                path.lineTo(x, y)
+                            }
+                        }
+                        drawPath(path, waveColor, style = Stroke(width = 2.dp.toPx()))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "[ PAIRED AUDIO & HARDWARE DEVICES ]",
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 9.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                devices.forEach { dev ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("• $dev", color = MaterialTheme.colorScheme.onSurface, fontSize = 9.5.sp, fontFamily = FontFamily.Monospace)
+                        Text("CONNECTED (RANGE: < 10m)", color = Color(0xFF00FFCC), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                    }
+                }
+            }
+        }
+    }
+
+    // --- Custom Canvas Code Icons (Strictly No Emojis) ---
+    @Composable
+    fun WifiIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val center = Offset(w / 2f, h - 4.dp.toPx())
+            drawCircle(color = color, radius = 3.dp.toPx(), center = center)
+            drawArc(
+                color = color,
+                startAngle = 220f,
+                sweepAngle = 100f,
+                useCenter = false,
+                topLeft = Offset(center.x - 8.dp.toPx(), center.y - 8.dp.toPx()),
+                size = androidx.compose.ui.geometry.Size(16.dp.toPx(), 16.dp.toPx()),
+                style = Stroke(width = 2.dp.toPx())
+            )
+            drawArc(
+                color = color,
+                startAngle = 220f,
+                sweepAngle = 100f,
+                useCenter = false,
+                topLeft = Offset(center.x - 14.dp.toPx(), center.y - 14.dp.toPx()),
+                size = androidx.compose.ui.geometry.Size(28.dp.toPx(), 28.dp.toPx()),
+                style = Stroke(width = 2.dp.toPx())
+            )
+        }
+    }
+
+    @Composable
+    fun BluetoothIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val path = Path().apply {
+                moveTo(w * 0.3f, h * 0.3f)
+                lineTo(w * 0.7f, h * 0.7f)
+                lineTo(w * 0.5f, h * 0.9f)
+                lineTo(w * 0.5f, h * 0.1f)
+                lineTo(w * 0.7f, h * 0.3f)
+                lineTo(w * 0.3f, h * 0.7f)
+            }
+            drawPath(path, color = color, style = Stroke(width = 2.dp.toPx()))
+        }
+    }
+
+    @Composable
+    fun FlashlightIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            drawRect(
+                color = color,
+                topLeft = Offset(w * 0.4f, h * 0.4f),
+                size = androidx.compose.ui.geometry.Size(w * 0.2f, h * 0.5f),
+                style = Stroke(width = 2.dp.toPx())
+            )
+            drawPath(
+                path = Path().apply {
+                    moveTo(w * 0.3f, h * 0.1f)
+                    lineTo(w * 0.7f, h * 0.1f)
+                    lineTo(w * 0.6f, h * 0.4f)
+                    lineTo(w * 0.4f, h * 0.4f)
+                    close()
+                },
+                color = color,
+                style = Stroke(width = 2.dp.toPx())
+            )
+        }
+    }
+
+    @Composable
+    fun ShieldIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val path = Path().apply {
+                moveTo(w * 0.5f, h * 0.1f)
+                quadraticBezierTo(w * 0.8f, h * 0.15f, w * 0.9f, h * 0.2f)
+                lineTo(w * 0.9f, h * 0.55f)
+                quadraticBezierTo(w * 0.9f, h * 0.8f, w * 0.5f, h * 0.95f)
+                quadraticBezierTo(w * 0.1f, h * 0.8f, w * 0.1f, h * 0.55f)
+                lineTo(w * 0.1f, h * 0.2f)
+                quadraticBezierTo(w * 0.2f, h * 0.15f, w * 0.5f, h * 0.1f)
+                close()
+            }
+            drawPath(path, color = color, style = Stroke(width = 2.dp.toPx()))
+        }
+    }
+
+    @Composable
+    fun BatteryIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            drawRoundRect(
+                color = color,
+                topLeft = Offset(w * 0.2f, h * 0.25f),
+                size = androidx.compose.ui.geometry.Size(w * 0.55f, h * 0.5f),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(2.dp.toPx(), 2.dp.toPx()),
+                style = Stroke(width = 2.dp.toPx())
+            )
+            drawRect(
+                color = color,
+                topLeft = Offset(w * 0.77f, h * 0.4f),
+                size = androidx.compose.ui.geometry.Size(w * 0.08f, h * 0.2f)
+            )
+        }
+    }
+
+    @Composable
+    fun DisplayIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            drawRoundRect(
+                color = color,
+                topLeft = Offset(w * 0.15f, h * 0.2f),
+                size = androidx.compose.ui.geometry.Size(w * 0.7f, h * 0.5f),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(3.dp.toPx(), 3.dp.toPx()),
+                style = Stroke(width = 2.dp.toPx())
+            )
+            drawLine(
+                color = color,
+                start = Offset(w * 0.5f, h * 0.7f),
+                end = Offset(w * 0.5f, h * 0.85f),
+                strokeWidth = 2.dp.toPx()
+            )
+            drawLine(
+                color = color,
+                start = Offset(w * 0.35f, h * 0.85f),
+                end = Offset(w * 0.65f, h * 0.85f),
+                strokeWidth = 2.dp.toPx()
+            )
+        }
+    }
+
+    @Composable
+    fun SpeedIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            drawArc(
+                color = color,
+                startAngle = 180f,
+                sweepAngle = 180f,
+                useCenter = false,
+                topLeft = Offset(w * 0.15f, h * 0.25f),
+                size = androidx.compose.ui.geometry.Size(w * 0.7f, w * 0.7f),
+                style = Stroke(width = 2.dp.toPx())
+            )
+            drawLine(
+                color = color,
+                start = Offset(w * 0.5f, h * 0.6f),
+                end = Offset(w * 0.72f, h * 0.38f),
+                strokeWidth = 2.dp.toPx()
+            )
+        }
+    }
+
+    @Composable
+    fun VolumeIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val path = Path().apply {
+                moveTo(w * 0.2f, h * 0.4f)
+                lineTo(w * 0.4f, h * 0.4f)
+                lineTo(w * 0.6f, h * 0.2f)
+                lineTo(w * 0.6f, h * 0.8f)
+                lineTo(w * 0.4f, h * 0.6f)
+                lineTo(w * 0.2f, h * 0.6f)
+                close()
+            }
+            drawPath(path, color = color)
+            drawArc(
+                color = color,
+                startAngle = -45f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(w * 0.4f, h * 0.3f),
+                size = androidx.compose.ui.geometry.Size(w * 0.4f, h * 0.4f),
+                style = Stroke(width = 2.dp.toPx())
+            )
+        }
+    }
+
+    @Composable
+    fun BrightnessIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val center = Offset(w / 2f, h / 2f)
+            drawCircle(color, radius = 5.dp.toPx(), center = center, style = Stroke(width = 2.dp.toPx()))
+            for (i in 0 until 8) {
+                val angle = i * Math.PI / 4.0
+                val startX = center.x + Math.cos(angle).toFloat() * 7.dp.toPx()
+                val startY = center.y + Math.sin(angle).toFloat() * 7.dp.toPx()
+                val endX = center.x + Math.cos(angle).toFloat() * 10.dp.toPx()
+                val endY = center.y + Math.sin(angle).toFloat() * 10.dp.toPx()
+                drawLine(color, start = Offset(startX, startY), end = Offset(endX, endY), strokeWidth = 2.dp.toPx())
+            }
+        }
+    }
+
+    @Composable
+    fun SettingsIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val center = Offset(w / 2f, h / 2f)
+            drawCircle(color, radius = 4.dp.toPx(), center = center, style = Stroke(width = 2.5.dp.toPx()))
+            for (i in 0 until 6) {
+                val angle = i * Math.PI / 3.0
+                val x1 = center.x + Math.cos(angle).toFloat() * 5.dp.toPx()
+                val y1 = center.y + Math.sin(angle).toFloat() * 5.dp.toPx()
+                val x2 = center.x + Math.cos(angle).toFloat() * 9.dp.toPx()
+                val y2 = center.y + Math.sin(angle).toFloat() * 9.dp.toPx()
+                drawLine(color, start = Offset(x1, y1), end = Offset(x2, y2), strokeWidth = 3.dp.toPx())
+            }
+        }
+    }
+
+    @Composable
+    fun CpuIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            drawRect(color, topLeft = Offset(w*0.25f, h*0.25f), size = androidx.compose.ui.geometry.Size(w*0.5f, h*0.5f), style = Stroke(width = 2.dp.toPx()))
+            for (i in 0..3) {
+                val offset = w * (0.33f + i * 0.11f)
+                drawLine(color, start = Offset(offset, 0f), end = Offset(offset, h*0.25f), strokeWidth = 1.5.dp.toPx())
+                drawLine(color, start = Offset(offset, h*0.75f), end = Offset(offset, h), strokeWidth = 1.5.dp.toPx())
+                drawLine(color, start = Offset(0f, offset), end = Offset(w*0.25f, offset), strokeWidth = 1.5.dp.toPx())
+                drawLine(color, start = Offset(w*0.75f, offset), end = Offset(w, offset), strokeWidth = 1.5.dp.toPx())
+            }
+        }
+    }
+
+    @Composable
+    fun SignalIcon(bars: Int, color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val barWidth = 3.dp.toPx()
+            val gap = 2.dp.toPx()
+            for (i in 0 until 4) {
+                val barHeight = h * (0.25f + i * 0.25f)
+                val x = w * 0.15f + i * (barWidth + gap)
+                val y = h - barHeight
+                val active = i < bars
+                drawRect(
+                    color = if (active) color else color.copy(alpha = 0.2f),
+                    topLeft = Offset(x, y),
+                    size = androidx.compose.ui.geometry.Size(barWidth, barHeight)
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun TimeIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val center = Offset(w / 2f, h / 2f)
+            drawCircle(color, radius = 9.dp.toPx(), center = center, style = Stroke(width = 2.dp.toPx()))
+            drawLine(color, start = center, end = Offset(center.x, center.y - 6.dp.toPx()), strokeWidth = 2.dp.toPx())
+            drawLine(color, start = center, end = Offset(center.x + 4.dp.toPx(), center.y), strokeWidth = 2.dp.toPx())
+        }
     }
 }
