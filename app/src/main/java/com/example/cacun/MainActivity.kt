@@ -819,65 +819,18 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     Column(modifier = Modifier.fillMaxSize()) {
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // HEADER ROW WITH CACUN LOGO
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                        // CENTERED CACUN LOGO ONLY
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.cacun),
-                                    contentDescription = "Cacun Logo Header",
-                                    modifier = Modifier
-                                        .height(35.dp)
-                                        .aspectRatio(2.8f)
-                                )
-                                Column {
-                                    Text(
-                                        text = "HARDWARE HUD",
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontSize = 13.sp,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontWeight = FontWeight.Bold,
-                                        letterSpacing = 1.sp
-                                    )
-                                    Text(
-                                        text = "MATERIAL YOU CORE v2.5",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                        fontSize = 8.sp,
-                                        fontFamily = FontFamily.Monospace
-                                    )
-                                }
-                            }
-
-                            // Glowing Secure Indicator
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
+                            Image(
+                                painter = painterResource(id = R.drawable.cacun),
+                                contentDescription = "Cacun Logo Header",
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(MaterialTheme.colorScheme.primaryContainer)
-                                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .clip(RoundedCornerShape(3.dp))
-                                        .background(MaterialTheme.colorScheme.primary)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "SECURE",
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontSize = 9.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                                    .height(42.dp)
+                                    .aspectRatio(2.8f)
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(14.dp))
