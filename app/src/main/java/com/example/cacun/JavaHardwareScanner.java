@@ -27,8 +27,13 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import javax.microedition.khronos.egl.*;
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Java Hardware and Telemetry Integration.
@@ -356,5 +361,101 @@ public class JavaHardwareScanner {
         if (am != null) {
             am.setStreamVolume(streamType, index, 0);
         }
+    }
+
+    // --- GPU Renderer (OpenGL context query) ---
+    public static String getGpuRenderer() {
+        try {
+            EGL10 egl = (EGL10) EGLContext.getEGL();
+            EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
+            int[] version = new int[2];
+            egl.eglInitialize(display, version);
+            int[] configAttribs = {
+                EGL10.EGL_RENDERABLE_TYPE, 4, // EGL_OPENGL_ES2_BIT
+                EGL10.EGL_NONE
+            };
+            EGLConfig[] configs = new EGLConfig[1];
+            int[] numConfigs = new int[1];
+            egl.eglChooseConfig(display, configAttribs, configs, 1, numConfigs);
+            EGLConfig config = configs[0];
+            int[] contextAttribs = {
+                0x3098, 2, // EGL_CONTEXT_CLIENT_VERSION = 2
+                EGL10.EGL_NONE
+            };
+            EGLContext context = egl.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT, contextAttribs);
+            EGLSurface surface = egl.eglCreatePbufferSurface(display, config, new int[]{EGL10.EGL_WIDTH, 1, EGL10.EGL_HEIGHT, 1, EGL10.EGL_NONE});
+            egl.eglMakeCurrent(display, surface, surface, context);
+            GL10 gl10 = (GL10) egl.eglGetCurrentContext().getGL();
+            String renderer = gl10.glGetString(GL10.GL_RENDERER);
+            egl.eglMakeCurrent(display, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT);
+            egl.eglDestroySurface(display, surface);
+            egl.eglDestroyContext(display, context);
+            egl.eglTerminate(display);
+            if (renderer != null && !renderer.isEmpty()) {
+                return renderer;
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return "ADRENO / MALI CORE";
+    }
+
+    // --- Linux kernel CPU Frequencies sysfs query ---
+    public static int getCpuFrequency() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"));
+            String line = reader.readLine();
+            reader.close();
+            if (line != null) {
+                return Integer.parseInt(line.trim()) / 1000;
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return 0;
+    }
+
+    public static int getCpuMaxFrequency() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq"));
+            String line = reader.readLine();
+            reader.close();
+            if (line != null) {
+                return Integer.parseInt(line.trim()) / 1000;
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return 0;
+    }
+
+    // --- SoC Board Properties ---
+    public static String getSocModel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            String soc = Build.SOC_MODEL;
+            if (soc != null && !soc.isEmpty()) {
+                return soc.toUpperCase();
+            }
+        }
+        String platform = getSystemProperty("ro.board.platform");
+        if (!platform.isEmpty()) {
+            return platform.toUpperCase();
+        }
+        return Build.HARDWARE.toUpperCase();
+    }
+
+    public static String getSystemProperty(String key) {
+        try {
+            Process p = Runtime.getRuntime().exec("getprop " + key);
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String val = r.readLine();
+            r.close();
+            if (val != null) {
+                return val.trim();
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return "";
     }
 }

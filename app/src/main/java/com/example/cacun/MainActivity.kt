@@ -519,6 +519,85 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         var screenTimeTodayStr by remember { mutableStateOf("LOCKED") }
         var usagePermissionActive by remember { mutableStateOf(isUsageAccessGranted()) }
         val appStatsList = remember { mutableStateListOf<JavaHardwareScanner.AppDetail>() }
+        val threatApps = remember { mutableStateListOf<JavaHardwareScanner.AppDetail>() }
+
+        fun triggerHeuristicScan() {
+            coroutineScope.launch {
+                isScanningMalware = true
+                scanProgress = 0f
+                scannedAppsCount = 0
+                threatApps.clear()
+                addLog("[SCAN] Initiating heuristical permissions scan over active packages...")
+                
+                try {
+                    val pm = context.packageManager
+                    val appList = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+                    val total = appList.size
+                    
+                    for ((index, packageInfo) in appList.withIndex()) {
+                        delay(20) // Smooth progression
+                        scanProgress = (index + 1).toFloat() / total
+                        scannedAppsCount = index + 1
+                        scanningFilePath = packageInfo.packageName
+                        
+                        val appName = packageInfo.applicationInfo?.loadLabel(pm)?.toString() ?: packageInfo.packageName
+                        val isSystem = ((packageInfo.applicationInfo?.flags ?: 0) and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
+                        
+                        if (!isSystem) {
+                            val installer = try {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                    pm.getInstallSourceInfo(packageInfo.packageName).installingPackageName
+                                } else {
+                                    pm.getInstallerPackageName(packageInfo.packageName)
+                                }
+                            } catch (e: Exception) { null }
+                            
+                            val isSideloaded = installer == null || installer.isEmpty()
+                            val requested = packageInfo.requestedPermissions
+                            var dangerousCount = 0
+                            if (requested != null) {
+                                val dangerousList = listOf(
+                                    "android.permission.READ_SMS",
+                                    "android.permission.RECEIVE_SMS",
+                                    "android.permission.SEND_SMS",
+                                    "android.permission.SYSTEM_ALERT_WINDOW",
+                                    "android.permission.WRITE_SETTINGS",
+                                    "android.permission.ACCESS_FINE_LOCATION"
+                                )
+                                for (p in requested) {
+                                    if (dangerousList.contains(p)) dangerousCount++
+                                }
+                            }
+                            
+                            if (isSideloaded && dangerousCount >= 1) {
+                                val detail = JavaHardwareScanner.AppDetail().apply {
+                                    name = appName
+                                    packageName = packageInfo.packageName
+                                    installSource = "APK / SIDE-LOAD"
+                                    securityScore = 100 - (dangerousCount * 18)
+                                    this.isSystem = false
+                                }
+                                threatApps.add(detail)
+                                addLog("[WRN] Threat detected: $appName ($dangerousCount dangerous permissions)")
+                            }
+                        }
+                    }
+                    
+                    delay(200)
+                    isScanningMalware = false
+                    if (threatApps.isEmpty()) {
+                        addLog("[SCAN] Scan complete. 0 threats detected. Device is secured.")
+                        Toast.makeText(context, "Shield Scan Completed: System Secured", Toast.LENGTH_SHORT).show()
+                    } else {
+                        addLog("[WRN] Scan complete. Flagged ${threatApps.size} security threats.")
+                        Toast.makeText(context, "Shield Scan: Flagged ${threatApps.size} risks!", Toast.LENGTH_LONG).show()
+                    }
+                } catch (e: Exception) {
+                    isScanningMalware = false
+                    addLog("[ERR] Scanning interrupted: ${e.message}")
+                }
+            }
+        }
 
         // Trigger updates dynamically for Screen Time
         LaunchedEffect(usagePermissionActive) {
@@ -865,28 +944,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                     ) {
                                         SystemDiagnosticConsole()
                                         AntiVirusScannerSection(
-                                            isScanningMalware, scanProgress, scanningFilePath, scannedAppsCount,
-                                            appStatsList, onTriggerScan = {
-                                                coroutineScope.launch {
-                                                    isScanningMalware = true
-                                                    scanProgress = 0f
-                                                    scannedAppsCount = 0
-                                                    addLog("[SCAN] Commencing local APK threat verification...")
-                                                    
-                                                    val appList = JavaHardwareScanner.getInstalledApps(context)
-                                                    for ((index, app) in appList.take(20).withIndex()) {
-                                                        delay(180)
-                                                        scanProgress = (index + 1) / 20f
-                                                        scannedAppsCount = index + 1
-                                                        scanningFilePath = app.packageName
-                                                        addLog("[SCAN] Scanning ${app.name}... CLEAN")
-                                                    }
-                                                    delay(250)
-                                                    isScanningMalware = false
-                                                    addLog("[SCAN] Scan complete. 0 threats detected in system directories.")
-                                                    Toast.makeText(context, "Shield Scan Completed: System Clean", Toast.LENGTH_SHORT).show()
-                                                }
-                                            }
+                                            isScanning = isScanningMalware,
+                                            progress = scanProgress,
+                                            filePath = scanningFilePath,
+                                            count = scannedAppsCount,
+                                            threatApps = threatApps,
+                                            onTriggerScan = { triggerHeuristicScan() }
                                         )
                                         ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
                                             launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
@@ -909,28 +972,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                     InteractiveHardwareControls(context)
                                     SystemDiagnosticConsole()
                                     AntiVirusScannerSection(
-                                        isScanningMalware, scanProgress, scanningFilePath, scannedAppsCount,
-                                        appStatsList, onTriggerScan = {
-                                            coroutineScope.launch {
-                                                isScanningMalware = true
-                                                scanProgress = 0f
-                                                scannedAppsCount = 0
-                                                addLog("[SCAN] Commencing local APK threat verification...")
-                                                
-                                                val appList = JavaHardwareScanner.getInstalledApps(context)
-                                                for ((index, app) in appList.take(20).withIndex()) {
-                                                    delay(180)
-                                                    scanProgress = (index + 1) / 20f
-                                                    scannedAppsCount = index + 1
-                                                    scanningFilePath = app.packageName
-                                                    addLog("[SCAN] Scanning ${app.name}... CLEAN")
-                                                }
-                                                delay(250)
-                                                isScanningMalware = false
-                                                addLog("[SCAN] Scan complete. 0 threats detected in system directories.")
-                                                Toast.makeText(context, "Shield Scan Completed: System Clean", Toast.LENGTH_SHORT).show()
-                                            }
-                                        }
+                                        isScanning = isScanningMalware,
+                                        progress = scanProgress,
+                                        filePath = scanningFilePath,
+                                        count = scannedAppsCount,
+                                        threatApps = threatApps,
+                                        onTriggerScan = { triggerHeuristicScan() }
                                     )
                                     ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
                                         launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
@@ -1261,6 +1308,31 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 CodeDataRow("PLUG IN TIME", chargeStartTime)
                 CodeDataRow("EXPECTED FULL BY", expectedFullTime, if (isChargingState) Color(0xFF00FFCC) else Color.White)
                 CodeDataRow("LAST DISCONNECT TIME", lastPlugTime)
+
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "[ POWER ESTIMATION FORMULAE ]",
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 9.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "• Wattage Equation: P = V × I\n" +
+                           "  - Live Volts (V): ${String.format(Locale.US, "%.3f", batteryVoltage)} V\n" +
+                           "  - Live Current (I): ${String.format(Locale.US, "%.1f", batteryCurrent)} mA\n" +
+                           "  - Result Power (P): ${String.format(Locale.US, "%.2f", batteryPowerW)} W\n" +
+                           "• Brick Rating: Estimated Power / Efficiency (0.85)\n" +
+                           "• Charger Cable Flow Rating: (Current > 3000mA) ? 5A/6A : 3A",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                    fontSize = 8.5.sp,
+                    fontFamily = FontFamily.Monospace,
+                    lineHeight = 12.sp
+                )
             }
         }
     }
@@ -1502,9 +1574,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         progress: Float,
         filePath: String,
         count: Int,
-        appsList: List<JavaHardwareScanner.AppDetail>,
+        threatApps: List<JavaHardwareScanner.AppDetail>,
         onTriggerScan: () -> Unit
     ) {
+        val context = LocalContext.current
         MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
@@ -1563,6 +1636,55 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                         ) {
                             Text("RUN SHIELD", fontSize = 10.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                    }
+                }
+
+                if (!isScanning && threatApps.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "[ FLAGGED RISKS & UNINSTALL SHIELD ]",
+                        color = Color(0xFFFF3B30),
+                        fontSize = 9.5.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    threatApps.forEach { app ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f))
+                                .border(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1.2f)) {
+                                Text(app.name, color = MaterialTheme.colorScheme.onErrorContainer, fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                                Text(app.packageName, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f), fontSize = 8.5.sp, fontFamily = FontFamily.Monospace, maxLines = 1)
+                                Text("Security Score: ${app.securityScore}%", color = Color(0xFFFFB300), fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                            }
+                            Button(
+                                onClick = {
+                                    try {
+                                        val uninstallIntent = Intent(Intent.ACTION_DELETE).apply {
+                                            data = Uri.parse("package:${app.packageName}")
+                                        }
+                                        context.startActivity(uninstallIntent)
+                                    } catch (e: Exception) {
+                                        addLog("[ERR] Failed to initiate uninstallation.")
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                shape = RoundedCornerShape(4.dp),
+                                modifier = Modifier.height(30.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Text("RESOLVE", fontSize = 9.5.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onError)
+                            }
                         }
                     }
                 }
@@ -1748,9 +1870,17 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
+                val gpuName = remember { JavaHardwareScanner.getGpuRenderer() }
+                val socName = remember { JavaHardwareScanner.getSocModel() }
+                val cpuFreq = JavaHardwareScanner.getCpuFrequency()
+                val cpuMax = JavaHardwareScanner.getCpuMaxFrequency()
+                val cpuFreqStr = if (cpuFreq > 0) "$cpuFreq MHz / $cpuMax MHz" else "DYNAMIC CONTROL"
+
                 CodeDataRow("MANUFACTURER", manufacturer)
                 CodeDataRow("PRODUCT MODEL", model)
-                CodeDataRow("CPU ARCH CORES", "${Runtime.getRuntime().availableProcessors()} Cores (${Build.CPU_ABI.uppercase()})")
+                CodeDataRow("HARDWARE SOC CHIP", socName)
+                CodeDataRow("GPU CORE ACCEL", gpuName)
+                CodeDataRow("CPU CORES FREQ", "$cpuFreqStr (${Runtime.getRuntime().availableProcessors()} Cores)")
                 CodeDataRow("SYSTEM THREADS", "${Thread.activeCount()} Threads Active", Color(0xFFFFB300))
                 CodeDataRow("INTEGRITY STATUS", if(isRooted) "ROOTED / UNLOCKED" else "VERIFIED / SECURE", if(isRooted) Color(0xFFFFB300) else Color(0xFF00FFCC))
                 CodeDataRow("5G MODEM PROFILE", modemModel)
