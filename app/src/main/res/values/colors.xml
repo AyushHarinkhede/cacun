@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Core Themes -->
+    <color name="primary">#7C3AED</color>
+    <color name="primary_dark">#6D28D9</color>
+    <color name="primary_light">#A78BFA</color>
+    <color name="bg_dark">#1A1A2E</color>
+    <color name="bg_dark_secondary">#16213E</color>
+    <color name="bg_card">#0F3460</color>
+    <color name="bg_accent">#1E3A5F</color>
+    <color name="accent">#E67E5F</color>
+    <color name="text_primary">#F3F0FF</color>
+    <color name="text_secondary">#E9D5FF</color>
+    <color name="text_muted">#C4B5FD</color>
+    
+    <!-- System Standard Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#888888</color>
+    <color name="divider">#4C1D95</color>
+    <color name="green_status">#4CAF50</color>
+    <color name="red_status">#F44336</color>
+    
+    <!-- Glassmorphism and Material You Colors -->
+    <color name="glass_card_bg">#26FFFFFF</color> <!-- 15% opacity white -->
+    <color name="glass_card_stroke">#4DFFFFFF</color> <!-- 30% opacity white -->
+    <color name="glass_card_bg_dark">#990F3460</color> <!-- 60% opacity card color -->
+    <color name="glass_card_stroke_dark">#4D7C3AED</color> <!-- 30% opacity primary -->
+    <color name="player_progress_bg">#33A78BFA</color>
+    
+    <!-- Material You Pastel Palette -->
+    <color name="md_you_pastel_violet">#D8B4FE</color>
+    <color name="md_you_pastel_purple">#C084FC</color>
+    <color name="md_you_pastel_indigo">#818CF8</color>
+    <color name="md_you_pastel_cyan">#67E8F9</color>
+</resources>

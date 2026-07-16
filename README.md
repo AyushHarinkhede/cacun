@@ -1,232 +1,57 @@
-# Cacun - MERN Stack Redesign
+# Cacun - Glassmorphic System HUD (Android)
 
-A complete rebuild of the Cacun webapp using the MERN stack (MongoDB, Express, React, Node.js). 
+Cacun is a premium, interactive, and hardware-aware **System Diagnostics HUD** for Android. Rebuilt entirely from scratch in Kotlin, it utilizes high-performance low-level Java API bindings to monitor system parameters while allowing active control of hardware interfaces.
 
-<div style="display: flex; align-items: center; justify-content: flex-start; gap: 0px;"> 
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=9643F7&background=00000000&center=false&vCenter=true&width=85&lines=cacun" alt="cacun" />
-  
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=FF0000&background=00000000&center=false&vCenter=true&width=50&startDelay=1500&lines=is" alt="is" />
-  
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=3000&color=23F709&background=00000000&center=false&vCenter=true&width=220&startDelay=3000&lines=Live!🌱" alt="Live" />
-</div> 
- 
+The UI is built with Jetpack Compose featuring a state-of-the-art **Glassmorphic Cyber-Console** theme, optimized for both mobile phones and tablets in portrait orientation.
+
 ---
 
-## 🌍 About Cacun
+## 🚀 Key Features
 
-Cacun is a revolutionary **nature-first marketplace** dedicated to promoting sustainable living through eco-friendly products. Our platform connects conscious consumers with vendors who share our commitment to environmental protection.
+* **Kernel Boot Diagnostics Sequence:** Animates an interactive command-line log console on startup typing out system mounting and sensor checks.
+* **Low-Power Telemetry Engine:**
+  * **Lifecycle Awareness:** Sensor listeners and broadcast receivers are bound strictly during `onResume` and **fully unregistered** in `onPause` when the app is in the background or screen is locked. This ensures **0% background CPU / battery drain**.
+  * **Eco-Throttling Mode:** Switch between Fast, Standard, and Eco Mode. Eco Mode decreases sensor polling intervals to 1000ms, conserving hardware power cycles.
+* **Interactive Hardware Controls:**
+  * **Rear Torch Toggle:** Turn on/off the device's physical camera LED.
+  * **Music Stream Volume:** Real-time system audio volume slider using `AudioManager`.
+  * **Brightness Override:** Slide to adjust local window brightness level dynamically from dimmed (5%) to maximum (100%) without needing system-wide write settings permissions.
+  * **Haptic Pulse Test:** Fire custom tactile vibration waves (`CLICK`, `THUMP`, and `SOS WAVE` morse code pulse).
+* **Deep Hardware Telemetry:**
+  * **Network Interface:** Telemetry link type (WiFi/Cellular/Disconnected) and downstream bandwidth in **Mbps**.
+  * **Oscilloscope Vector Plotter:** Canvas graph displaying live scrolling accelerometer movements (X, Y, Z mapped to neon colors).
+  * **Battery Module:** Track battery percentage, voltage (V), health state, temperature (°C), charging plug type, current (mA), and calculated wattage (W).
+  * **Memory Array Allocation:** Graphical indicators showing RAM usage and internal storage arrays.
+  * **System Specs:** Manufacturer, device model, CPU core hardware, Android version, screen resolution, refresh rate, NFC antenna state, and camera megapixels (front/rear).
+  * **Secure Codes:** Attempted IMEI read with security exception logging and Android ID fallback.
 
-### 🎯 Our Mission
+---
 
-To create a world where every purchase contributes to a healthier planet by offering:
-- **Plastic-free alternatives**
-- **Non-toxic products**
-- **Recycled materials**
-- **Nature-based solutions**
-- **Reusable options**
+## 🛠️ Technology Stack
+* **Language:** Kotlin (HUD View) & Java (Hardware Telemetry API bindings)
+* **UI Framework:** Jetpack Compose (Material 3 with custom glassmorphism)
+* **Build System:** Gradle (Kotlin DSL - Android Gradle Plugin 9.0)
+* **Offboard Telemetry Agent:** Python 3 (ADB Shell connection utility)
 
-## ✨ Key Features
+---
 
-### 🛍️ **Product Categories**
-- **Plastic Free** - Packaging and products with zero plastic use
-- **Non Toxic** - Safe beauty, soap, detergents, farm items and daily essentials
-- **Recycled Material** - Shoes, clothes, carry bags, pouches, boxes, furniture and more
-- **Nature Products** - Leafy plates, edible spoons, coconut coir scrub, organic skincare
-- **Reuse Products** - Refillable bottles, reusable shampoo packaging, cleaner capsules
+## 🐍 Offboard Python Telemetry Exporter
 
-### 🌱 **Campaigns & NGOs**
-- Join clean-earth missions and track impact through your purchases
-- Support verified organizations working on waste reduction and nature protection
-- Real-time impact tracking and reporting
+For off-device diagnostics, you can run the offboard Python agent. Connect your phone via USB with USB Debugging enabled, and run:
 
-### 📱 **Modern User Experience**
-- **Responsive Design** - Works seamlessly on all devices
-- **Royal Theme** - Premium royal blue and gold color scheme
-- **Smooth Animations** - Engaging scroll-triggered animations
-- **Advanced Search** - Find products quickly with intelligent search
-- **Social Integration** - Connect with eco-conscious community
-
-## 🛠️ **Technology Stack**
-
-### **Frontend**
-- **React** - Modern component-based architecture
-- **CSS3** - Advanced styling with custom properties
-- **JavaScript ES6+** - Modern JavaScript features
-- **Responsive Grid/Flexbox** - Mobile-first design approach
-
-### **Design System**
-- **Royal Blue & Gold Theme** - Premium color palette
-- **Custom Animations** - Smooth transitions and micro-interactions
-- **Component Library** - Reusable UI components
-- **Accessibility** - WCAG compliant design
-
-## 🚀 **Getting Started**
-
-### **Prerequisites**
-- Node.js (v14 or higher)
-- npm or yarn
-- Modern web browser
-
-### **Installation**
 ```bash
-# Clone the repository
-git clone https://github.com/AyushHarinkhede/cacun.git
-
-# Navigate to project directory
-cd cacun
-
-# Install dependencies
-npm install
-
-# Start development server
-npm start
+python telemetry_exporter.py
 ```
 
-### **Build for Production**
-```bash
-# Build optimized production bundle
-npm run build
+This script interfaces with ADB to pull device info, battery health, current drain, power wattage, storage metrics, screen brightness, system stream volume, and active hardware sensors remotely.
 
-# Preview production build
-npm run preview
+---
+
+## ⚙️ Compilation & Build
+
+To compile the application and generate the debug APK, run:
+
+```powershell
+.\gradlew assembleDebug
 ```
-
-## 📁 **Project Structure**
-=======
-## Project Structure
->>>>>>> e412424 (cacun new redesign)
-
-```
-cacun/
-├── server/                 # Node.js/Express backend
-│   ├── config/            # Configuration files
-│   ├── controllers/        # Route controllers
-│   ├── models/            # MongoDB schemas
-│   ├── routes/            # API routes
-│   ├── middleware/        # Custom middleware
-│   ├── server.js          # Entry point
-│   ├── package.json
-│   └── .env              # Environment variables (not in git)
-│
-├── client/               # React frontend
-│   ├── public/           # Static files
-│   ├── src/
-│   │   ├── components/   # React components
-│   │   ├── pages/        # Page components
-│   │   ├── hooks/        # Custom hooks
-│   │   ├── utils/        # Utility functions
-│   │   ├── styles/       # CSS/styling
-│   │   ├── App.jsx       # Main app component
-│   │   └── main.jsx      # Entry point
-│   ├── package.json
-│   ├── vite.config.js
-│   └── .env             # Environment variables (not in git)
-│
-├── .gitignore
-└── README.md
-```
-
-## Getting Started
-
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB
-- npm or yarn
-
-### Installation
-
-1. **Install Server Dependencies**
-```bash
-cd server
-npm install
-```
-
-2. **Install Client Dependencies**
-```bash
-cd ../client
-npm install
-```
-
-### Configuration
-
-1. Create `.env` file in the `server/` directory:
-```
-MONGO_URI=mongodb://localhost:27017/cacun
-PORT=5000
-NODE_ENV=development
-JWT_SECRET=your_jwt_secret_here
-```
-
-2. Create `.env` file in the `client/` directory:
-```
-VITE_API_URL=http://localhost:5000
-```
-
-### Running the Application
-
-**Development Mode:**
-
-Terminal 1 - Start the server:
-```bash
-cd server
-npm run dev
-```
-
-Terminal 2 - Start the client:
-```bash
-cd client
-npm run dev
-```
-
-**Production Mode:**
-
-Build the client:
-```bash
-cd client
-npm run build
-```
-
-Start the server with environment set to production:
-```bash
-cd server
-NODE_ENV=production npm start
-```
-
-## Technology Stack
-
-### Backend
-- **Node.js** - Runtime environment
-- **Express** - Web framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - ODM for MongoDB
-- **JWT** - Authentication
-
-### Frontend
-- **React** - UI library
-- **Vite** - Build tool
-- **Tailwind CSS** - Utility-first CSS framework
-- **Axios** - HTTP client
-
-## Development
-
-### Available Scripts
-
-**Server:**
-- `npm run dev` - Start server with hot reload
-- `npm start` - Start production server
-
-**Client:**
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-
-## Contributing
-
-1. Create a feature branch: `git checkout -b feature/your-feature`
-2. Commit changes: `git commit -am 'Add new feature'`
-3. Push to branch: `git push origin feature/your-feature`
-4. Submit a pull request
-
-## License
-
-MIT
+The compiled APK will be available under `app/build/outputs/apk/debug/`.

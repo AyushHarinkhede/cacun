@@ -1,1 +1,29 @@
-node_modules
+# Node.js
+node_modules/
+client/node_modules/
+server/node_modules/
+client/dist/
+out/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.gradle/
+/local.properties
+/.idea/caches/
+/.idea/libraries/
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build/
+app/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+android-test/
+
+# APK Output
+cacun-social-dashboard.apk
