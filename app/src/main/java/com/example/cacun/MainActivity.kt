@@ -502,6 +502,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     // --- Jetpack Compose UI Views ---
 
+    class TabItem(val name: String, val icon: @Composable (Color) -> Unit)
+
     @Composable
     fun MainDashboardScreen() {
         val context = LocalContext.current
@@ -965,8 +967,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     .background(MaterialTheme.colorScheme.background)
                     .alpha(entranceAlpha)
                     .offset(y = entranceOffsetY)
-            ) {
-                BoxWithConstraints(
+            ) {                BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -974,306 +975,399 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         .padding(horizontal = 14.dp)
                 ) {
                     val isTablet = maxWidth >= 600.dp
-
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        // CENTERED CACUN LOGO ONLY
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.cacun),
-                                contentDescription = "Cacun Logo Header",
-                                modifier = Modifier
-                                    .height(42.dp)
-                                    .aspectRatio(2.8f)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        // Scrollable Main Section
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(scrollState)
-                        ) {
-                            if (isTablet) {
-                                // Tablet 2-Column Responsive Layout
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                                ) {
-                                    // Column 1
-                                    Column(
-                                        modifier = Modifier.weight(1f),
-                                        verticalArrangement = Arrangement.spacedBy(14.dp)
-                                    ) {
-                                        PerformanceSpeedController()
-                                        LiveOscilloscopePlot(lightLux, refreshRate)
-                                        NetworkSpeedDiagnosticsWidget(
-                                            downloadSpeed = downloadSpeedMbps,
-                                            uploadSpeed = uploadSpeedMbps,
-                                            downloadHistory = speedHistoryDownload,
-                                            uploadHistory = speedHistoryUpload,
-                                            simOperator = simOperator,
-                                            networkType = modemDetails,
-                                            linkSpeed = 433
-                                        )
-                                        BluetoothDiagnosticsWidget(
-                                            isEnabled = isBluetoothEnabled,
-                                            devices = bondedDevices,
-                                            history = bluetoothHistory,
-                                            onToggleBt = {
-                                                if (isBluetoothEnabled) {
-                                                    try {
-                                                        bluetoothAdapter?.disable()
-                                                        isBluetoothEnabled = false
-                                                        addLog("[BT] Bluetooth disabled.")
-                                                    } catch (e: Exception) {
-                                                        launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
-                                                    }
-                                                } else {
-                                                    try {
-                                                        bluetoothAdapter?.enable()
-                                                        isBluetoothEnabled = true
-                                                        addLog("[BT] Bluetooth enabled.")
-                                                    } catch (e: Exception) {
-                                                        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                                                        context.startActivity(enableBtIntent)
-                                                    }
-                                                }
-                                            }
-                                        )
-                                        BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
-                                        InteractiveHardwareControls(
-                                            context = context,
-                                            isHudActive = isHudActive,
-                                            onHudToggle = {
-                                                if (isHudActive) {
-                                                    context.stopService(Intent(context, FloatingHudService::class.java))
-                                                    isHudActive = false
-                                                    addLog("[HUD] Floating HUD Overlay stopped.")
-                                                } else {
-                                                    if (Settings.canDrawOverlays(context)) {
-                                                        context.startService(Intent(context, FloatingHudService::class.java))
-                                                        isHudActive = true
-                                                        addLog("[HUD] Floating HUD Overlay started.")
-                                                    } else {
-                                                        addLog("[HUD] Requesting overlay settings...")
-                                                        Toast.makeText(context, "Please allow Cacun 'Display over other apps'", Toast.LENGTH_LONG).show()
-                                                        val intent = Intent(
-                                                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                                            Uri.parse("package:${context.packageName}")
-                                                        )
-                                                        context.startActivity(intent)
-                                                    }
-                                                }
-                                            }
-                                        )
-                                    }
-
-                                    // Column 2
-                                    Column(
-                                        modifier = Modifier.weight(1f),
-                                        verticalArrangement = Arrangement.spacedBy(14.dp)
-                                    ) {
-                                        SystemDiagnosticConsole()
-                                        AntiVirusScannerSection(
-                                            isScanning = isScanningMalware,
-                                            progress = scanProgress,
-                                            filePath = scanningFilePath,
-                                            count = scannedAppsCount,
-                                            threatApps = threatApps,
-                                            onTriggerScan = { triggerHeuristicScan() }
-                                        )
-                                        ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
-                                            launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
-                                            Handler(Looper.getMainLooper()).postDelayed({
-                                                usagePermissionActive = isUsageAccessGranted()
-                                            }, 2000)
-                                        })
-                                        VolatileStorageSectors(context, usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
-                                        HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, patchLevel, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs, isRooted, modemDetails, simOperator, deviceAge, estimatedLifespanYears, updatesRemaining, onLaunchColorTest = {
-                                            isTestingColors = true
-                                        })
-                                    }
-                                }
+                    var currentTab by remember { mutableStateOf("DASHBOARD") }
+                    val toggleHud = {
+                        if (isHudActive) {
+                            context.stopService(Intent(context, FloatingHudService::class.java))
+                            isHudActive = false
+                            addLog("[HUD] Floating HUD Overlay stopped.")
+                        } else {
+                            if (Settings.canDrawOverlays(context)) {
+                                context.startService(Intent(context, FloatingHudService::class.java))
+                                isHudActive = true
+                                addLog("[HUD] Floating HUD Overlay started.")
                             } else {
-                                // Phone 1-Column Portrait Layout
-                                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                                    PerformanceSpeedController()
-                                    LiveOscilloscopePlot(lightLux, refreshRate)
-                                    NetworkSpeedDiagnosticsWidget(
-                                        downloadSpeed = downloadSpeedMbps,
-                                        uploadSpeed = uploadSpeedMbps,
-                                        downloadHistory = speedHistoryDownload,
-                                        uploadHistory = speedHistoryUpload,
-                                        simOperator = simOperator,
-                                        networkType = modemDetails,
-                                        linkSpeed = 433
-                                    )
-                                    BluetoothDiagnosticsWidget(
-                                        isEnabled = isBluetoothEnabled,
-                                        devices = bondedDevices,
-                                        history = bluetoothHistory,
-                                        onToggleBt = {
-                                            if (isBluetoothEnabled) {
-                                                try {
-                                                    bluetoothAdapter?.disable()
-                                                    isBluetoothEnabled = false
-                                                    addLog("[BT] Bluetooth disabled.")
-                                                } catch (e: Exception) {
-                                                    launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
+                                addLog("[HUD] Requesting overlay settings...")
+                                Toast.makeText(context, "Please allow Cacun 'Display over other apps'", Toast.LENGTH_LONG).show()
+                                val intent = Intent(
+                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:${context.packageName}")
+                                )
+                                context.startActivity(intent)
+                            }
+                        }
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // CENTERED CACUN LOGO ONLY
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.cacun),
+                                    contentDescription = "Cacun Logo Header",
+                                    modifier = Modifier
+                                        .height(38.dp)
+                                        .aspectRatio(2.8f)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Scrollable Tab View area using Crossfade for smooth animations
+                            androidx.compose.animation.Crossfade(
+                                targetState = currentTab,
+                                modifier = Modifier.weight(1f),
+                                animationSpec = androidx.compose.animation.core.tween(durationMillis = 200)
+                            ) { tab ->
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState())
+                                ) {
+                                    when (tab) {
+                                        "DASHBOARD" -> {
+                                            Column(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                            ) {
+                                                if (isTablet) {
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                                    ) {
+                                                        Column(
+                                                            modifier = Modifier.weight(1f),
+                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                        ) {
+                                                            PerformanceSpeedController()
+                                                            InteractiveHardwareControls(context, isHudActive, toggleHud)
+                                                        }
+                                                        Column(
+                                                            modifier = Modifier.weight(1f),
+                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                        ) {
+                                                            HardwareICDirectory(
+                                                                manufacturer, model, androidVersion, sdkVersion, patchLevel,
+                                                                widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei,
+                                                                androidId, cameraSpecs, isRooted, modemDetails, simOperator,
+                                                                deviceAge, estimatedLifespanYears, updatesRemaining,
+                                                                onLaunchColorTest = { isTestingColors = true }
+                                                            )
+                                                        }
+                                                    }
+                                                } else {
+                                                    PerformanceSpeedController()
+                                                    InteractiveHardwareControls(context, isHudActive, toggleHud)
+                                                    HardwareICDirectory(
+                                                        manufacturer, model, androidVersion, sdkVersion, patchLevel,
+                                                        widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei,
+                                                        androidId, cameraSpecs, isRooted, modemDetails, simOperator,
+                                                        deviceAge, estimatedLifespanYears, updatesRemaining,
+                                                        onLaunchColorTest = { isTestingColors = true }
+                                                    )
                                                 }
-                                            } else {
-                                                try {
-                                                    bluetoothAdapter?.enable()
-                                                    isBluetoothEnabled = true
-                                                    addLog("[BT] Bluetooth enabled.")
-                                                } catch (e: Exception) {
-                                                    val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                                                    context.startActivity(enableBtIntent)
+
+                                                MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
+                                                    Column(modifier = Modifier.padding(12.dp)) {
+                                                        Text(
+                                                            text = "[ LEGAL PRIVACY CHARTER ]",
+                                                            color = MaterialTheme.colorScheme.secondary,
+                                                            fontSize = 9.sp,
+                                                            fontFamily = FontFamily.Monospace,
+                                                            fontWeight = FontWeight.Bold
+                                                        )
+                                                        Spacer(modifier = Modifier.height(4.dp))
+                                                        Text(
+                                                            text = "By accessing Cacun HUD hardware logs, you authorize localized sandbox reading of sensors, battery broadcast configurations, and storage directories. No metadata is shared offboard. Your telephony security keys (IMEI) remain local and are protected by Android security exception sandboxes.",
+                                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                                            fontSize = 8.5.sp,
+                                                            fontFamily = FontFamily.Monospace,
+                                                            lineHeight = 11.sp
+                                                        )
+                                                    }
                                                 }
+
+                                                Column(
+                                                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    val date = java.text.SimpleDateFormat("dd MMMM yyyy", Locale.US).format(Date())
+                                                    val day = java.text.SimpleDateFormat("EEEE", Locale.US).format(Date())
+                                                    val time = java.text.SimpleDateFormat("HH:mm z", Locale.US).format(Date())
+                                                    
+                                                    Text(
+                                                        text = "$day | $date | $time",
+                                                        color = MaterialTheme.colorScheme.primary,
+                                                        fontSize = 10.sp,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                    Text(
+                                                        text = "USER PROFILE: ROOT ADMINISTRATOR",
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                                        fontSize = 9.sp,
+                                                        fontFamily = FontFamily.Monospace
+                                                    )
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                    Text(
+                                                        text = "DEVELOPER: AYUSH HARINKHEDE",
+                                                        color = MaterialTheme.colorScheme.onSurface,
+                                                        fontSize = 10.sp,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                    Text(
+                                                        text = "CONTACT: ayushharinkhere2005@gmail.com",
+                                                        color = MaterialTheme.colorScheme.secondary,
+                                                        fontSize = 9.sp,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        modifier = Modifier.clickable {
+                                                            try {
+                                                                val mailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                                                                    data = Uri.parse("mailto:ayushharinkhere2005@gmail.com")
+                                                                }
+                                                                context.startActivity(mailIntent)
+                                                            } catch (e: Exception) {}
+                                                        }
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.height(100.dp))
                                             }
                                         }
-                                    )
-                                    BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
-                                     InteractiveHardwareControls(
-                                         context = context,
-                                         isHudActive = isHudActive,
-                                         onHudToggle = {
-                                             if (isHudActive) {
-                                                 context.stopService(Intent(context, FloatingHudService::class.java))
-                                                 isHudActive = false
-                                                 addLog("[HUD] Floating HUD Overlay stopped.")
-                                             } else {
-                                                 if (Settings.canDrawOverlays(context)) {
-                                                     context.startService(Intent(context, FloatingHudService::class.java))
-                                                     isHudActive = true
-                                                     addLog("[HUD] Floating HUD Overlay started.")
-                                                 } else {
-                                                     addLog("[HUD] Requesting overlay settings...")
-                                                     Toast.makeText(context, "Please allow Cacun 'Display over other apps'", Toast.LENGTH_LONG).show()
-                                                     val intent = Intent(
-                                                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                                         Uri.parse("package:${context.packageName}")
-                                                     )
-                                                     context.startActivity(intent)
-                                                 }
-                                             }
-                                         }
-                                     )
-                                    SystemDiagnosticConsole()
-                                    AntiVirusScannerSection(
-                                        isScanning = isScanningMalware,
-                                        progress = scanProgress,
-                                        filePath = scanningFilePath,
-                                        count = scannedAppsCount,
-                                        threatApps = threatApps,
-                                        onTriggerScan = { triggerHeuristicScan() }
-                                    )
-                                    ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
-                                        launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
-                                        Handler(Looper.getMainLooper()).postDelayed({
-                                            usagePermissionActive = isUsageAccessGranted()
-                                        }, 2500)
-                                    })
-                                    VolatileStorageSectors(context, usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
-                                    HardwareICDirectory(manufacturer, model, androidVersion, sdkVersion, patchLevel, widthPx, heightPx, densityDpi, refreshRate, nfcStatus, imei, androidId, cameraSpecs, isRooted, modemDetails, simOperator, deviceAge, estimatedLifespanYears, updatesRemaining, onLaunchColorTest = {
-                                        isTestingColors = true
-                                    })
-                                }
-                            }
-
-                            // DEVELOPER CREDENTIALS & LICENSES FOOTER
-                            Spacer(modifier = Modifier.height(24.dp))
-                            
-                            MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
-                                Column(modifier = Modifier.padding(12.dp)) {
-                                    Text(
-                                        text = "[ LEGAL PRIVACY CHARTER ]",
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        fontSize = 9.sp,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = "By accessing Cacun HUD hardware logs, you authorize localized sandbox reading of sensors, battery broadcast configurations, and storage directories. No metadata is shared offboard. Your telephony security keys (IMEI) remain local and are protected by Android security exception sandboxes.",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                        fontSize = 8.5.sp,
-                                        fontFamily = FontFamily.Monospace,
-                                        lineHeight = 11.sp
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Image(
-                                painter = painterResource(id = R.drawable.cacun),
-                                contentDescription = "Cacun Watermark",
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .height(26.dp)
-                                    .aspectRatio(2.8f)
-                                    .alpha(0.3f)
-                            )
-                            
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            // Developer Info Block
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                val date = java.text.SimpleDateFormat("dd MMMM yyyy", Locale.US).format(Date())
-                                val day = java.text.SimpleDateFormat("EEEE", Locale.US).format(Date())
-                                val time = java.text.SimpleDateFormat("HH:mm z", Locale.US).format(Date())
-                                
-                                Text(
-                                    text = "$day | $date | $time",
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "USER PROFILE: ROOT ADMINISTRATOR",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                                    fontSize = 9.sp,
-                                    fontFamily = FontFamily.Monospace
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "DEVELOPER: AYUSH HARINKHEDE",
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "CONTACT: ayushharinkhere2005@gmail.com",
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    fontSize = 9.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier.clickable {
-                                        try {
-                                            val mailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                                                data = Uri.parse("mailto:ayushharinkhere2005@gmail.com")
+                                        "NETWORK" -> {
+                                            Column(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                            ) {
+                                                if (isTablet) {
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                                    ) {
+                                                        Column(
+                                                            modifier = Modifier.weight(1f),
+                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                        ) {
+                                                            LiveOscilloscopePlot(lightLux, refreshRate)
+                                                            NetworkSpeedDiagnosticsWidget(
+                                                                downloadSpeed = downloadSpeedMbps,
+                                                                uploadSpeed = uploadSpeedMbps,
+                                                                downloadHistory = speedHistoryDownload,
+                                                                uploadHistory = speedHistoryUpload,
+                                                                simOperator = simOperator,
+                                                                networkType = networkType,
+                                                                linkSpeed = linkSpeed
+                                                            )
+                                                        }
+                                                        Column(
+                                                            modifier = Modifier.weight(1f),
+                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                        ) {
+                                                            BluetoothDiagnosticsWidget(
+                                                                isEnabled = isBluetoothEnabled,
+                                                                devices = bondedDevices,
+                                                                history = bluetoothHistory,
+                                                                onToggleBt = {
+                                                                    if (isBluetoothEnabled) {
+                                                                        try {
+                                                                            @Suppress("DEPRECATION")
+                                                                            bluetoothAdapter?.disable()
+                                                                            isBluetoothEnabled = false
+                                                                            addLog("[BT] Bluetooth disabled.")
+                                                                        } catch (e: Exception) {
+                                                                            launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
+                                                                        }
+                                                                    } else {
+                                                                        try {
+                                                                            @Suppress("DEPRECATION")
+                                                                            bluetoothAdapter?.enable()
+                                                                            isBluetoothEnabled = true
+                                                                            addLog("[BT] Bluetooth enabled.")
+                                                                        } catch (e: Exception) {
+                                                                            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                                                            context.startActivity(enableBtIntent)
+                                                                        }
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
+                                                    }
+                                                } else {
+                                                    LiveOscilloscopePlot(lightLux, refreshRate)
+                                                    NetworkSpeedDiagnosticsWidget(
+                                                        downloadSpeed = downloadSpeedMbps,
+                                                        uploadSpeed = uploadSpeedMbps,
+                                                        downloadHistory = speedHistoryDownload,
+                                                        uploadHistory = speedHistoryUpload,
+                                                        simOperator = simOperator,
+                                                        networkType = networkType,
+                                                        linkSpeed = linkSpeed
+                                                    )
+                                                    BluetoothDiagnosticsWidget(
+                                                        isEnabled = isBluetoothEnabled,
+                                                        devices = bondedDevices,
+                                                        history = bluetoothHistory,
+                                                        onToggleBt = {
+                                                            if (isBluetoothEnabled) {
+                                                                try {
+                                                                    @Suppress("DEPRECATION")
+                                                                    bluetoothAdapter?.disable()
+                                                                    isBluetoothEnabled = false
+                                                                    addLog("[BT] Bluetooth disabled.")
+                                                                } catch (e: Exception) {
+                                                                    launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
+                                                                }
+                                                            } else {
+                                                                try {
+                                                                    @Suppress("DEPRECATION")
+                                                                    bluetoothAdapter?.enable()
+                                                                    isBluetoothEnabled = true
+                                                                    addLog("[BT] Bluetooth enabled.")
+                                                                } catch (e: Exception) {
+                                                                    val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                                                    context.startActivity(enableBtIntent)
+                                                                }
+                                                            }
+                                                        }
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.height(100.dp))
                                             }
-                                            context.startActivity(mailIntent)
-                                        } catch (e: Exception) {}
+                                        }
+                                        "STORAGE" -> {
+                                            Column(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                            ) {
+                                                VolatileStorageSectors(context, usedRamPercent, usedRamGb, totalRamGb, usedStoragePercent, usedStorageGb, totalStorageGb)
+                                                Spacer(modifier = Modifier.height(100.dp))
+                                            }
+                                        }
+                                        "SECURITY" -> {
+                                            Column(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                            ) {
+                                                if (isTablet) {
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                                    ) {
+                                                        Column(
+                                                            modifier = Modifier.weight(1f),
+                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                        ) {
+                                                            AntiVirusScannerSection(
+                                                                isScanning = isScanningMalware,
+                                                                progress = scanProgress,
+                                                                filePath = scanningFilePath,
+                                                                count = scannedAppsCount,
+                                                                threatApps = threatApps,
+                                                                onTriggerScan = { triggerHeuristicScan() }
+                                                            )
+                                                        }
+                                                        Column(
+                                                            modifier = Modifier.weight(1f),
+                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                        ) {
+                                                            ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
+                                                                launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
+                                                                Handler(Looper.getMainLooper()).postDelayed({
+                                                                    usagePermissionActive = isUsageAccessGranted()
+                                                                }, 2000)
+                                                            })
+                                                        }
+                                                    }
+                                                } else {
+                                                    AntiVirusScannerSection(
+                                                        isScanning = isScanningMalware,
+                                                        progress = scanProgress,
+                                                        filePath = scanningFilePath,
+                                                        count = scannedAppsCount,
+                                                        threatApps = threatApps,
+                                                        onTriggerScan = { triggerHeuristicScan() }
+                                                    )
+                                                    ScreenTimeAnalyticsCard(usagePermissionActive, screenTimeTodayStr, appStatsList, onOpenSettings = {
+                                                        launchSystemIntent(Settings.ACTION_USAGE_ACCESS_SETTINGS, "USAGE STATS")
+                                                        Handler(Looper.getMainLooper()).postDelayed({
+                                                            usagePermissionActive = isUsageAccessGranted()
+                                                        }, 2500)
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.height(100.dp))
+                                            }
+                                        }
                                     }
-                                )
+                                }
                             }
-                            
-                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+
+                        // Floating Capsule Bottom Navigation Bar
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
+                                .align(Alignment.BottomCenter)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(28.dp))
+                                    .background(Color(0xF50C0E14))
+                                    .border(1.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), RoundedCornerShape(28.dp))
+                                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val tabs = listOf(
+                                    TabItem("DASHBOARD", { color -> CpuIcon(color, Modifier.size(18.dp)) }),
+                                    TabItem("NETWORK", { color -> WifiIcon(color, Modifier.size(18.dp)) }),
+                                    TabItem("STORAGE", { color -> SpeedIcon(color, Modifier.size(18.dp)) }),
+                                    TabItem("SECURITY", { color -> ShieldIcon(color, Modifier.size(18.dp)) })
+                                )
+
+                                tabs.forEach { tab ->
+                                    val active = currentTab == tab.name
+                                    val color = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    
+                                    val scale = remember { androidx.compose.animation.core.Animatable(1f) }
+                                    val coroutineScope = rememberCoroutineScope()
+
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable(
+                                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                                                indication = null
+                                            ) {
+                                                coroutineScope.launch {
+                                                    triggerVibration(1)
+                                                    scale.animateTo(0.85f, animationSpec = tween(50))
+                                                    scale.animateTo(1.05f, animationSpec = tween(80))
+                                                    scale.animateTo(1f, animationSpec = tween(50))
+                                                }
+                                                currentTab = tab.name
+                                            }
+                                            .graphicsLayer(scaleX = scale.value, scaleY = scale.value),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        tab.icon(color)
+                                        Text(
+                                            text = tab.name,
+                                            fontSize = 8.sp,
+                                            fontFamily = FontFamily.Monospace,
+                                            color = color,
+                                            fontWeight = if (active) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
