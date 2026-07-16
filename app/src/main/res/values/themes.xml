@@ -19,15 +19,5 @@
         <!-- Status Bar & Navigation Bar customization -->
         <item name="android:statusBarColor">@color/bg_dark</item>
         <item name="android:navigationBarColor">@color/bg_dark</item>
-        
-        <!-- BottomNavigationView Theme -->
-        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
-    </style>
-
-    <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="backgroundTint">@color/bg_dark_secondary</item>
-        <item name="itemIconTint">@color/selector_nav_colors</item>
-        <item name="itemTextColor">@color/selector_nav_colors</item>
-        <item name="itemRippleColor">@color/primary_light</item>
     </style>
 </resources>
