@@ -536,6 +536,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         val bondedDevices = remember { mutableStateListOf<String>() }
         val bluetoothHistory = remember { mutableStateListOf<Float>() }
 
+        // Overlay HUD & Refresh Rate states
+        var liveRefreshRate by remember { mutableFloatStateOf(JavaHardwareScanner.getRefreshRate(context)) }
+        var isHudActive by remember { mutableStateOf(isServiceRunning(context, FloatingHudService::class.java)) }
+
         // Core traffic stats & Bluetooth status loop
         LaunchedEffect(Unit) {
             var lastRx = TrafficStats.getTotalRxBytes()
@@ -566,6 +570,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 lastRx = curRx
                 lastTx = curTx
                 lastTime = now
+
+                liveRefreshRate = JavaHardwareScanner.getRefreshRate(context)
+                isHudActive = isServiceRunning(context, FloatingHudService::class.java)
 
                 isBluetoothEnabled = bluetoothAdapter?.isEnabled ?: false
                 if (isBluetoothEnabled) {
@@ -844,7 +851,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             val widthPx = metrics.widthPixels
             val heightPx = metrics.heightPixels
             val densityDpi = metrics.densityDpi
-            val refreshRate = JavaHardwareScanner.getRefreshRate(context)
+            val refreshRate = liveRefreshRate
 
             // Dynamic network details
             val networkType = JavaHardwareScanner.getNetworkType(context)
@@ -1041,7 +1048,31 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                             }
                                         )
                                         BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
-                                        InteractiveHardwareControls(context)
+                                        InteractiveHardwareControls(
+                                            context = context,
+                                            isHudActive = isHudActive,
+                                            onHudToggle = {
+                                                if (isHudActive) {
+                                                    context.stopService(Intent(context, FloatingHudService::class.java))
+                                                    isHudActive = false
+                                                    addLog("[HUD] Floating HUD Overlay stopped.")
+                                                } else {
+                                                    if (Settings.canDrawOverlays(context)) {
+                                                        context.startService(Intent(context, FloatingHudService::class.java))
+                                                        isHudActive = true
+                                                        addLog("[HUD] Floating HUD Overlay started.")
+                                                    } else {
+                                                        addLog("[HUD] Requesting overlay settings...")
+                                                        Toast.makeText(context, "Please allow Cacun 'Display over other apps'", Toast.LENGTH_LONG).show()
+                                                        val intent = Intent(
+                                                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                            Uri.parse("package:${context.packageName}")
+                                                        )
+                                                        context.startActivity(intent)
+                                                    }
+                                                }
+                                            }
+                                        )
                                     }
 
                                     // Column 2
@@ -1110,7 +1141,31 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                         }
                                     )
                                     BatteryInfusionModule(batteryPowerW, brickEstimate, cableEstimate)
-                                    InteractiveHardwareControls(context)
+                                     InteractiveHardwareControls(
+                                         context = context,
+                                         isHudActive = isHudActive,
+                                         onHudToggle = {
+                                             if (isHudActive) {
+                                                 context.stopService(Intent(context, FloatingHudService::class.java))
+                                                 isHudActive = false
+                                                 addLog("[HUD] Floating HUD Overlay stopped.")
+                                             } else {
+                                                 if (Settings.canDrawOverlays(context)) {
+                                                     context.startService(Intent(context, FloatingHudService::class.java))
+                                                     isHudActive = true
+                                                     addLog("[HUD] Floating HUD Overlay started.")
+                                                 } else {
+                                                     addLog("[HUD] Requesting overlay settings...")
+                                                     Toast.makeText(context, "Please allow Cacun 'Display over other apps'", Toast.LENGTH_LONG).show()
+                                                     val intent = Intent(
+                                                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                         Uri.parse("package:${context.packageName}")
+                                                     )
+                                                     context.startActivity(intent)
+                                                 }
+                                             }
+                                         }
+                                     )
                                     SystemDiagnosticConsole()
                                     AntiVirusScannerSection(
                                         isScanning = isScanningMalware,
@@ -1510,7 +1565,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     @Composable
-    fun InteractiveHardwareControls(context: Context) {
+    fun InteractiveHardwareControls(
+        context: Context,
+        isHudActive: Boolean,
+        onHudToggle: () -> Unit
+    ) {
         MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1526,37 +1585,36 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 Spacer(modifier = Modifier.height(14.dp))
 
                 // Control Center Grid Button Toggles in Code-Icon Way
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val controlCenterButtons = listOf(
-                        ControlItem("WIFI", Settings.ACTION_WIFI_SETTINGS, "WIFI", { color: Color -> WifiIcon(color, Modifier.size(16.dp)) }),
-                        ControlItem("BT", Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH", { color: Color -> BluetoothIcon(color, Modifier.size(16.dp)) }),
-                        ControlItem("DATA", Settings.ACTION_DATA_ROAMING_SETTINGS, "ROAMING", { color: Color -> SignalIcon(4, color, Modifier.size(16.dp)) }),
-                        ControlItem("FLIGHT", Settings.ACTION_AIRPLANE_MODE_SETTINGS, "FLIGHT MODE", { color: Color -> SettingsIcon(color, Modifier.size(16.dp)) }),
-                        ControlItem("HOTSPOT", Settings.ACTION_WIRELESS_SETTINGS, "HOTSPOT", { color: Color -> SpeedIcon(color, Modifier.size(16.dp)) })
-                    )
+                val row1 = listOf(
+                    ControlItem("WIFI", { color -> WifiIcon(color, Modifier.size(16.dp)) }, false, { launchSystemIntent(Settings.ACTION_WIFI_SETTINGS, "WIFI") }),
+                    ControlItem("BT", { color -> BluetoothIcon(color, Modifier.size(16.dp)) }, false, { launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH") }),
+                    ControlItem("DATA", { color -> SignalIcon(4, color, Modifier.size(16.dp)) }, false, { launchSystemIntent(Settings.ACTION_DATA_ROAMING_SETTINGS, "ROAMING") })
+                )
+                
+                val row2 = listOf(
+                    ControlItem("HUD OVERLAY", { color -> DisplayIcon(color, Modifier.size(16.dp)) }, isHudActive, onHudToggle),
+                    ControlItem("FLIGHT", { color -> AirplaneIcon(color, Modifier.size(16.dp)) }, false, { launchSystemIntent(Settings.ACTION_AIRPLANE_MODE_SETTINGS, "FLIGHT MODE") }),
+                    ControlItem("HOTSPOT", { color -> HotspotIcon(color, Modifier.size(16.dp)) }, false, { launchSystemIntent(Settings.ACTION_WIRELESS_SETTINGS, "HOTSPOT") })
+                )
 
-                    controlCenterButtons.forEach { btn ->
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.secondaryContainer)
-                                .clickable { launchSystemIntent(btn.action, btn.logName) }
-                                .padding(vertical = 8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            btn.icon(MaterialTheme.colorScheme.onSecondaryContainer)
-                            Text(
-                                text = btn.label,
-                                fontSize = 8.sp,
-                                fontFamily = FontFamily.Monospace,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                fontWeight = FontWeight.Bold
-                            )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        row1.forEach { btn ->
+                            ControlItemView(btn, Modifier.weight(1f))
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        row2.forEach { btn ->
+                            ControlItemView(btn, Modifier.weight(1f))
                         }
                     }
                 }
@@ -1673,6 +1731,31 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun ControlItemView(btn: ControlItem, modifier: Modifier = Modifier) {
+        val containerColor = if (btn.active) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+        val contentColor = if (btn.active) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
+        
+        Column(
+            modifier = modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(containerColor)
+                .clickable { btn.onClick() }
+                .padding(vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            btn.icon(contentColor)
+            Text(
+                text = btn.label,
+                fontSize = 8.sp,
+                fontFamily = FontFamily.Monospace,
+                color = contentColor,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 
@@ -2374,9 +2457,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     // --- Private ControlItem Data Class ---
     private data class ControlItem(
         val label: String,
-        val action: String,
-        val logName: String,
-        val icon: @Composable (Color) -> Unit
+        val icon: @Composable (Color) -> Unit,
+        val active: Boolean = false,
+        val onClick: () -> Unit
     )
 
     // --- New Diagnostics Widgets and Canvas Code Icons ---
@@ -2854,6 +2937,95 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             drawCircle(color, radius = 9.dp.toPx(), center = center, style = Stroke(width = 2.dp.toPx()))
             drawLine(color, start = center, end = Offset(center.x, center.y - 6.dp.toPx()), strokeWidth = 2.dp.toPx())
             drawLine(color, start = center, end = Offset(center.x + 4.dp.toPx(), center.y), strokeWidth = 2.dp.toPx())
+        }
+    }
+
+    private fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        try {
+            for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.name == service.service.className) {
+                    return true
+                }
+            }
+        } catch (e: Exception) {}
+        return false
+    }
+
+    @Composable
+    fun AirplaneIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val path = Path().apply {
+                moveTo(w * 0.5f, h * 0.1f)
+                lineTo(w * 0.5f, h * 0.9f)
+                
+                moveTo(w * 0.5f, h * 0.45f)
+                lineTo(w * 0.1f, h * 0.65f)
+                lineTo(w * 0.1f, h * 0.75f)
+                lineTo(w * 0.5f, h * 0.65f)
+                
+                moveTo(w * 0.5f, h * 0.45f)
+                lineTo(w * 0.9f, h * 0.65f)
+                lineTo(w * 0.9f, h * 0.75f)
+                lineTo(w * 0.5f, h * 0.65f)
+                
+                moveTo(w * 0.5f, h * 0.8f)
+                lineTo(w * 0.3f, h * 0.9f)
+                lineTo(w * 0.5f, h * 0.85f)
+                
+                moveTo(w * 0.5f, h * 0.8f)
+                lineTo(w * 0.7f, h * 0.9f)
+                lineTo(w * 0.5f, h * 0.85f)
+            }
+            drawPath(path, color = color, style = Stroke(width = 1.8f))
+        }
+    }
+
+    @Composable
+    fun HotspotIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val center = Offset(w / 2f, h / 2f)
+            drawCircle(color, radius = 2.dp.toPx(), center = center)
+            drawArc(
+                color = color,
+                startAngle = -45f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(center.x - 6.dp.toPx(), center.y - 6.dp.toPx()),
+                size = androidx.compose.ui.geometry.Size(12.dp.toPx(), 12.dp.toPx()),
+                style = Stroke(width = 1.8.dp.toPx())
+            )
+            drawArc(
+                color = color,
+                startAngle = 135f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(center.x - 6.dp.toPx(), center.y - 6.dp.toPx()),
+                size = androidx.compose.ui.geometry.Size(12.dp.toPx(), 12.dp.toPx()),
+                style = Stroke(width = 1.8.dp.toPx())
+            )
+            drawArc(
+                color = color,
+                startAngle = -45f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(center.x - 12.dp.toPx(), center.y - 12.dp.toPx()),
+                size = androidx.compose.ui.geometry.Size(24.dp.toPx(), 24.dp.toPx()),
+                style = Stroke(width = 1.8.dp.toPx())
+            )
+            drawArc(
+                color = color,
+                startAngle = 135f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(center.x - 12.dp.toPx(), center.y - 12.dp.toPx()),
+                size = androidx.compose.ui.geometry.Size(24.dp.toPx(), 24.dp.toPx()),
+                style = Stroke(width = 1.8.dp.toPx())
+            )
         }
     }
 }
