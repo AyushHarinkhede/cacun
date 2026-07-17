@@ -104,6 +104,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var expectedFullTime by mutableStateOf("UNKNOWN")
     private var lastPlugTime by mutableStateOf("UNKNOWN")
 
+    private var isPowerSaveMode by mutableStateOf(false)
+    private var chargeStartMillis by mutableLongStateOf(0L)
+
     // Hardware Controls States
     private var isFlashlightOn by mutableStateOf(false)
     private var volumeMediaPercent by mutableFloatStateOf(0.5f)
@@ -181,10 +184,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 if (isChargingState && !oldCharging) {
                     chargeStartTime = currentTime
                     lastPlugTime = currentTime
+                    chargeStartMillis = System.currentTimeMillis()
                     calculateExpectedChargeTime()
                 } else if (!isChargingState && oldCharging) {
                     chargeStartTime = "UNKNOWN"
                     expectedFullTime = "UNKNOWN"
+                    chargeStartMillis = 0L
                 }
 
                 addLog("[BAT] Telemetry packet received. Level: $batteryPct% | Temp: $batteryTemp°C")
@@ -516,6 +521,44 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
         // 2. Simulated Malware scan state
         var isScanningMalware by remember { mutableStateOf(false) }
+        var isOptimizingSystem by remember { mutableStateOf(false) }
+
+        // Dynamic storage and memory states
+        val initMemoryInfo = remember { JavaHardwareScanner.getMemoryInfo(context) }
+        val initTotRam = initMemoryInfo.totalMem / (1024f * 1024f * 1024f)
+        val initAvRam = initMemoryInfo.availMem / (1024f * 1024f * 1024f)
+        
+        var liveTotalRamGb by remember { mutableFloatStateOf(initTotRam) }
+        var liveUsedRamGb by remember { mutableFloatStateOf(initTotRam - initAvRam) }
+        var liveUsedRamPercent by remember {
+            mutableIntStateOf(if (initMemoryInfo.totalMem > 0) {
+                ((initMemoryInfo.totalMem - initMemoryInfo.availMem) * 100f / initMemoryInfo.totalMem).toInt()
+            } else 0)
+        }
+
+        val initTotStorage = JavaHardwareScanner.getTotalStorage()
+        val initAvStorage = JavaHardwareScanner.getAvailableStorage()
+        val initTotStorageGb = initTotStorage / (1024f * 1024f * 1024f)
+        val initUsedStorageGb = (initTotStorage - initAvStorage) / (1024f * 1024f * 1024f)
+
+        var liveTotalStorageGb by remember { mutableFloatStateOf(initTotStorageGb) }
+        var liveUsedStorageGb by remember { mutableFloatStateOf(initUsedStorageGb) }
+        var liveUsedStoragePercent by remember {
+            mutableIntStateOf(if (initTotStorage > 0) {
+                ((initTotStorage - initAvStorage) * 100f / initTotStorage).toInt()
+            } else 0)
+        }
+
+        // Battery diagnostics and histories states
+        val batteryCapacityMah = remember { JavaHardwareScanner.getBatteryCapacity(context) }
+        val batteryVoltageHistory = remember { mutableStateListOf<Float>() }
+        val batteryCurrentHistory = remember { mutableStateListOf<Float>() }
+        val batteryPowerHistory = remember { mutableStateListOf<Float>() }
+
+        // Optimizer states
+        var freedRamMb by remember { mutableIntStateOf(0) }
+        var freedJunkKb by remember { mutableLongStateOf(0L) }
+        val scanTerminalLogs = remember { mutableStateListOf<String>() }
         var scanProgress by remember { mutableFloatStateOf(0f) }
         var scanningFilePath by remember { mutableStateOf("") }
         var scannedAppsCount by remember { mutableIntStateOf(0) }
@@ -600,6 +643,41 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 val nextWave = if (isBluetoothEnabled) (30..80).random().toFloat() else 0f
                 bluetoothHistory.add(nextWave)
                 if (bluetoothHistory.size > 40) bluetoothHistory.removeAt(0)
+
+                val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+                isPowerSaveMode = pm?.isPowerSaveMode ?: false
+
+                val voltVal = batteryVoltage
+                val currVal = batteryCurrent
+                val powVal = Math.abs(voltVal * currVal / 1000f)
+
+                batteryVoltageHistory.add(voltVal)
+                batteryCurrentHistory.add(currVal)
+                batteryPowerHistory.add(powVal)
+
+                if (batteryVoltageHistory.size > 40) batteryVoltageHistory.removeAt(0)
+                if (batteryCurrentHistory.size > 40) batteryCurrentHistory.removeAt(0)
+                if (batteryPowerHistory.size > 40) batteryPowerHistory.removeAt(0)
+
+                // Dynamic memory and storage updates
+                val currentMemoryInfo = JavaHardwareScanner.getMemoryInfo(context)
+                val totRam = currentMemoryInfo.totalMem / (1024f * 1024f * 1024f)
+                val avRam = currentMemoryInfo.availMem / (1024f * 1024f * 1024f)
+                liveTotalRamGb = totRam
+                liveUsedRamGb = totRam - avRam
+                liveUsedRamPercent = if (currentMemoryInfo.totalMem > 0) {
+                    ((currentMemoryInfo.totalMem - currentMemoryInfo.availMem) * 100f / currentMemoryInfo.totalMem).toInt()
+                } else 0
+
+                val totStorage = JavaHardwareScanner.getTotalStorage()
+                val avStorage = JavaHardwareScanner.getAvailableStorage()
+                val totStorageGb = totStorage / (1024f * 1024f * 1024f)
+                val usedStorageGb = (totStorage - avStorage) / (1024f * 1024f * 1024f)
+                liveTotalStorageGb = totStorageGb
+                liveUsedStorageGb = usedStorageGb
+                liveUsedStoragePercent = if (totStorage > 0) {
+                    ((totStorage - avStorage) * 100f / totStorage).toInt()
+                } else 0
             }
         }
 
@@ -678,6 +756,36 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     isScanningMalware = false
                     addLog("[ERR] Scanning interrupted: ${e.message}")
                 }
+            }
+        }
+
+        fun triggerSystemOptimize() {
+            coroutineScope.launch {
+                isOptimizingSystem = true
+                scanTerminalLogs.clear()
+                scanTerminalLogs.add("[CLEANER] Initiating GC heap analysis...")
+                delay(400)
+                scanTerminalLogs.add("[CLEANER] Scanning files: cache/ temp/ logs/")
+                delay(300)
+                scanTerminalLogs.add("[CLEANER] Reclaiming unused heap allocations...")
+                
+                var reclaimedBytes = 0L
+                var cleanedFilesCount = 0L
+                
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    reclaimedBytes = JavaHardwareScanner.cleanRam(context)
+                    cleanedFilesCount = JavaHardwareScanner.cleanJunkFiles(context)
+                }
+
+                freedRamMb = (reclaimedBytes / (1024 * 1024)).toInt()
+                freedJunkKb = cleanedFilesCount / 1024L
+                
+                scanTerminalLogs.add("[SUCCESS] Cleaned $cleanedFilesCount junk files.")
+                scanTerminalLogs.add("[SUCCESS] Reclaimed $freedRamMb MB heap memory.")
+                delay(300)
+                isOptimizingSystem = false
+                addLog("[CLEANER] Optimization complete. RAM freed: $freedRamMb MB. Junk freed: ${freedJunkKb} KB.")
+                Toast.makeText(context, "System Optimized successfully!", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -975,7 +1083,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         .padding(horizontal = 14.dp)
                 ) {
                     val isTablet = maxWidth >= 600.dp
-                    var currentTab by remember { mutableStateOf("DASHBOARD") }
+                    var currentTab by remember { mutableStateOf("SPECTRUM") }
                     val toggleHud = {
                         if (isHudActive) {
                             context.stopService(Intent(context, FloatingHudService::class.java))
@@ -1139,106 +1247,133 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                                 Spacer(modifier = Modifier.height(100.dp))
                                             }
                                         }
-                                        "NETWORK" -> {
-                                            Column(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalArrangement = Arrangement.spacedBy(14.dp)
-                                            ) {
-                                                if (isTablet) {
-                                                    Row(
-                                                        modifier = Modifier.fillMaxWidth(),
-                                                        horizontalArrangement = Arrangement.spacedBy(14.dp)
-                                                    ) {
-                                                        Column(
-                                                            modifier = Modifier.weight(1f),
-                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
-                                                        ) {
-                                                            LiveOscilloscopePlot(lightLux, refreshRate)
-                                                            NetworkSpeedDiagnosticsWidget(
-                                                                downloadSpeed = downloadSpeedMbps,
-                                                                uploadSpeed = uploadSpeedMbps,
-                                                                downloadHistory = speedHistoryDownload,
-                                                                uploadHistory = speedHistoryUpload,
-                                                                simOperator = simOperator,
-                                                                networkType = networkType,
-                                                                linkSpeed = linkSpeed
-                                                            )
-                                                        }
-                                                        Column(
-                                                            modifier = Modifier.weight(1f),
-                                                            verticalArrangement = Arrangement.spacedBy(14.dp)
-                                                        ) {
-                                                            BluetoothDiagnosticsWidget(
-                                                                isEnabled = isBluetoothEnabled,
-                                                                devices = bondedDevices,
-                                                                history = bluetoothHistory,
-                                                                onToggleBt = {
-                                                                    if (isBluetoothEnabled) {
-                                                                        try {
-                                                                            @Suppress("DEPRECATION")
-                                                                            bluetoothAdapter?.disable()
-                                                                            isBluetoothEnabled = false
-                                                                            addLog("[BT] Bluetooth disabled.")
-                                                                        } catch (e: Exception) {
-                                                                            launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
-                                                                        }
-                                                                    } else {
-                                                                        try {
-                                                                            @Suppress("DEPRECATION")
-                                                                            bluetoothAdapter?.enable()
-                                                                            isBluetoothEnabled = true
-                                                                            addLog("[BT] Bluetooth enabled.")
-                                                                        } catch (e: Exception) {
-                                                                            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                                                                            context.startActivity(enableBtIntent)
-                                                                        }
-                                                                    }
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                } else {
-                                                    LiveOscilloscopePlot(lightLux, refreshRate)
-                                                    NetworkSpeedDiagnosticsWidget(
-                                                        downloadSpeed = downloadSpeedMbps,
-                                                        uploadSpeed = uploadSpeedMbps,
-                                                        downloadHistory = speedHistoryDownload,
-                                                        uploadHistory = speedHistoryUpload,
-                                                        simOperator = simOperator,
-                                                        networkType = networkType,
-                                                        linkSpeed = linkSpeed
-                                                    )
-                                                    BluetoothDiagnosticsWidget(
-                                                        isEnabled = isBluetoothEnabled,
-                                                        devices = bondedDevices,
-                                                        history = bluetoothHistory,
-                                                        onToggleBt = {
-                                                            if (isBluetoothEnabled) {
-                                                                try {
-                                                                    @Suppress("DEPRECATION")
-                                                                    bluetoothAdapter?.disable()
-                                                                    isBluetoothEnabled = false
-                                                                    addLog("[BT] Bluetooth disabled.")
-                                                                } catch (e: Exception) {
-                                                                    launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
-                                                                }
-                                                            } else {
-                                                                try {
-                                                                    @Suppress("DEPRECATION")
-                                                                    bluetoothAdapter?.enable()
-                                                                    isBluetoothEnabled = true
-                                                                    addLog("[BT] Bluetooth enabled.")
-                                                                } catch (e: Exception) {
-                                                                    val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                                                                    context.startActivity(enableBtIntent)
-                                                                }
-                                                            }
-                                                        }
-                                                    )
-                                                }
-                                                Spacer(modifier = Modifier.height(100.dp))
-                                            }
-                                        }
+                                        "SPECTRUM" -> {
+                                             Column(
+                                                 modifier = Modifier.fillMaxWidth(),
+                                                 verticalArrangement = Arrangement.spacedBy(14.dp)
+                                             ) {
+                                                 BatteryInfusionModule(
+                                                     batteryPowerW = abs(batteryVoltage * batteryCurrent / 1000f),
+                                                     brickRating = if (isChargingState) {
+                                                         val estimatedWatts = Math.round(abs(batteryVoltage * batteryCurrent / 1000f) / 0.85f)
+                                                         val standardWatts = when {
+                                                             estimatedWatts <= 5 -> 5
+                                                             estimatedWatts <= 10 -> 10
+                                                             estimatedWatts <= 15 -> 15
+                                                             estimatedWatts <= 18 -> 18
+                                                             estimatedWatts <= 25 -> 25
+                                                             estimatedWatts <= 33 -> 33
+                                                             estimatedWatts <= 45 -> 45
+                                                             estimatedWatts <= 67 -> 67
+                                                             estimatedWatts <= 80 -> 80
+                                                             else -> 120
+                                                         }
+                                                         "${standardWatts}W SMART CHARGER"
+                                                     } else "DISCONNECTED",
+                                                     cableRating = if (isChargingState) {
+                                                         if (abs(batteryCurrent) > 3000f) "5A / 6A TYPE-C PROTOCOL" else "3A STANDARD PROTOCOL"
+                                                     } else "DISCONNECTED",
+                                                     batteryCapacityMah = batteryCapacityMah,
+                                                     batteryVoltageHistory = batteryVoltageHistory,
+                                                     batteryCurrentHistory = batteryCurrentHistory,
+                                                     batteryPowerHistory = batteryPowerHistory
+                                                 )
+
+                                                 if (isTablet) {
+                                                     Row(
+                                                         modifier = Modifier.fillMaxWidth(),
+                                                         horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                                     ) {
+                                                         Column(
+                                                             modifier = Modifier.weight(1f),
+                                                             verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                         ) {
+                                                             LiveOscilloscopePlot(lightLux, refreshRate)
+                                                             NetworkSpeedDiagnosticsWidget(
+                                                                 downloadSpeed = downloadSpeedMbps,
+                                                                 uploadSpeed = uploadSpeedMbps,
+                                                                 downloadHistory = speedHistoryDownload,
+                                                                 uploadHistory = speedHistoryUpload,
+                                                                 simOperator = simOperator,
+                                                                 networkType = networkType,
+                                                                 linkSpeed = linkSpeed
+                                                             )
+                                                         }
+                                                         Column(
+                                                             modifier = Modifier.weight(1f),
+                                                             verticalArrangement = Arrangement.spacedBy(14.dp)
+                                                         ) {
+                                                             BluetoothDiagnosticsWidget(
+                                                                 isEnabled = isBluetoothEnabled,
+                                                                 devices = bondedDevices,
+                                                                 history = bluetoothHistory,
+                                                                 onToggleBt = {
+                                                                     if (isBluetoothEnabled) {
+                                                                         try {
+                                                                             @Suppress("DEPRECATION")
+                                                                             bluetoothAdapter?.disable()
+                                                                             isBluetoothEnabled = false
+                                                                             addLog("[BT] Bluetooth disabled.")
+                                                                         } catch (e: Exception) {
+                                                                             launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
+                                                                         }
+                                                                     } else {
+                                                                         try {
+                                                                             @Suppress("DEPRECATION")
+                                                                             bluetoothAdapter?.enable()
+                                                                             isBluetoothEnabled = true
+                                                                             addLog("[BT] Bluetooth enabled.")
+                                                                         } catch (e: Exception) {
+                                                                             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                                                             context.startActivity(enableBtIntent)
+                                                                         }
+                                                                     }
+                                                                 }
+                                                             )
+                                                         }
+                                                     }
+                                                 } else {
+                                                     LiveOscilloscopePlot(lightLux, refreshRate)
+                                                     NetworkSpeedDiagnosticsWidget(
+                                                         downloadSpeed = downloadSpeedMbps,
+                                                         uploadSpeed = uploadSpeedMbps,
+                                                         downloadHistory = speedHistoryDownload,
+                                                         uploadHistory = speedHistoryUpload,
+                                                         simOperator = simOperator,
+                                                         networkType = networkType,
+                                                         linkSpeed = linkSpeed
+                                                     )
+                                                     BluetoothDiagnosticsWidget(
+                                                         isEnabled = isBluetoothEnabled,
+                                                         devices = bondedDevices,
+                                                         history = bluetoothHistory,
+                                                         onToggleBt = {
+                                                             if (isBluetoothEnabled) {
+                                                                 try {
+                                                                     @Suppress("DEPRECATION")
+                                                                     bluetoothAdapter?.disable()
+                                                                     isBluetoothEnabled = false
+                                                                     addLog("[BT] Bluetooth disabled.")
+                                                                 } catch (e: Exception) {
+                                                                     launchSystemIntent(Settings.ACTION_BLUETOOTH_SETTINGS, "BLUETOOTH")
+                                                                 }
+                                                             } else {
+                                                                 try {
+                                                                     @Suppress("DEPRECATION")
+                                                                     bluetoothAdapter?.enable()
+                                                                     isBluetoothEnabled = true
+                                                                     addLog("[BT] Bluetooth enabled.")
+                                                                 } catch (e: Exception) {
+                                                                     val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                                                     context.startActivity(enableBtIntent)
+                                                                 }
+                                                             }
+                                                         }
+                                                     )
+                                                 }
+                                                 Spacer(modifier = Modifier.height(100.dp))
+                                             }
+                                         }
                                         "STORAGE" -> {
                                             Column(
                                                 modifier = Modifier.fillMaxWidth(),
@@ -1323,50 +1458,74 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                                     .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val tabs = listOf(
-                                    TabItem("DASHBOARD", { color -> CpuIcon(color, Modifier.size(18.dp)) }),
-                                    TabItem("NETWORK", { color -> WifiIcon(color, Modifier.size(18.dp)) }),
-                                    TabItem("STORAGE", { color -> SpeedIcon(color, Modifier.size(18.dp)) }),
-                                    TabItem("SECURITY", { color -> ShieldIcon(color, Modifier.size(18.dp)) })
-                                )
+                            ) {                                 val tabs = listOf(
+                                     TabItem("SPECTRUM", { color -> WavesIcon(color, Modifier.size(18.dp)) }),
+                                     TabItem("DASHBOARD", { color -> CpuIcon(color, Modifier.size(18.dp)) }),
+                                     TabItem("STORAGE", { color -> SpeedIcon(color, Modifier.size(18.dp)) }),
+                                     TabItem("SECURITY", { color -> ShieldIcon(color, Modifier.size(18.dp)) })
+                                 )
 
-                                tabs.forEach { tab ->
-                                    val active = currentTab == tab.name
-                                    val color = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                    
-                                    val scale = remember { androidx.compose.animation.core.Animatable(1f) }
-                                    val coroutineScope = rememberCoroutineScope()
+                                 tabs.forEach { tab ->
+                                     val active = currentTab == tab.name
+                                     val color = if (active) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                     
+                                     val scale = remember { androidx.compose.animation.core.Animatable(1f) }
+                                     val coroutineScope = rememberCoroutineScope()
+                                     
+                                     val capsuleWidth by androidx.compose.animation.core.animateDpAsState(
+                                         targetValue = if (active) 48.dp else 0.dp,
+                                         animationSpec = androidx.compose.animation.core.spring(stiffness = androidx.compose.animation.core.Spring.StiffnessMedium)
+                                     )
+                                     val capsuleAlpha by androidx.compose.animation.core.animateFloatAsState(
+                                         targetValue = if (active) 1f else 0f,
+                                         animationSpec = androidx.compose.animation.core.tween(150)
+                                     )
 
-                                    Column(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .clickable(
-                                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
-                                                indication = null
-                                            ) {
-                                                coroutineScope.launch {
-                                                    triggerVibration(1)
-                                                    scale.animateTo(0.85f, animationSpec = tween(50))
-                                                    scale.animateTo(1.05f, animationSpec = tween(80))
-                                                    scale.animateTo(1f, animationSpec = tween(50))
-                                                }
-                                                currentTab = tab.name
-                                            }
-                                            .graphicsLayer(scaleX = scale.value, scaleY = scale.value),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                                    ) {
-                                        tab.icon(color)
-                                        Text(
-                                            text = tab.name,
-                                            fontSize = 8.sp,
-                                            fontFamily = FontFamily.Monospace,
-                                            color = color,
-                                            fontWeight = if (active) FontWeight.Bold else FontWeight.Normal
-                                        )
-                                    }
-                                }
+                                     Column(
+                                         modifier = Modifier
+                                             .weight(1f)
+                                             .clickable(
+                                                 interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                                                 indication = null
+                                             ) {
+                                                 coroutineScope.launch {
+                                                     triggerVibration(1)
+                                                     scale.animateTo(0.85f, animationSpec = tween(50))
+                                                     scale.animateTo(1.05f, animationSpec = tween(80))
+                                                     scale.animateTo(1f, animationSpec = tween(50))
+                                                 }
+                                                 currentTab = tab.name
+                                             }
+                                             .graphicsLayer(scaleX = scale.value, scaleY = scale.value),
+                                         horizontalAlignment = Alignment.CenterHorizontally,
+                                         verticalArrangement = Arrangement.spacedBy(2.dp)
+                                     ) {
+                                         Box(
+                                             modifier = Modifier
+                                                 .height(30.dp)
+                                                 .width(64.dp),
+                                             contentAlignment = Alignment.Center
+                                         ) {
+                                             if (capsuleAlpha > 0f) {
+                                                 Box(
+                                                     modifier = Modifier
+                                                         .height(26.dp)
+                                                         .width(capsuleWidth)
+                                                         .clip(RoundedCornerShape(13.dp))
+                                                         .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = capsuleAlpha))
+                                                 )
+                                             }
+                                             tab.icon(color)
+                                         }
+                                         Text(
+                                             text = tab.name,
+                                             fontSize = 8.sp,
+                                             fontFamily = FontFamily.Monospace,
+                                             color = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                             fontWeight = if (active) FontWeight.Bold else FontWeight.Normal
+                                         )
+                                     }
+                                 } 
                             }
                         }
                     }
@@ -1553,7 +1712,21 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     @Composable
-    fun BatteryInfusionModule(batteryPowerW: Float, brickRating: String, cableRating: String) {
+    fun BatteryInfusionModule(
+        batteryPowerW: Float,
+        brickRating: String,
+        cableRating: String,
+        batteryCapacityMah: Int,
+        batteryVoltageHistory: List<Float>,
+        batteryCurrentHistory: List<Float>,
+        batteryPowerHistory: List<Float>
+    ) {
+        var activeHistoryTab by remember { mutableStateOf("VOLTAGE") }
+        
+        val elapsedStr = if (isChargingState && chargeStartMillis > 0L) {
+            "${(System.currentTimeMillis() - chargeStartMillis) / 60000L} min"
+        } else "DISCONNECTED"
+
         MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1605,11 +1778,18 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
-                        CodeDataRow("BATTERY DESIGN CAP", "5000 mAh")
+                        CodeDataRow("BATTERY DESIGN CAP", "$batteryCapacityMah mAh")
                         CodeDataRow("HEALTH CORE STATUS", batteryHealthStr, if(batteryHealthStr == "GOOD") Color(0xFF00FFCC) else Color(0xFFFFB300))
                         CodeDataRow("INLET WATTAGE", "${String.format(Locale.US, "%.2f", batteryPowerW)} W")
                         CodeDataRow("ESTIMATED BRICK", brickRating, Color(0xFF00E5FF))
                         CodeDataRow("CABLE RATING FLOW", cableRating)
+                        
+                        val isSafe = batteryTemp <= 45f && batteryVoltage <= 4.5f
+                        CodeDataRow(
+                            "SAFETY INDEX RATIO", 
+                            if (isSafe) "✅ SECURE SAFE" else "⚠️ THERMAL EXCEEDED", 
+                            if (isSafe) Color(0xFF00FFCC) else Color(0xFFFF3B30)
+                        )
                     }
                 }
 
@@ -1627,8 +1807,115 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 CodeDataRow("PLUG IN TIME", chargeStartTime)
+                CodeDataRow("ELAPSED TIME", elapsedStr)
                 CodeDataRow("EXPECTED FULL BY", expectedFullTime, if (isChargingState) Color(0xFF00FFCC) else Color.White)
                 CodeDataRow("LAST DISCONNECT TIME", lastPlugTime)
+
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Tab Switcher for History Plot
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("VOLTAGE", "CURRENT", "POWER").forEach { tab ->
+                        val isSelected = activeHistoryTab == tab
+                        val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                        val containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(26.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(containerColor)
+                                .clickable { activeHistoryTab = tab }
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = tab,
+                                color = contentColor,
+                                fontSize = 8.5.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Canvas history plotter
+                val currentHistory = when (activeHistoryTab) {
+                    "VOLTAGE" -> batteryVoltageHistory
+                    "CURRENT" -> batteryCurrentHistory
+                    else -> batteryPowerHistory
+                }
+
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(95.dp)
+                        .background(Color(0xFF040609), RoundedCornerShape(4.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                ) {
+                    val w = size.width
+                    val h = size.height
+                    val points = currentHistory.toList()
+                    if (points.isNotEmpty()) {
+                        val maxVal = points.maxOrNull() ?: 1f
+                        val minVal = points.minOrNull() ?: 0f
+                        val range = if (maxVal - minVal > 0f) maxVal - minVal else 1f
+
+                        val path = Path()
+                        points.forEachIndexed { idx, value ->
+                            val x = (idx.toFloat() / 40f) * w
+                            val y = h * 0.9f - ((value - minVal) / range) * (h * 0.8f)
+                            if (idx == 0) {
+                                path.moveTo(x, y)
+                            } else {
+                                path.lineTo(x, y)
+                            }
+                        }
+                        val strokeColor = when (activeHistoryTab) {
+                            "VOLTAGE" -> Color(0xFFFFB300)
+                            "CURRENT" -> Color(0xFFBD00FF)
+                            else -> Color(0xFF00FFCC)
+                        }
+                        drawPath(
+                            path = path,
+                            color = strokeColor,
+                            style = Stroke(width = 1.8.dp.toPx())
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "VOLTS: ${String.format(Locale.US, "%.3f", batteryVoltage)} V",
+                        color = Color(0xFFFFB300),
+                        fontSize = 8.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                    Text(
+                        text = "AMPS: ${String.format(Locale.US, "%.1f", batteryCurrent)} mA",
+                        color = Color(0xFFBD00FF),
+                        fontSize = 8.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                    Text(
+                        text = "WATTS: ${String.format(Locale.US, "%.2f", batteryPowerW)} W",
+                        color = Color(0xFF00FFCC),
+                        fontSize = 8.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(10.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
@@ -1644,9 +1931,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "• Wattage Equation: P = V × I\n" +
-                           "  - Live Volts (V): ${String.format(Locale.US, "%.3f", batteryVoltage)} V\n" +
-                           "  - Live Current (I): ${String.format(Locale.US, "%.1f", batteryCurrent)} mA\n" +
-                           "  - Result Power (P): ${String.format(Locale.US, "%.2f", batteryPowerW)} W\n" +
                            "• Brick Rating: Estimated Power / Efficiency (0.85)\n" +
                            "• Charger Cable Flow Rating: (Current > 3000mA) ? 5A/6A : 3A",
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
@@ -2188,13 +2472,75 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     @Composable
+    fun MultiSegmentProgressBar(
+        imageSize: Long, videoSize: Long, audioSize: Long,
+        downloadSize: Long, documentSize: Long, apkSize: Long,
+        otherSize: Long, freeSize: Long, totalSize: Long,
+        modifier: Modifier = Modifier
+    ) {
+        Column(modifier = modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "INTERNAL EMMC BLOCK",
+                    fontSize = 9.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
+                val usedGb = (totalSize - freeSize).toFloat() / (1024 * 1024 * 1024)
+                val totalGb = totalSize.toFloat() / (1024 * 1024 * 1024)
+                Text(
+                    text = "${String.format(Locale.US, "%.1f", usedGb)} GB / ${String.format(Locale.US, "%.1f", totalGb)} GB",
+                    fontSize = 9.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.height(6.dp))
+            Canvas(modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp))) {
+                val w = size.width
+                val h = size.height
+                
+                if (totalSize > 0) {
+                    val sizes = listOf(imageSize, videoSize, audioSize, downloadSize, documentSize, apkSize, otherSize, freeSize)
+                    val colors = listOf(
+                        Color(0xFFFF5722), // Photos
+                        Color(0xFF2196F3), // Videos
+                        Color(0xFFE91E63), // Audio
+                        Color(0xFF00E5FF), // Downloads
+                        Color(0xFFBD00FF), // Documents
+                        Color(0xFFFFB300), // APKs
+                        Color(0xFF4A4D55), // Apps & System
+                        Color(0xFF00FFCC).copy(alpha = 0.15f) // Free Space
+                    )
+
+                    var currentX = 0f
+                    for (i in sizes.indices) {
+                        val sizeBytes = sizes[i]
+                        val color = colors[i]
+                        if (sizeBytes <= 0) continue
+                        val segmentW = (sizeBytes.toFloat() / totalSize.toFloat()) * w
+                        drawRect(
+                            color = color,
+                            topLeft = Offset(currentX, 0f),
+                            size = androidx.compose.ui.geometry.Size(segmentW, h)
+                        )
+                        currentX += segmentW
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
     fun VolatileStorageSectors(
         context: Context,
         usedRamPercent: Int, usedRamGb: Float, totalRamGb: Float,
         usedStoragePercent: Int, usedStorageGb: Float, totalStorageGb: Float
     ) {
-        var isExpanded by remember { mutableStateOf(false) }
-        
         var imageSize by remember { mutableLongStateOf(0L) }
         var videoSize by remember { mutableLongStateOf(0L) }
         var audioSize by remember { mutableLongStateOf(0L) }
@@ -2207,53 +2553,54 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         var readSpeed by remember { mutableFloatStateOf(0f) }
         var isBenchmarking by remember { mutableStateOf(false) }
 
-        LaunchedEffect(isExpanded) {
-            if (isExpanded) {
-                isScanningDetails = true
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                    imageSize = JavaHardwareScanner.getImagesSize(context)
-                    videoSize = JavaHardwareScanner.getVideosSize(context)
-                    audioSize = JavaHardwareScanner.getAudioSize(context)
-                    downloadSize = JavaHardwareScanner.getDownloadsSize(context)
-                    documentSize = JavaHardwareScanner.getDocumentsSize(context)
-                    apkSize = JavaHardwareScanner.getApksSize(context)
-                }
-                isScanningDetails = false
+        val totalCapacityBytes = (totalStorageGb * 1024f * 1024f * 1024f).toLong()
+        val totalUsedBytes = (usedStorageGb * 1024f * 1024f * 1024f).toLong()
+        val freeBytes = Math.max(0L, totalCapacityBytes - totalUsedBytes)
+        
+        val cataloguedBytes = imageSize + videoSize + audioSize + downloadSize + documentSize + apkSize
+        val otherBytes = Math.max(0L, totalUsedBytes - cataloguedBytes)
+
+        LaunchedEffect(Unit) {
+            isScanningDetails = true
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                val results = listOf(
+                    JavaHardwareScanner.getImagesSize(context),
+                    JavaHardwareScanner.getVideosSize(context),
+                    JavaHardwareScanner.getAudioSize(context),
+                    JavaHardwareScanner.getDownloadsSize(context),
+                    JavaHardwareScanner.getDocumentsSize(context),
+                    JavaHardwareScanner.getApksSize(context)
+                )
+                imageSize = results[0]
+                videoSize = results[1]
+                audioSize = results[2]
+                downloadSize = results[3]
+                documentSize = results[4]
+                apkSize = results[5]
             }
+            isScanningDetails = false
         }
 
         LaunchedEffect(isBenchmarking) {
             if (isBenchmarking) {
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                    val speeds = JavaHardwareScanner.runStorageSpeedTest(context)
-                    writeSpeed = speeds[0]
-                    readSpeed = speeds[1]
+                val speeds = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    JavaHardwareScanner.runStorageSpeedTest(context)
                 }
+                writeSpeed = speeds[0]
+                readSpeed = speeds[1]
                 isBenchmarking = false
             }
         }
 
         MaterialYouCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(12.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "> STORAGE BLOCK STRUCTURE ALLOC",
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    IconButton(
-                        onClick = { isExpanded = !isExpanded },
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        ChevronIcon(isExpanded, color = MaterialTheme.colorScheme.primary)
-                    }
-                }
+                Text(
+                    text = "> STORAGE BLOCK STRUCTURE ALLOC",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Spacer(modifier = Modifier.height(12.dp))
 
                 ProgressDataRow(
@@ -2263,118 +2610,114 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     barColor = MaterialTheme.colorScheme.primary
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-                ProgressDataRow(
-                    label = "INTERNAL EMMC BLOCK",
-                    percent = usedStoragePercent,
-                    detailsStr = "${String.format(Locale.US, "%.1f", usedStorageGb)} GB / ${String.format(Locale.US, "%.1f", totalStorageGb)} GB",
-                    barColor = MaterialTheme.colorScheme.secondary
+                MultiSegmentProgressBar(
+                    imageSize = imageSize,
+                    videoSize = videoSize,
+                    audioSize = audioSize,
+                    downloadSize = downloadSize,
+                    documentSize = documentSize,
+                    apkSize = apkSize,
+                    otherSize = otherBytes,
+                    freeSize = freeBytes,
+                    totalSize = totalCapacityBytes
                 )
 
-                if (isExpanded) {
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                if (isScanningDetails) {
+                    Text(
+                        text = "INDEXING DIRECTORIES, PLEASE WAIT...",
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily.Monospace,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CylinderStorageGraph(
+                            imageSize = imageSize,
+                            videoSize = videoSize,
+                            audioSize = audioSize,
+                            downloadSize = downloadSize,
+                            documentSize = documentSize,
+                            apkSize = apkSize,
+                            otherSize = otherBytes,
+                            freeSize = freeBytes,
+                            totalSize = totalCapacityBytes
+                        )
+
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            StorageCategoryRow("PHOTOS", imageSize, Color(0xFFFF5722), totalCapacityBytes)
+                            StorageCategoryRow("VIDEOS", videoSize, Color(0xFF2196F3), totalCapacityBytes)
+                            StorageCategoryRow("AUDIO", audioSize, Color(0xFFE91E63), totalCapacityBytes)
+                            StorageCategoryRow("DOWNLOADS", downloadSize, Color(0xFF00E5FF), totalCapacityBytes)
+                            StorageCategoryRow("DOCUMENTS", documentSize, Color(0xFFBD00FF), totalCapacityBytes)
+                            StorageCategoryRow("APK FILES", apkSize, Color(0xFFFFB300), totalCapacityBytes)
+                            StorageCategoryRow("APPS & SYSTEM", otherBytes, Color(0xFF4A4D55), totalCapacityBytes)
+                            StorageCategoryRow("FREE SPACE", freeBytes, Color(0xFF00FFCC), totalCapacityBytes)
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(14.dp))
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    if (isScanningDetails) {
-                        Text(
-                            text = "INDEXING DIRECTORIES, PLEASE WAIT...",
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 10.sp,
-                            fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    } else {
-                        val totalCapacityBytes = (totalStorageGb * 1024f * 1024f * 1024f).toLong()
-                        val totalUsedBytes = (usedStorageGb * 1024f * 1024f * 1024f).toLong()
-                        val freeBytes = Math.max(0L, totalCapacityBytes - totalUsedBytes)
-                        
-                        val cataloguedBytes = imageSize + videoSize + audioSize + downloadSize + documentSize + apkSize
-                        val otherBytes = Math.max(0L, totalUsedBytes - cataloguedBytes)
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CylinderStorageGraph(
-                                imageSize = imageSize,
-                                videoSize = videoSize,
-                                audioSize = audioSize,
-                                downloadSize = downloadSize,
-                                documentSize = documentSize,
-                                apkSize = apkSize,
-                                otherSize = otherBytes,
-                                freeSize = freeBytes,
-                                totalSize = totalCapacityBytes
+                    // Storage Speed Benchmarking Widget
+                    Text(
+                        text = "[ STORAGE DRIVE PERFORMANCE BENCHMARK ]",
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontSize = 9.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = if (writeSpeed > 0) "WRITE RATE: ${String.format(Locale.US, "%.2f", writeSpeed)} MB/s" else "WRITE RATE: -- MB/s",
+                                color = if (writeSpeed > 0) Color(0xFF00FFCC) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace
                             )
-
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                StorageCategoryRow("PHOTOS", imageSize, Color(0xFFFF5722), totalCapacityBytes)
-                                StorageCategoryRow("VIDEOS", videoSize, Color(0xFF2196F3), totalCapacityBytes)
-                                StorageCategoryRow("AUDIO", audioSize, Color(0xFFE91E63), totalCapacityBytes)
-                                StorageCategoryRow("DOWNLOADS", downloadSize, Color(0xFF00E5FF), totalCapacityBytes)
-                                StorageCategoryRow("DOCUMENTS", documentSize, Color(0xFFBD00FF), totalCapacityBytes)
-                                StorageCategoryRow("APK FILES", apkSize, Color(0xFFFFB300), totalCapacityBytes)
-                                StorageCategoryRow("APPS & SYSTEM", otherBytes, Color(0xFF4A4D55), totalCapacityBytes)
-                                StorageCategoryRow("FREE SPACE", freeBytes, Color(0xFF00FFCC), totalCapacityBytes)
-                            }
+                            Text(
+                                text = if (readSpeed > 0) "READ RATE:  ${String.format(Locale.US, "%.2f", readSpeed)} MB/s" else "READ RATE:  -- MB/s",
+                                color = if (readSpeed > 0) Color(0xFFBD00FF) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
                         }
 
-                        Spacer(modifier = Modifier.height(14.dp))
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Storage Speed Benchmarking Widget
-                        Text(
-                            text = "[ STORAGE DRIVE PERFORMANCE BENCHMARK ]",
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 9.sp,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                        Button(
+                            onClick = { isBenchmarking = true },
+                            enabled = !isBenchmarking,
+                            modifier = Modifier.height(30.dp),
+                            shape = RoundedCornerShape(4.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                         ) {
-                            Column {
-                                Text(
-                                    text = if (writeSpeed > 0) "WRITE RATE: ${String.format(Locale.US, "%.2f", writeSpeed)} MB/s" else "WRITE RATE: -- MB/s",
-                                    color = if (writeSpeed > 0) Color(0xFF00FFCC) else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace
-                                )
-                                Text(
-                                    text = if (readSpeed > 0) "READ RATE:  ${String.format(Locale.US, "%.2f", readSpeed)} MB/s" else "READ RATE:  -- MB/s",
-                                    color = if (readSpeed > 0) Color(0xFFBD00FF) else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Button(
-                                onClick = { isBenchmarking = true },
-                                enabled = !isBenchmarking,
-                                modifier = Modifier.height(30.dp),
-                                shape = RoundedCornerShape(4.dp),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                            ) {
-                                Text(
-                                    text = if (isBenchmarking) "BENCHMARKING..." else "RUN BENCHMARK",
-                                    fontSize = 8.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                            }
+                            Text(
+                                text = if (isBenchmarking) "BENCHMARKING..." else "RUN BENCHMARK",
+                                fontSize = 8.sp,
+                                fontFamily = FontFamily.Monospace,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
                         }
                     }
                 }
@@ -2408,15 +2751,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         otherSize: Long, freeSize: Long, totalSize: Long,
         modifier: Modifier = Modifier
     ) {
-        Canvas(modifier = modifier.width(50.dp).height(160.dp)) {
+        Canvas(modifier = modifier.width(55.dp).height(160.dp)) {
             val w = size.width
             val h = size.height
             val rx = w / 2f
             val ry = 6.dp.toPx()
-
             val totalH = h - 2 * ry
+
             if (totalSize > 0) {
-                val sizes = listOf(freeSize, otherSize, apkSize, documentSize, downloadSize, audioSize, videoSize, imageSize)
+                val rawSizes = listOf(freeSize, otherSize, apkSize, documentSize, downloadSize, audioSize, videoSize, imageSize)
                 val colors = listOf(
                     Color(0xFF00FFCC), // Free
                     Color(0xFF4A4D55), // Apps & System
@@ -2428,14 +2771,43 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     Color(0xFFFF5722)  // Images
                 )
 
+                // Floor height algorithm:
+                // Category with non-zero size gets at least 6.dp floor.
+                // Rest of height is distributed proportionally to remaining sizes.
+                val floorHeightPx = 6.dp.toPx()
+                var activeCategoriesCount = 0
+                var totalFloorHeightPx = 0f
+                var activeBytesSum = 0L
+
+                for (sizeBytes in rawSizes) {
+                    if (sizeBytes > 0) {
+                        activeCategoriesCount++
+                        totalFloorHeightPx += floorHeightPx
+                        activeBytesSum += sizeBytes
+                    }
+                }
+
+                val remainingH = totalH - totalFloorHeightPx
+                val heights = FloatArray(rawSizes.size)
+
+                if (activeBytesSum > 0) {
+                    for (i in rawSizes.indices) {
+                        val bytes = rawSizes[i]
+                        if (bytes > 0) {
+                            val proportionalFraction = bytes.toFloat() / activeBytesSum.toFloat()
+                            heights[i] = floorHeightPx + (proportionalFraction * remainingH)
+                        } else {
+                            heights[i] = 0f
+                        }
+                    }
+                }
+
                 var currentY = h - ry
 
-                for (idx in sizes.indices) {
-                    val sizeBytes = sizes[idx]
+                for (idx in rawSizes.indices) {
+                    val segmentH = heights[idx]
+                    if (segmentH <= 0f) continue
                     val color = colors[idx]
-                    if (sizeBytes <= 0) continue
-
-                    val segmentH = (sizeBytes.toFloat() / totalSize.toFloat()) * totalH
                     val nextY = currentY - segmentH
 
                     val path = Path().apply {
@@ -2447,8 +2819,28 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     }
                     drawPath(path, color)
 
+                    // Draw 3D metallic gradient overlay
+                    val metallicBrush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.45f),
+                            Color.Transparent,
+                            Color.White.copy(alpha = 0.35f),
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.55f)
+                        ),
+                        startX = 0f,
+                        endX = w
+                    )
+                    drawPath(path, metallicBrush)
+
+                    // Draw ovals
                     drawOval(
                         color = color,
+                        topLeft = Offset(0f, currentY - ry),
+                        size = androidx.compose.ui.geometry.Size(w, 2 * ry)
+                    )
+                    drawOval(
+                        brush = metallicBrush,
                         topLeft = Offset(0f, currentY - ry),
                         size = androidx.compose.ui.geometry.Size(w, 2 * ry)
                     )
@@ -2458,9 +2850,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         topLeft = Offset(0f, nextY - ry),
                         size = androidx.compose.ui.geometry.Size(w, 2 * ry)
                     )
+                    drawOval(
+                        brush = metallicBrush,
+                        topLeft = Offset(0f, nextY - ry),
+                        size = androidx.compose.ui.geometry.Size(w, 2 * ry)
+                    )
 
                     drawOval(
-                        color = Color.Black.copy(alpha = 0.15f),
+                        color = Color.Black.copy(alpha = 0.2f),
                         topLeft = Offset(0f, nextY - ry),
                         size = androidx.compose.ui.geometry.Size(w, 2 * ry),
                         style = Stroke(width = 1.2.dp.toPx())
@@ -3294,6 +3691,25 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 drawLine(color, start = Offset(0f, offset), end = Offset(w*0.25f, offset), strokeWidth = 1.5.dp.toPx())
                 drawLine(color, start = Offset(w*0.75f, offset), end = Offset(w, offset), strokeWidth = 1.5.dp.toPx())
             }
+        }
+    }
+
+    @Composable
+    fun WavesIcon(color: Color, modifier: Modifier = Modifier) {
+        Canvas(modifier = modifier.size(24.dp)) {
+            val w = size.width
+            val h = size.height
+            val path = Path()
+            path.moveTo(w * 0.1f, h * 0.5f)
+            path.quadraticTo(w * 0.3f, h * 0.2f, w * 0.5f, h * 0.5f)
+            path.quadraticTo(w * 0.7f, h * 0.8f, w * 0.9f, h * 0.5f)
+            drawPath(path, color = color, style = Stroke(width = 2.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round))
+
+            val path2 = Path()
+            path2.moveTo(w * 0.1f, h * 0.7f)
+            path2.quadraticTo(w * 0.3f, h * 0.4f, w * 0.5f, h * 0.7f)
+            path2.quadraticTo(w * 0.7f, h * 1.0f, w * 0.9f, h * 0.7f)
+            drawPath(path2, color = color.copy(alpha = 0.5f), style = Stroke(width = 1.5.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round))
         }
     }
 

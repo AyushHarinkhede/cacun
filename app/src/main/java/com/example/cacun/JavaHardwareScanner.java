@@ -594,4 +594,87 @@ public class JavaHardwareScanner {
         }
         return speeds;
     }
+
+    public static int getBatteryCapacity(Context context) {
+        try {
+            Object powerProfile = Class.forName("com.android.internal.os.PowerProfile")
+                    .getConstructor(Context.class)
+                    .newInstance(context);
+            double batteryCapacity = (double) Class.forName("com.android.internal.os.PowerProfile")
+                    .getMethod("getAveragePower", String.class)
+                    .invoke(powerProfile, "battery.capacity");
+            return (int) batteryCapacity;
+        } catch (Exception e) {
+            return 5000;
+        }
+    }
+
+    public static long cleanRam(Context context) {
+        try {
+            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            ActivityManager.MemoryInfo before = new ActivityManager.MemoryInfo();
+            if (am != null) {
+                am.getMemoryInfo(before);
+            }
+
+            System.runFinalization();
+            Runtime.getRuntime().gc();
+            System.gc();
+
+            try { Thread.sleep(100); } catch (Exception ignored) {}
+
+            ActivityManager.MemoryInfo after = new ActivityManager.MemoryInfo();
+            if (am != null) {
+                am.getMemoryInfo(after);
+            }
+
+            return Math.max(0, after.availMem - before.availMem);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public static long cleanJunkFiles(Context context) {
+        long freedBytes = 0;
+        try {
+            File cacheDir = context.getCacheDir();
+            freedBytes += deleteJunkInDirectory(cacheDir);
+            File externalCacheDir = context.getExternalCacheDir();
+            if (externalCacheDir != null) {
+                freedBytes += deleteJunkInDirectory(externalCacheDir);
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return freedBytes;
+    }
+
+    private static long deleteJunkInDirectory(File dir) {
+        long freed = 0;
+        if (dir == null || !dir.exists()) return 0;
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    freed += deleteJunkInDirectory(file);
+                    File[] sub = file.listFiles();
+                    if (sub == null || sub.length == 0) {
+                        file.delete();
+                    }
+                } else {
+                    boolean isJunk = file.length() == 0 ||
+                                     file.getName().endsWith(".tmp") ||
+                                     file.getName().endsWith(".log") ||
+                                     file.getName().startsWith("cache_");
+                    if (isJunk) {
+                        long len = file.length();
+                        if (file.delete()) {
+                            freed += len > 0 ? len : 1024;
+                        }
+                    }
+                }
+            }
+        }
+        return freed;
+    }
 }
