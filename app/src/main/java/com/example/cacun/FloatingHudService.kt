@@ -55,6 +55,8 @@ class FloatingHudService : Service(), SensorEventListener {
         }
     }
 
+    private var isCharging: Boolean = false
+
     private val batteryReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.let {
@@ -63,6 +65,9 @@ class FloatingHudService : Service(), SensorEventListener {
                 batteryPercent = if (level != -1 && scale != -1) {
                     (level * 100) / scale
                 } else 0
+
+                val status = it.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+                isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
 
                 val voltageMv = it.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0)
                 batteryVoltage = voltageMv / 1000f

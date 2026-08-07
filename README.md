@@ -19,16 +19,23 @@
   - Real-time CPU clocks / throttling telemetry (`/sys/devices/system/cpu/`)
   - Live display refresh rate (60Hz, 90Hz, 120Hz, 144Hz, 240Hz+)
   - System hardware specifications (Modem, Camera, RAM, NFC)
-- **Network:**
+  - Hardware Interactive Diagnostics (Multi-touch screen test, Speaker frequency sweep)
+  - Automation Triggers UI (Macro profiles: Gaming, Eco, Performance, Battery Saver)
+- **Spectrum:**
   - Live upload/download scrolling traffic speed graph
   - RSSI bluetooth wave analyzer with custom drawn Canvas components
+  - Thermal Matrix Core (Battery temperature, CPU temperature, Thermal throttling status)
+  - Sensor Vector Plotter with oscilloscope visualization
 - **Storage:**
   - Real-time MediaStore cursor queries for Images, Videos, Audio, Documents, Downloads, and APKs
-  - Programmatic 3D cylinder partitioned graph visualizer
+  - Modern neon segmented vertical progress bar visualizer
+  - RAM Matrix Optimizer (Background process cleaner with memory purge)
   - Local Disk I/O caching read/write benchmark speed tester
 - **Security:**
   - Dynamic heuristic APK permission scanner & package uninstall interface
   - Screen Time tracker via UsageStatsManager
+  - App Permission Analyzer (Dangerous permissions scanner: Camera, Mic, Location)
+  - Network Firewall Monitor (Background data consumption tracking)
 - **Overlay HUD:**
   - Floating, draggable transparent widget overlaying other apps to monitor live sensor status
 
