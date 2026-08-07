@@ -19,23 +19,24 @@
   - Real-time CPU clocks / throttling telemetry (`/sys/devices/system/cpu/`)
   - Live display refresh rate (60Hz, 90Hz, 120Hz, 144Hz, 240Hz+)
   - System hardware specifications (Modem, Camera, RAM, NFC)
-  - Hardware Interactive Diagnostics (Multi-touch screen test, Speaker frequency sweep)
-  - Automation Triggers UI (Macro profiles: Gaming, Eco, Performance, Battery Saver)
+  - Hardware Interactive Diagnostics: Multi-touch screen test & speaker frequency sweep
+  - Automation Triggers UI: Macro profiles (Gaming, Eco, Performance, Battery Saver modes)
 - **Spectrum:**
-  - Live upload/download scrolling traffic speed graph
-  - RSSI bluetooth wave analyzer with custom drawn Canvas components
-  - Thermal Matrix Core (Battery temperature, CPU temperature, Thermal throttling status)
   - Sensor Vector Plotter with oscilloscope visualization
+  - Network speed diagnostics with live traffic graphs
+  - Bluetooth diagnostics with device list and wave analyzer
+  - Thermal Matrix Core: Battery & CPU temperature monitoring with glowing gauges
+  - Battery Infusion Module: Power calibration, charger brick rating, cable protocol detection
 - **Storage:**
   - Real-time MediaStore cursor queries for Images, Videos, Audio, Documents, Downloads, and APKs
-  - Modern neon segmented vertical progress bar visualizer
-  - RAM Matrix Optimizer (Background process cleaner with memory purge)
-  - Local Disk I/O caching read/write benchmark speed tester
+  - Neon segmented vertical progress bar for storage visualization
+  - RAM Matrix Optimizer: Background process cleaner with memory purge functionality
+  - Volatile Storage Sectors: Live RAM and storage usage monitoring
 - **Security:**
   - Dynamic heuristic APK permission scanner & package uninstall interface
   - Screen Time tracker via UsageStatsManager
-  - App Permission Analyzer (Dangerous permissions scanner: Camera, Mic, Location)
-  - Network Firewall Monitor (Background data consumption tracking)
+  - App Permission Analyzer: Dangerous permissions scanner (Camera, Mic, Location)
+  - Network Firewall Monitor: Background data consumption tracking
 - **Overlay HUD:**
   - Floating, draggable transparent widget overlaying other apps to monitor live sensor status
 
